@@ -20,9 +20,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: rgba(0, 0, 0, 0);
+      background: #0d0d0d;
       padding: 20px 40px;
-      z-index: 10;
+      z-index: 100;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     header .logo {
@@ -58,8 +58,10 @@
     }
     /* Sekce */
 section {
-    padding: 80px 20px;
+    padding: 120px 20px 20px;
     margin: 20px;
+    z-index: 1;
+    position: relative;
   }
   
   section h2 {
@@ -71,6 +73,78 @@ section {
     font-size: 1rem;
     line-height: 1.6;
     color: #ccc;
+  }
+  .intro {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0d0d0d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 101;
+    overflow: hidden;
+    transition: all 1s ease;
+  }
+  .intro-logo {
+    font-size: 4rem;
+    font-weight: 700;
+    color: #fff;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 1s ease;
+  }
+  .intro.active {
+    top: -100%;
+    opacity: 0;
+    background: transparent;
+  }
+
+  /* Hero section */
+  .hero {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 1;
+  }
+  .hero video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    filter: brightness(0.3);
+  }
+  .hero-content {
+    z-index: 2;
+    max-width: 800px;
+  }
+  .hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+  .btn {
+    display: inline-block;
+    padding: 15px 30px;
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0);
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .btn:hover {
+    background: #fff;
+    color: #0d0d0d;
   }
 
     /* Mobile Menu */
