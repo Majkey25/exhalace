@@ -1,16 +1,19 @@
+
  * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
     body {
-      font-family: 'Montserrat', sans-serif;
+      font-family: 'Poppins', sans-serif;
       background-color: #0d0d0d;
       color: #ffffff;
       overflow-x: hidden;
+      overflow-y: auto; 
+      height: 100%;
     }
     header {
-      position: sticky;
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
@@ -55,8 +58,8 @@
     }
     /* Sekce */
 section {
-    padding: 80px 20px; /* Odsazení nahoře pro posunutí obsahu od menu */
-    margin: 20px; /* Odsazení kolem sekce */
+    padding: 80px 20px;
+    margin: 20px;
   }
   
   section h2 {
@@ -72,54 +75,54 @@ section {
 
     /* Mobile Menu */
 @media (max-width: 768px) {
+    nav ul {
+      display: none; /* Hide regular menu */
+      flex-direction: column; /* Stack items vertically */
+      position: absolute;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.9); /* Background for the mobile menu */
+      padding: 10px;
+    }
+  
+    nav ul li {
+      width: 100%;
+      text-align: center;
+    }
+  
+    nav ul li a {
+      padding: 15px;
+      font-size: 1.2rem;
+    }
+  
+    .menu-toggle {
+      display: block;
+      cursor: pointer;
+      font-size: 2rem;
+      color: #fff;
+      position: absolute;
+      right: 20px;
+      top: 20px;
+    }
+  
+    nav ul.show {
+      display: flex; /* Show menu when toggle is active */
+    }
+  }
+  
+  /* Hide the menu by default on mobile */
   nav ul {
-    display: none; /* Hide regular menu */
-    flex-direction: column; /* Stack items vertically */
-    position: absolute;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.9); /* Background for the mobile menu */
-    padding: 10px;
+    display: flex;
   }
-
-  nav ul li {
-    width: 100%;
-    text-align: center;
-  }
-
-  nav ul li a {
-    padding: 15px;
-    font-size: 1.2rem;
-  }
-
+  
+  /* Hamburger Icon */
   .menu-toggle {
-    display: block;
-    cursor: pointer;
-    font-size: 2rem;
-    color: #fff;
-    position: absolute;
-    right: 20px;
-    top: 20px;
+    display: none;
   }
-
-  nav ul.show {
-    display: flex; /* Show menu when toggle is active */
+  
+  @media (max-width: 768px) {
+    .menu-toggle {
+      display: block; /* Show hamburger menu icon */
+    }
   }
-}
-
-/* Hide the menu by default on mobile */
-nav ul {
-  display: flex;
-}
-
-/* Hamburger Icon */
-.menu-toggle {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .menu-toggle {
-    display: block; /* Show hamburger menu icon */
-  }
-}
