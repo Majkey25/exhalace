@@ -39,7 +39,7 @@ html {
     nav ul {
       display: flex;
       list-style: none;
-      gap: 40px;
+      gap: 10px;
       padding-left: 0;
       margin: 0;
 
@@ -174,57 +174,59 @@ footer {
     border-radius: 30px; 
     color: white; 
   }
+
+  .menu-toggle {
+    display: none;
+  }
  /* Mobile Menu */
-@media (max-width: 700px) {
-    /* Hide the logo */
-    header .logo {
-        display: none;
+ @media (max-width: 1320px) {
+    header {
+        flex-direction: column;
+        padding: 10px 20px;
     }
-    /* Adjust menu items to fit on small screens */
+
+    
+
+    nav {
+        width: 100%;
+        text-align: center;
+    }
+
     nav ul {
-        flex-wrap: wrap; /* Allow items to wrap */
-        overflow: hidden;
-        display: flex;
-        gap: 10px; /* Optional: adjust space between items */
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+        padding-left: 0;
     }
 
     nav ul li {
-        margin-right: 0;
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
     }
 
-    /* Style for "More" button */
-    nav ul li.more {
-        display: none;
-        position: relative;
-    }
-
-    nav ul li.more a {
-        padding: 10px;
-        cursor: pointer;
-    }
-
-    nav ul li.more .submenu {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background: #0d0d0d;
-        display: none;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    }
-
-    nav ul li.more.show-submenu .submenu {
+    /* Mobile menu button */
+    .menu-toggle {
         display: block;
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 2rem;
+        cursor: pointer;
+        padding: 10px;
+        margin-left: auto;
     }
 
-    /* Hide menu items in mobile view if needed */
-    nav ul li:not(.more) {
-        display: inline-block;
+    /* Menu hidden by default */
+    .nav-list {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        margin-top: 10px;
     }
 
-    header {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 20px;
+    .nav-list.active {
+        display: flex;
     }
 }

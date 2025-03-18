@@ -19,5 +19,9 @@ window.addEventListener('load', () => {
   
     window.addEventListener('resize', updateFooterContent);
     updateFooterContent(); // Inicializace footeru při načtení stránky
+    document.getElementById('menu-toggle').addEventListener('click', function() {
+        document.querySelector('.nav-list').classList.toggle('active');
+    });
+    
   });
   
