@@ -194,7 +194,7 @@ footer {
       position: absolute;
       top: 60px; 
       left: 0;
-      background-color: #33333337;
+      background-color: #33333337; /* Semi-transparent background */
       display: none; 
       transition: transform 0.3s ease;
       transform: translateX(-100%);
