@@ -42,6 +42,7 @@ html {
       gap: 40px;
       padding-left: 0;
       margin: 0;
+
     }
     nav ul li {
       transition: all 0.3s ease;
@@ -154,59 +155,6 @@ section {
     color: #0d0d0d;
   }
 
-    /* Mobile Menu */
-@media (max-width: 768px) {
-    nav ul {
-      display: none; /* Hide regular menu */
-      flex-direction: column; /* Stack items vertically */
-      position: absolute;
-      top: 60px;
-      left: 0;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.9); /* Background for the mobile menu */
-      padding: 10px;
-    }
-  
-    nav ul li {
-      width: 100%;
-      text-align: center;
-    }
-  
-    nav ul li a {
-      padding: 15px;
-      font-size: 1.2rem;
-    }
-  
-    .menu-toggle {
-      display: block;
-      cursor: pointer;
-      font-size: 2rem;
-      color: #fff;
-      position: absolute;
-      right: 20px;
-      top: 20px;
-    }
-  
-    nav ul.show {
-      display: flex; /* Show menu when toggle is active */
-    }
-  }
-  
-  /* Hide the menu by default on mobile */
-  nav ul {
-    display: flex;
-  }
-  
-  /* Hamburger Icon */
-  .menu-toggle {
-    display: none;
-  }
-  
-  @media (max-width: 768px) {
-    .menu-toggle {
-      display: block; /* Show hamburger menu icon */
-    }
-  }
 /* Footer */
 footer {
     position: fixed;
@@ -214,7 +162,7 @@ footer {
     left: 0;
     width: 100%;
     text-align: center;
-    padding: 10px 0;
+    padding: 8px 0;
     display: flex;
     justify-content: center;
     gap: 10px;
@@ -226,3 +174,57 @@ footer {
     border-radius: 30px; 
     color: white; 
   }
+ /* Mobile Menu */
+@media (max-width: 7000px) {
+    /* Hide the logo */
+    header .logo {
+        display: none;
+    }
+    /* Adjust menu items to fit on small screens */
+    nav ul {
+        flex-wrap: wrap; /* Allow items to wrap */
+        overflow: hidden;
+        display: flex;
+        gap: 10px; /* Optional: adjust space between items */
+    }
+
+    nav ul li {
+        margin-right: 0;
+    }
+
+    /* Style for "More" button */
+    nav ul li.more {
+        display: none;
+        position: relative;
+    }
+
+    nav ul li.more a {
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    nav ul li.more .submenu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: #0d0d0d;
+        display: none;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    nav ul li.more.show-submenu .submenu {
+        display: block;
+    }
+
+    /* Hide menu items in mobile view if needed */
+    nav ul li:not(.more) {
+        display: inline-block;
+    }
+
+    header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+    }
+}

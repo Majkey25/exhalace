@@ -52,32 +52,31 @@
     <p>V našem setlistu najdete mix skladeb pro každého – od těch energických a rychlých, až po pomalejší, emotivnější kousky, které vás dostanou. Naším cílem je přinášet na pódium pestrou paletu zvuků a nálad, protože víme, že každý má jiný vkus a chuť na něco jiného. U nás si každý najde to své – ať už jste fanouškem tvrdšího rocku nebo jemnějších balad.</p>
     <p>To, co nás odlišuje, je snaha přinášet něco nového a neokoukaného. Snažíme se soustředit na chytlavé skladby, které nejsou běžně součástí repertoáru jiných kapel v našem okolí. Takže pokud hledáte něco čerstvého, něco, co oživí místní rockovou scénu, rozhodně u nás budete mít co poslouchat.</p>
       
-    <footer style="display: flex; justify-content: center; align-items: center; text-align: center;">
-      <a href="https://majkey25.github.io/Majkey25/" style="text-decoration: none; color: inherit;">
+    <footer id="footer" style="display: flex; justify-content: center; align-items: center; text-align: center;">
+      <a id="footer-link" href="https://majkey25.github.io/Majkey25/" style="text-decoration: none; color: inherit;">
         <p style="margin: 1;">
           <span id="footer-text" style="background-color: #333; padding: 5px 20px; border-radius: 30px; color: white;">
-            Made by Matěj Teplý &copy; 2025 All rights reserved.
+            <!-- Footer content will be updated here -->
           </span>
         </p>
       </a>
     </footer>
-    <script href="assets/js/main.js"></script>
+    <script src="assets/js/script.js"></script>
     <script>
-    // Intro animace
-    window.addEventListener('load', () => {
-      const intro = document.getElementById('intro');
-      const logo = document.querySelector('.intro-logo');
-
-      setTimeout(() => {
-        logo.style.opacity = 1;
-        logo.style.transform = 'translateY(0)';
-      }, 500);
-
-      setTimeout(() => {
-        intro.classList.add('active');
-      }, 2000);
-    });
-  </script>
-
+      // Intro animace
+      window.addEventListener('load', () => {
+        const intro = document.getElementById('intro');
+        const logo = document.querySelector('.intro-logo');
+  
+        setTimeout(() => {
+          logo.style.opacity = 1;
+          logo.style.transform = 'translateY(0)';
+        }, 500);
+  
+        setTimeout(() => {
+          intro.classList.add('active');
+        }, 2000);
+      });
+    </script>
 </body>
 </html>
