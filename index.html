@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EXHALACE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #0d0d0d;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0);
+      padding: 20px 40px;
+      z-index: 10;
+    }
+    header .logo {
+      position: absolute;
+      left: 40px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #fff;
+    }
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 40px;
+    }
+    nav ul li {
+      transition: all 0.3s ease;
+    }
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1rem;
+      padding: 10px 20px;
+      transition: all 0.3s ease;
+    }
+    nav ul li a:hover {
+      background: #ffffff;
+      color: #0d0d0d;
+      border-radius: 50px;
+    }
+
+    /* Intro animace */
+    .intro {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0d0d0d;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      transition: all 1s ease;
+    }
+    .intro-logo {
+      font-size: 4rem;
+      font-weight: 700;
+      color: #fff;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 1s ease;
+    }
+    .intro.active {
+      top: -100%;
+      opacity: 0;
+    }
+
+    /* Hero section */
+    .hero {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .hero video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      filter: brightness(0.3);
+    }
+    .hero-content {
+      z-index: 1;
+      max-width: 800px;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 15px 30px;
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0);
+      color: #fff;
+      border: 2px solid #fff;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    .btn:hover {
+      background: #fff;
+      color: #0d0d0d;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Intro -->
+  <div class="intro" id="intro">
+    <div class="intro-logo">EXHALACE</div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">EXHALACE</div>
+    <nav>
+      <ul>
+        <li><a href="#home">Úvod</a></li>
+        <li><a href="#concerts">Koncerty</a></li>
+        <li><a href="#gallery">Fotogalerie</a></li>
+        <li><a href="#contact">Kontakt</a></li>
+        <li><a href="#songs">Seznam skladeb</a></li>
+        <li><a href="#forum">Fórum</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <video autoplay muted loop>
+      <source src="tvuj-soubor.mp4" type="video/mp4">
+      Tvůj prohlížeč nepodporuje video.
+    </video>
+    <div class="hero-content">
+      <h1>Rocková kapela Exhalace z Jalubí</h1>
+      <p>Hrajeme pecky CZ/SK od 70s po současnost. Známé i nehrané věci, rychlé i pomalé, pro každýho něco!</p>
+      <a href="#about" class="btn">Zjistit více</a>
+    </div>
+  </section>
+
+  <script>
+    // Intro animace
+    window.addEventListener('load', () => {
+      const intro = document.getElementById('intro');
+      const logo = document.querySelector('.intro-logo');
+
+      setTimeout(() => {
+        logo.style.opacity = 1;
+        logo.style.transform = 'translateY(0)';
+      }, 500);
+
+      setTimeout(() => {
+        intro.classList.add('active');
+      }, 2000);
+    });
+  </script>
+
+</body>
+</html>
