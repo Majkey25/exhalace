@@ -1,5 +1,5 @@
 window.addEventListener('load', () => {
-    const menu = document.querySelector('nav ul');
+    const menu = document.querySelector('nav ul'); // Select the menu directly
     const footer = document.querySelector('footer');
     const items = Array.from(menu.children);
   
@@ -18,10 +18,10 @@ window.addEventListener('load', () => {
     }
   
     window.addEventListener('resize', updateFooterContent);
-    updateFooterContent(); // Inicializace footeru při načtení stránky
-    document.getElementById('menu-toggle').addEventListener('click', function() {
-        document.querySelector('.nav-list').classList.toggle('active');
-    });
+    updateFooterContent(); // Initialize footer on page load
     
-  });
-  
+    // Hamburger menu toggle
+    document.getElementById('menu-toggle').addEventListener('click', function() {
+        menu.classList.toggle('active'); // Toggle the 'active' class on the nav ul
+    });
+});
