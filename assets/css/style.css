@@ -207,3 +207,22 @@ section {
       display: block; /* Show hamburger menu icon */
     }
   }
+/* Footer */
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  footer span {
+    background-color: #0d0d0d;
+    padding: 5px 20px;
+    border-radius: 30px; 
+    color: white; 
+  }

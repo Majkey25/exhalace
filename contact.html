@@ -3,10 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Koncerty - EXHALACE</title>
+  <title>Kontakt - EXHALACE</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="icon" href="assets/images/icon.png" type="image/png">
   <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    section {
+      max-width: 800px;
+      width: 100%;
+      background-color: #333;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    .contact-info {
+      margin-top: 30px;
+    }
+    .contact-info p {
+      margin: 10px 0;
+    }
+    .contact-info i {
+      margin-right: 10px;
+    }
+    .contact-info a {
+      color: #fff;
+    }
+    /* Sociální sítě (ikony) */
+    .social-icons {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .social-icons a {
+      margin: 0 15px;
+      color: #fff;
+      font-size: 2rem;
+      transition: color 0.3s ease, transform 0.3s ease;
+      border: none;
+    }
+    .social-icons a:hover {
+      transform: scale(1.2);
+    }
+    .social-icons a.facebook:hover {
+      color: #1877f2; /* Facebook blue */
+    }
+    .social-icons a.instagram:hover {
+      color: #e1306c; /* Instagram red */
+    }
+    /* Animace ikon */
+    .social-icons a {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s forwards;
+    }
+    .social-icons a:nth-child(1) {
+      animation-delay: 0.2s;
+    }
+    .social-icons a:nth-child(2) {
+      animation-delay: 0.4s;
+    }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -24,9 +102,36 @@
   </header>
 
   <section>
-    <h2>Kontakt</h2>
-    <p>mapa, mail, tel, socky</p>
+    <h2>Kontaktujte nás</h2>
+    <p>Máte dotazy? Chcete si s námi domluvit koncert? Nebo nás chcete jen pozdravit?</p><p>Napište nám a my se vám co nejdříve ozveme!</p>
+
+    <!-- Kontaktní informace -->
+    <div class="contact-info">
+      <p><i class="fas fa-phone"></i> Telefon: +420 604 525 780 -Miroslav Kostelecký</p>
+      <p><i class="fas fa-envelope"></i> E-mail: <a href="mailto:exhalace@email.cz">exhalace@email.cz</a></p>
+    </div>
+
+    <!-- Sociální sítě (ikony) -->
+    <div class="social-icons">
+      <a href="https://www.facebook.com/kapelaexhalace" target="_blank" class="facebook">
+        <i class="fab fa-facebook"></i>
+      </a>
+      <a href="https://www.instagram.com/exhalace_?igsh=MW1hMHRuMWlzempxMw==" target="_blank" class="instagram">
+        <i class="fab fa-instagram"></i>
+      </a>
+    </div>
   </section>
 
+
+  <footer style="display: flex; justify-content: center; align-items: center; text-align: center;">
+    <a href="https://majkey25.github.io/Majkey25/" style="text-decoration: none; color: inherit;">
+      <p style="margin: 1;">
+        <span id="footer-text" style="background-color: #333; padding: 5px 20px; border-radius: 30px; color: white;">
+          Made by Matěj Teplý &copy; 2025 All rights reserved.
+        </span>
+      </p>
+    </a>
+  </footer>
+  <script href="assets/js/main.js"></script>
 </body>
 </html>
