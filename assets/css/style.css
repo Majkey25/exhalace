@@ -180,9 +180,17 @@ footer {
   
   @media (max-width: 1320px) {
     header {
-      flex-direction: column;
+      display: flex;
+      justify-content: space-between; 
+      align-items: center;
       padding: 10px 20px;
-      position: relative; 
+      position: fixed; 
+      width: 100%; 
+    }
+  
+    header .logo {
+      position: static; 
+      margin: 0; 
     }
   
     nav ul {
@@ -218,6 +226,6 @@ footer {
       font-size: 2rem;
       cursor: pointer;
       padding: 10px;
-      margin-left: auto;
+      margin: 0;
     }
   }
