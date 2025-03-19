@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="icon" href="assets/images/icon.png" type="image/png">
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <style>
     body {
       display: flex;
@@ -110,7 +111,7 @@
 
     <!-- Kontaktní informace -->
     <div class="contact-info">
-      <p><i class="fas fa-phone"></i> Telefon: +420 604 525 780 -Miroslav Kostelecký</p>
+      <p><i class="fas fa-phone"></i> Telefon: +420 604 525 780 - Miroslav Kostelecký</p>
       <p><i class="fas fa-envelope"></i> E-mail: <a href="mailto:exhalace@email.cz">exhalace@email.cz</a></p>
     </div>
 
@@ -125,7 +126,7 @@
     </div>
     <div style="margin-top: 40px;">
       <h2>Kde nás najdete?</h2>
-      <div id="mapa"></div>
+      <div id="map"></div>
     </div>
   </section>
 
@@ -138,25 +139,28 @@
       </p>
     </a>
   </footer>
-  <!-- MAPY.CZ SCRIPT -->
-  <script type="text/javascript" src="https://api.mapy.cz/loader.js"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
   <script type="text/javascript">
-    Loader.load(null, { suggest: true });
-    var center = SMap.Coords.fromWGS84(17.5097703, 49.1065194);
+    // Initialize the map when the page loads
+    window.onload = function () {
+      const map = L.map('map', {
+    scrollWheelZoom: false,
+  }).setView([49.11641067230354, 17.427769228739685], 13);
 
-    var m = new SMap(JAK.gel("mapa"), center, 16);
-    m.addDefaultLayer(SMap.DEF_BASE).enable();
-    m.addDefaultControls();
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
 
-    var layer = new SMap.Layer.Marker();
-    m.addLayer(layer);
-    layer.enable();
+  L.marker([49.11641067230354, 17.427769228739685]).addTo(map)
+      .bindPopup('Jalubí')
+      .openPopup();
 
-    var marker = new SMap.Marker(center, "myMarker");
-    layer.addMarker(marker);
+      
+      
+}
   </script>
-
-  <script src="assets/js/script.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="assets/js/script.js"></script>
 
 </body>
 </html>
