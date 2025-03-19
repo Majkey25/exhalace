@@ -8,7 +8,109 @@
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" as="style">
   <link rel="icon" href="assets/images/icon.png" type="image/png">
   <link rel="stylesheet" href="assets/css/style.css">
+
+  <style>
+    
+  .events-list {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .event-card {
+  background-color: #222;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  text-align: left; /* Align text to the left */
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+
+  .event-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+  }
+
+  .event-card h3 {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    text-align: left; 
+  }
+
+  .event-card p {
+    font-size: 1.1rem;
+    margin: 10px 0;
+    text-align: left;
+  }
+
+  .event-card a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 15px;
+    display: inline-block;
+    font-size: 1.2rem;
+    transition: color 0.3s;
+    
+  }
+
+  .event-card a:hover {
+    color: #007700;
+  }
+
+  .add-to-calendar {
+    margin-top: 10px;
+    display: inline-block;
+    background-color: #444;
+    color: #ffffff;
+    padding: 8px 20px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+
+  .add-to-calendar:hover {
+    background-color: #ffffff;
+    color: #ffffff;
+  }
+  .show-past-button {
+  background-color: #444; 
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+  text-align: center;
+  display: block; 
+  margin: 20px auto; 
+}
+
+.show-past-button:hover {
+  background-color: #007700; /* Green on hover */
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.show-past-button:focus {
+  outline: none; /* Remove focus outline */
+}
+
+.past-events {
+    display: none;
+    margin-top: 30px;
+    
+  }
+</style>
 </head>
+
 <body>
     <header>
         <div class="logo">
@@ -29,7 +131,20 @@
 
   <section>
     <h2>Koncerty</h2>
-    <p>Informace o nadcházejících koncertech kapely Exhalace.</p><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><p>...</p>
+    <p>Informace o nadcházejících koncertech kapely Exhalace. Přidejte si do kalendáře naše nadcházející vystoupení a přijďte nás podpořit!</p>
+
+    
+    <div class="events-list">
+      <!-- Upcoming Event Cards will be inserted dynamically by JavaScript -->
+    </div>
+
+    <button class="show-past-button" onclick="togglePastEvents()">Zobrazit uplynulé koncerty</button>
+
+    <div class="past-events">
+      <!-- Past Event Cards will also be inserted dynamically by JavaScript -->
+    </div>
+  </section>
+    </div>
   </section>
   <footer id="footer" style="display: flex; justify-content: center; align-items: center; text-align: center;">
     <a id="footer-link" href="https://majkey25.github.io/Majkey25/" style="text-decoration: none; color: inherit;">
@@ -41,5 +156,74 @@
     </a>
   </footer>
   <script src="assets/js/script.js"></script>
+  <script>
+    const concerts = [
+      {
+        title: "Koncert v Brně",
+        date: "2025-03-25T20:00:00",
+        location: "Klub Fléda, Brno",
+        mapLink: "https://www.mapy.cz/s/fg3J",
+        calendarLink: "data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0ADTSTART:20250325T200000%0ADTEND:20250325T230000%0ASUMMARY:Koncert v Brně%0ALOCATION:Klub Fléda, Brno%0AEND:VEVENT%0AEND:VCALENDAR"
+      },
+      {
+        title: "Koncert v Praze",
+        date: "2025-04-05T19:00:00",
+        location: "Rock Café, Praha",
+        mapLink: "https://www.mapy.cz/s/fn3J",
+        calendarLink: "data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0ADTSTART:20250405T190000%0ADTEND:20250405T220000%0ASUMMARY:Koncert v Praze%0ALOCATION:Rock Café, Praha%0AEND:VEVENT%0AEND:VCALENDAR"
+      },
+      {
+        title: "Koncert ve Zlíně",
+        date: "2025-04-12T21:00:00",
+        location: "Hudební klub, Zlín",
+        mapLink: "https://www.mapy.cz/s/ft4J",
+        calendarLink: "data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0ADTSTART:20250412T210000%0ADTEND:20250412T230000%0ASUMMARY:Koncert ve Zlíně%0ALOCATION:Hudební klub, Zlín%0AEND:VEVENT%0AEND:VCALENDAR"
+      },
+      {
+        title: "Koncert v Olomouci",
+        date: "2025-02-15T19:00:00",
+        location: "Sokolovna, Olomouc",
+        mapLink: "https://www.mapy.cz/s/fg3J",
+        calendarLink: null
+      }
+    ];
+
+    // Function to create event card HTML
+    function createEventCard(event) {
+      return `
+        <div class="event-card">
+          <h3>${event.title}</h3>
+          <p>Datum: ${new Date(event.date).getDate()}.${new Date(event.date).getMonth() + 1}.${new Date(event.date).getFullYear()}</p>
+          <p>Čas: ${new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}</p>
+          <p>Místo: ${event.location}</p>
+          <a href="${event.mapLink}" target="_blank">Zobrazit na mapách</a>
+          ${event.calendarLink ? `<a href="${event.calendarLink}" class="add-to-calendar" download="${event.title.replace(/\s+/g, '-').toLowerCase()}.ics">Přidat do kalendáře</a>` : ''}
+        </div>
+      `;
+    }
+
+    // Function to display events
+    function displayEvents() {
+      const today = new Date();
+      const upcomingEvents = concerts.filter(event => new Date(event.date) > today);
+      const pastEvents = concerts.filter(event => new Date(event.date) <= today);
+
+      const eventsList = document.querySelector('.events-list');
+      const pastEventsList = document.querySelector('.past-events');
+
+      eventsList.innerHTML = upcomingEvents.map(createEventCard).join('');
+      pastEventsList.innerHTML = pastEvents.map(createEventCard).join('');
+    }
+
+    // Call displayEvents on page load
+    displayEvents();
+
+    // Toggle past events visibility
+    function togglePastEvents() {
+      document.querySelector('.past-events').classList.toggle('hidden');
+      const showPastButton = document.querySelector('.show-past-button');
+      showPastButton.textContent = document.querySelector('.past-events').classList.contains('hidden') ? 'Zobrazit uplynulé koncerty' : 'Skrýt uplynulé koncerty';
+    }
+  </script>
 </body>
 </html>
