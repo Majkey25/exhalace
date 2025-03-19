@@ -123,8 +123,11 @@
         <i class="fab fa-instagram"></i>
       </a>
     </div>
+    <div style="margin-top: 40px;">
+      <h2>Kde nás najdete?</h2>
+      <div id="mapa"></div>
+    </div>
   </section>
-
 
   <footer id="footer" style="display: flex; justify-content: center; align-items: center; text-align: center;">
     <a id="footer-link" href="https://majkey25.github.io/Majkey25/" style="text-decoration: none; color: inherit;">
@@ -135,6 +138,25 @@
       </p>
     </a>
   </footer>
+  <!-- MAPY.CZ SCRIPT -->
+  <script type="text/javascript" src="https://api.mapy.cz/loader.js"></script>
+  <script type="text/javascript">
+    Loader.load(null, { suggest: true });
+    var center = SMap.Coords.fromWGS84(17.5097703, 49.1065194);
+
+    var m = new SMap(JAK.gel("mapa"), center, 16);
+    m.addDefaultLayer(SMap.DEF_BASE).enable();
+    m.addDefaultControls();
+
+    var layer = new SMap.Layer.Marker();
+    m.addLayer(layer);
+    layer.enable();
+
+    var marker = new SMap.Marker(center, "myMarker");
+    layer.addMarker(marker);
+  </script>
+
   <script src="assets/js/script.js"></script>
+
 </body>
 </html>
