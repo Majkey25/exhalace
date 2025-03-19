@@ -108,6 +108,9 @@
     margin-top: 30px;
     
   }
+  .hidden {
+  display: none;
+}
 </style>
 </head>
 
@@ -219,11 +222,18 @@
     displayEvents();
 
     // Toggle past events visibility
-    function togglePastEvents() {
-      document.querySelector('.past-events').classList.toggle('hidden');
-      const showPastButton = document.querySelector('.show-past-button');
-      showPastButton.textContent = document.querySelector('.past-events').classList.contains('hidden') ? 'Zobrazit uplynulé koncerty' : 'Skrýt uplynulé koncerty';
-    }
+function togglePastEvents() {
+  const pastEvents = document.querySelector('.past-events');
+  const showPastButton = document.querySelector('.show-past-button');
+  
+  // Toggle the visibility of the past events section
+  pastEvents.classList.toggle('hidden');
+
+  // Change the button text based on the visibility of past events
+  showPastButton.textContent = pastEvents.classList.contains('hidden') ? 
+    'Zobrazit uplynulé koncerty' : 'Skrýt uplynulé koncerty';
+}
+
   </script>
 </body>
 </html>
