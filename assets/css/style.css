@@ -68,13 +68,13 @@ section {
   }
   
   section h2 {
-    font-size: 2rem;
+    font-size: 3rem;
     margin-bottom: 10px;
     text-align: center;
   }
   
   section p {
-    font-size: 1rem;
+    font-size: 1.5rem;
     line-height: 1.6;
     color: #ccc;
     text-align: center;
@@ -173,6 +173,7 @@ footer {
     padding: 5px 20px;
     border-radius: 30px; 
     color: white; 
+    font-size: 1rem;
   }
 
  /* Mobile Menu */
@@ -365,13 +366,14 @@ footer {
 .song-item:hover {
   transform: translateX(10px);
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  color:#000000
 }
 .song-item a {
-  color: inherit; /* Inherits the color from the parent element */
-  text-decoration: none; /* Removes the underline */
+  color: inherit; 
+  text-decoration: none;
 }
 
 .song-item a:hover {
-  color: #fff; /* This will change the color on hover to white (or any color you prefer) */
-  text-decoration: underline; /* Optional: adds underline on hover */
+  text-decoration: underline;
 }
