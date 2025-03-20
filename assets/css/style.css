@@ -343,3 +343,35 @@ footer {
 .right {
   right: 10px;
 }
+.song-list {
+  display: flex;
+  flex-direction:column;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.song-item {
+  background-color: #333;
+  border-radius: 12px;
+  margin: 5px 0;
+  padding: 15px;
+  font-size: 18px;
+  color: #fff;
+  display: flex;
+  justify-content:center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.song-item:hover {
+  transform: translateX(10px);
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+.song-item a {
+  color: inherit; /* Inherits the color from the parent element */
+  text-decoration: none; /* Removes the underline */
+}
+
+.song-item a:hover {
+  color: #fff; /* This will change the color on hover to white (or any color you prefer) */
+  text-decoration: underline; /* Optional: adds underline on hover */
+}
