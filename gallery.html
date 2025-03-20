@@ -27,8 +27,50 @@
       </header>
   <section>
     <h2>Galerie</h2>
-    <p>...</p>
+    <p>Momentky z našich koncertů – posuďte sami, jestli to vypadá jako chaos nebo umění... nebo obojí!</p>
   </section>
+  <section class="gallery">
+    <div class="gallery-grid">
+      <!-- Example images -->
+      <div class="gallery-item">
+        <img src="assets/images/galery/1.jpg" class="gallery-img">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/galery/2.jpg" class="gallery-img">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/galery/3.jpg" class="gallery-img">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/galery/4.jpg" class="gallery-img">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/galery/5.jpg" class="gallery-img">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/galery/6.jpg" class="gallery-img">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/galery/7.jpg" class="gallery-img">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/galery/8.jpg" class="gallery-img">
+      </div>
+      <div class="gallery-item">
+        <img src="assets/images/galery/9.jpg" class="gallery-img">
+      </div>
+      <!-- Add more -->
+    </div>
+  </section>
+  
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <span class="close-btn">&times;</span>
+    <img class="modal-content" id="modal-img">
+    <button class="arrow left">&#10094;</button>
+    <button class="arrow right">&#10095;</button>
+    <div id="caption"></div>
+  </div>
   <footer id="footer" style="display: flex; justify-content: center; align-items: center; text-align: center;">
     <a id="footer-link" href="https://majkey25.github.io/Majkey25/" style="text-decoration: none; color: inherit;">
       <p style="margin: 1;">
@@ -39,5 +81,95 @@
     </a>
   </footer>
   <script src="assets/js/script.js"></script>
+  <script>
+    const images = document.querySelectorAll('.gallery-img');
+const modal = document.getElementById('modal');
+const modalImg = document.getElementById('modal-img');
+const caption = document.getElementById('caption');
+const closeBtn = document.querySelector('.close-btn');
+let currentIndex = 0; // To track the current image index
+
+// Open modal when image is clicked
+images.forEach((image, index) => {
+  image.addEventListener('click', () => {
+    currentIndex = index;
+    modal.style.display = 'flex';
+    modalImg.src = image.src;
+    caption.textContent = image.alt;
+  });
+});
+
+// Close modal when close button is clicked
+closeBtn.addEventListener('click', () => {
+  modal.style.display = 'none';
+});
+
+// Close modal when clicking outside the image
+window.addEventListener('click', (e) => {
+  if (e.target === modal) {
+    modal.style.display = 'none';
+  }
+});
+
+// Move to next or previous image
+document.querySelector('.left').addEventListener('click', () => {
+  currentIndex = (currentIndex === 0) ? images.length - 1 : currentIndex - 1;
+  modalImg.src = images[currentIndex].src;
+  caption.textContent = images[currentIndex].alt;
+});
+
+document.querySelector('.right').addEventListener('click', () => {
+  currentIndex = (currentIndex === images.length - 1) ? 0 : currentIndex + 1;
+  modalImg.src = images[currentIndex].src;
+  caption.textContent = images[currentIndex].alt;
+});
+
+// Variables to track touch positions
+let touchStartX = 0;
+let touchEndX = 0;
+
+// Handle touch start event
+modal.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+// Handle touch end event
+modal.addEventListener('touchend', (e) => {
+  touchEndX = e.changedTouches[0].screenX;
+
+  // Check if swipe was left or right
+  if (touchStartX > touchEndX + 50) {
+    // Swiped left: Move to next image
+    currentIndex = (currentIndex === images.length - 1) ? 0 : currentIndex + 1;
+    modalImg.src = images[currentIndex].src;
+    caption.textContent = images[currentIndex].alt;
+  } else if (touchStartX + 50 < touchEndX) {
+    // Swiped right: Move to previous image
+    currentIndex = (currentIndex === 0) ? images.length - 1 : currentIndex - 1;
+    modalImg.src = images[currentIndex].src;
+    caption.textContent = images[currentIndex].alt;
+  }
+});
+
+// Handle keyboard navigation for images (left/right arrows)
+window.addEventListener('keydown', (e) => {
+  if (modal.style.display === 'flex') { // Only allow if modal is open
+    if (e.key === 'ArrowLeft') {
+      // Left arrow key: Move to previous image
+      currentIndex = (currentIndex === 0) ? images.length - 1 : currentIndex - 1;
+      modalImg.src = images[currentIndex].src;
+      caption.textContent = images[currentIndex].alt;
+    } else if (e.key === 'ArrowRight') {
+      // Right arrow key: Move to next image
+      currentIndex = (currentIndex === images.length - 1) ? 0 : currentIndex + 1;
+      modalImg.src = images[currentIndex].src;
+      caption.textContent = images[currentIndex].alt;
+    } else if (e.key === 'Escape') {
+      // Escape key: Close modal
+      modal.style.display = 'none';
+    }
+  }
+});
+</script>
 </body>
 </html>
