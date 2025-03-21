@@ -377,3 +377,71 @@ footer {
 .song-item a:hover {
   text-decoration: underline;
 }
+.forum {
+  max-width: 800px;
+  padding: 20px;
+  color: #fff;
+  background-color: #222;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(255,255,255,0.05);
+}
+
+.forum h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.forum-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.forum-form input,
+.forum-form textarea {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #333;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.forum-form button {
+  padding: 10px;
+  background-color: #444;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.forum-form button:hover {
+  background-color: #666;
+}
+
+.forum-posts {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.post {
+  background-color: #333;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #666;
+}
+
+.post .author {
+  font-weight: bold;
+  color: #aaa;
+  margin-bottom: 5px;
+}
+
+.post .content {
+  white-space: pre-wrap;
+}

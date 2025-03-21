@@ -30,11 +30,22 @@
           </ul>
         </nav>
       </header>
+    <section class="forum">
+      <h2>Fórum</h2>
+    
+      <!-- Formulář pro nový příspěvek -->
+      <form id="forum-form" class="forum-form">
+        <input type="text" id="username" placeholder="Tvé jméno" required>
+        <textarea id="message" placeholder="Napiš něco..." required></textarea>
+        <button type="submit">Přidat příspěvek</button>
+      </form>
+    
+      <!-- Místo, kde se zobrazí příspěvky -->
+      <div id="forum-posts" class="forum-posts">
+        <!-- Dynamicky přidané příspěvky -->
+      </div>
+    </section>
 
-  <section>
-    <h2>Fórum</h2>
-    <p>..</p>
-  </section>
   <footer id="footer" style="display: flex; justify-content: center; align-items: center; text-align: center;">
     <a id="footer-link" href="https://majkey25.github.io/Majkey25/" style="text-decoration: none; color: inherit;">
       <p style="margin: 1;">
@@ -45,5 +56,34 @@
     </a>
   </footer>
   <script src="assets/js/script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("forum-form");
+  const postsContainer = document.getElementById("forum-posts");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById("username").value.trim();
+    const message = document.getElementById("message").value.trim();
+
+    if (username && message) {
+      const post = document.createElement("div");
+      post.className = "post";
+
+      post.innerHTML = `
+        <div class="author">${username}</div>
+        <div class="content">${message}</div>
+      `;
+
+      postsContainer.prepend(post); // Přidá nový post nahoru
+      form.reset();
+    } else {
+      alert("Vyplň jméno i zprávu!");
+    }
+  });
+});
+
+  </script>
 </body>
 </html>
