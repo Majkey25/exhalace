@@ -15,6 +15,45 @@
 
 </head>
 <body>
+  <style>.collapsible {
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+    padding: 10px 20px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .collapsible:hover {
+    background-color: #666;
+  }
+  
+  .collapsible:after {
+    content: ' ▼';
+    float: right;
+    transition: transform 0.3s ease;
+  }
+  
+  .active:after {
+    transform: rotate(180deg);
+  }
+  
+  .content {
+    padding: 0 20px;
+    display: none;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  </style>
 
   <!-- Intro -->
   <div class="intro" id="intro">
@@ -58,7 +97,38 @@
     <p>Jsme rocková kapela Exhalace, která pochází z malebné vesničky Jalubí u Uherského Hradiště. Hrajeme pro všechny, kteří milují živou hudbu, ať už jde o známé hity, nebo o méně známé skvosty české a slovenské rockové scény, které máme ve svém repertoáru. Od klasik, které znáte, až po perly, které v okolí zas tak často neuslyšíte.</p>
     <p>V našem setlistu najdete mix skladeb pro každého – od těch energických a rychlých, až po pomalejší, emotivnější kousky, které vás dostanou. Naším cílem je přinášet na pódium pestrou paletu zvuků a nálad, protože víme, že každý má jiný vkus a chuť na něco jiného. U nás si každý najde to své – ať už jste fanouškem tvrdšího rocku nebo jemnějších balad.</p>
     <p>To, co nás odlišuje, je snaha přinášet něco nového a neokoukaného. Snažíme se soustředit na chytlavé skladby, které nejsou běžně součástí repertoáru jiných kapel v našem okolí. Takže pokud hledáte něco čerstvého, něco, co oživí místní rockovou scénu, rozhodně u nás budete mít co poslouchat.</p>
-      
+    <button class="collapsible">Zobrazit členy</button>
+    <div class="content">
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 20px;">
+        
+        <div style="text-align: center;">
+          <img src="assets/images/clenove/roman.jpg" alt="Roman Doležal" style="max-width: 150px; border-radius: 10px;">
+          <p><strong>Roman Doležal</strong><br><span style="color: gray; font-size: 14px;">Zpěv</span></p>
+        </div>
+    
+        <div style="text-align: center;">
+          <img src="assets/images/clenove/stepan.jpg" alt="Štěpán Kostelecký" style="max-width: 150px; border-radius: 10px;">
+          <p><strong>Štěpán Kostelecký</strong><br><span style="color: gray; font-size: 14px;">Sólová kytara</span></p>
+        </div>
+    
+        <div style="text-align: center;">
+          <img src="assets/images/clenove/miroslav.jpg" alt="Miroslav Kostelecký" style="max-width: 150px; border-radius: 10px;">
+          <p><strong>Miroslav Kostelecký</strong><br><span style="color: gray; font-size: 14px;">Bicí</span></p>
+        </div>
+    
+        <div style="text-align: center;">
+          <img src="assets/images/clenove/libor.jpg" alt="Libor Vurst" style="max-width: 150px; border-radius: 10px;">
+          <p><strong>Libor Vurst</strong><br><span style="color: gray; font-size: 14px;">Basa</span></p>
+        </div>
+    
+        <div style="text-align: center;">
+          <img src="assets/images/clenove/matej.jpg" alt="Matěj Teplý" style="max-width: 150px; border-radius: 10px;">
+          <p><strong>Matěj Teplý</strong><br><span style="color: gray; font-size: 14px;">Doprovodná/Rytmická kytara</span></p>
+        </div>
+    
+      </div>
+    </div>
+    
     <footer id="footer" style="display: flex; justify-content: center; align-items: center; text-align: center;">
       <a id="footer-link" href="https://majkey25.github.io/Majkey25/" style="text-decoration: none; color: inherit;">
         <p style="margin: 1;">
@@ -84,6 +154,18 @@
           intro.classList.add('active');
         }, 2000);
       });
+      
+  document.querySelectorAll(".collapsible").forEach(button => {
+    button.addEventListener("click", function () {
+      this.classList.toggle("active");
+      const content = this.nextElementSibling;
+      if (content.style.display === "block") {
+        content.style.display = "none";
+      } else {
+        content.style.display = "block";
+      }
+    });
+  });
     </script>
 </body>
 </html>
