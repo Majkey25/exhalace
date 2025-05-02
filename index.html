@@ -15,32 +15,38 @@
 
 </head>
 <body>
-  <style>.collapsible {
-    background-color: #444;
-    color: white;
-    cursor: pointer;
-    padding: 10px 20px;
-    width: 100%;
-    border: none;
-    text-align: left;
-    outline: none;
-    font-size: 18px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .collapsible:hover {
-    background-color: #666;
-  }
-  
-  .collapsible:after {
-    content: ' ▼';
-    float: right;
-    transition: transform 0.3s ease;
-  }
-  
-  .active:after {
-    transform: rotate(180deg);
-  }
+  <style>
+  .collapsible {
+  background-color: transparent;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 9999px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: block;
+  margin: 40px auto 0 auto;
+  margin-top: 20px;
+}
+
+.collapsible:hover {
+  background-color: #fff;
+  color: #111;
+  transform: scale(1.05);
+}
+
+.collapsible:after {
+  content: '▼';
+  margin-left: 10px;
+  transition: transform 0.3s ease;
+}
+
+.collapsible.active:after {
+  transform: rotate(180deg);
+}
+
   
   .content {
     padding: 0 20px;
@@ -53,6 +59,17 @@
     from { opacity: 0; }
     to { opacity: 1; }
   }
+  .member-card {
+  width: 250px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  font-size: 5px;
+  white-space: nowrap;
+}
+
   </style>
 
   <!-- Intro -->
@@ -100,34 +117,29 @@
     <button class="collapsible">Zobrazit členy</button>
     <div class="content">
       <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 20px;">
-        
-        <div style="text-align: center;">
-          <img src="assets/images/clenove/roman.jpg" alt="Roman Doležal" style="max-width: 150px; border-radius: 10px;">
-          <p><strong>Roman Doležal</strong><br><span style="color: gray; font-size: 14px;">Zpěv</span></p>
+        <div class="member-card">
+          <img src="assets/images/clenove/roman.jpg" alt="Roman Doležal" style="max-width: 160px; border-radius: 10px;">
+          <p><strong>Roman Doležal</strong><br><span style="color: gray; font-size: 16px;">Zpěv</span></p>
         </div>
-    
-        <div style="text-align: center;">
-          <img src="assets/images/clenove/stepan.jpg" alt="Štěpán Kostelecký" style="max-width: 150px; border-radius: 10px;">
-          <p><strong>Štěpán Kostelecký</strong><br><span style="color: gray; font-size: 14px;">Sólová kytara</span></p>
+        <div class="member-card">
+          <img src="assets/images/clenove/stepan.jpg" alt="Štěpán Kostelecký" style="max-width: 160px; border-radius: 10px;">
+          <p><strong>Štěpán Kostelecký</strong><br><span style="color: gray; font-size: 16px;">Sólová kytara</span></p>
         </div>
-    
-        <div style="text-align: center;">
-          <img src="assets/images/clenove/miroslav.jpg" alt="Miroslav Kostelecký" style="max-width: 150px; border-radius: 10px;">
-          <p><strong>Miroslav Kostelecký</strong><br><span style="color: gray; font-size: 14px;">Bicí</span></p>
+        <div class="member-card">
+          <img src="assets/images/clenove/miroslav.jpg" alt="Miroslav Kostelecký" style="max-width: 160px; border-radius: 10px;">
+          <p><strong>Miroslav Kostelecký</strong><br><span style="color: gray; font-size: 16px;">Bicí</span></p>
         </div>
-    
-        <div style="text-align: center;">
-          <img src="assets/images/clenove/libor.jpg" alt="Libor Vurst" style="max-width: 150px; border-radius: 10px;">
-          <p><strong>Libor Vurst</strong><br><span style="color: gray; font-size: 14px;">Basa</span></p>
+        <div class="member-card">
+          <img src="assets/images/clenove/libor.jpg" alt="Libor Vurst" style="max-width: 160px; border-radius: 10px;">
+          <p><strong>Libor Vurst</strong><br><span style="color: gray; font-size: 16px;">Basa</span></p>
         </div>
-    
-        <div style="text-align: center;">
-          <img src="assets/images/clenove/matej.jpg" alt="Matěj Teplý" style="max-width: 150px; border-radius: 10px;">
-          <p><strong>Matěj Teplý</strong><br><span style="color: gray; font-size: 14px;">Doprovodná/Rytmická kytara</span></p>
+        <div class="member-card">
+          <img src="assets/images/clenove/matej.jpg" alt="Matěj Teplý" style="max-width: 160px; border-radius: 10px;">
+          <p><strong>Matěj Teplý</strong><br><span style="color: gray; font-size: 16px;">Kytara a Zpěv</span></p>
         </div>
-    
       </div>
     </div>
+  </section>
     
     <footer id="footer" style="display: flex; justify-content: center; align-items: center; text-align: center;">
       <a id="footer-link" href="https://majkey25.github.io/Majkey25/" style="text-decoration: none; color: inherit;">
@@ -154,7 +166,7 @@
           intro.classList.add('active');
         }, 2000);
       });
-      
+
   document.querySelectorAll(".collapsible").forEach(button => {
     button.addEventListener("click", function () {
       this.classList.toggle("active");
