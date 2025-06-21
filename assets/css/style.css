@@ -273,6 +273,8 @@ footer {
 .gallery-img {
   width: 100%;
   height: auto;
+  object-fit: contain;
+  object-position: center;
   display: block;
   transition: transform 0.3s ease;
 }
