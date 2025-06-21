@@ -186,6 +186,21 @@ const modalImg = document.getElementById('modal-img');
 const caption = document.getElementById('caption');
 const closeBtn = document.querySelector('.close-btn');
 let currentIndex = 0; // To track the current image index
+ 
+document.addEventListener('DOMContentLoaded', () => {
+      const grid = document.querySelector('.gallery-grid');
+      const items = Array.from(grid.children);
+      function sortDesc() {
+        const sorted = items.slice().sort((a, b) => {
+          const getNum = el => parseInt(
+            el.querySelector('img').getAttribute('src').match(/(\d+)(?=\.\w+$)/)[1]
+          );
+          return getNum(b) - getNum(a);
+        });
+        sorted.forEach(el => grid.appendChild(el));
+      }
+      sortDesc();
+       });
 
 // Open modal when image is clicked
 images.forEach((image, index) => {
