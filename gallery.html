@@ -14,6 +14,11 @@
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+  <style>
+  /* Galerie zpočátku NEVIDITELNÁ */
+  .gallery-grid {
+    visibility: hidden;
+  } </style>
     <header>
       <div class="logo">
         <a href="index.html">
@@ -180,13 +185,6 @@
   </footer>
   <script src="assets/js/script.js"></script>
   <script>
-    const images = document.querySelectorAll('.gallery-img');
-const modal = document.getElementById('modal');
-const modalImg = document.getElementById('modal-img');
-const caption = document.getElementById('caption');
-const closeBtn = document.querySelector('.close-btn');
-let currentIndex = 0; // To track the current image index
- 
 document.addEventListener('DOMContentLoaded', () => {
       const grid = document.querySelector('.gallery-grid');
       const items = Array.from(grid.children);
@@ -200,7 +198,15 @@ document.addEventListener('DOMContentLoaded', () => {
         sorted.forEach(el => grid.appendChild(el));
       }
       sortDesc();
+  grid.style.visibility = 'visible';
        });
+
+const images = document.querySelectorAll('.gallery-img');
+const modal = document.getElementById('modal');
+const modalImg = document.getElementById('modal-img');
+const caption = document.getElementById('caption');
+const closeBtn = document.querySelector('.close-btn');
+let currentIndex = 0; // To track the current image index
 
 // Open modal when image is clicked
 images.forEach((image, index) => {
@@ -225,13 +231,13 @@ window.addEventListener('click', (e) => {
 });
 
 // Move to next or previous image
-document.querySelector('.left').addEventListener('click', () => {
+document.querySelector('.right').addEventListener('click', () => {
   currentIndex = (currentIndex === 0) ? images.length - 1 : currentIndex - 1;
   modalImg.src = images[currentIndex].src;
   caption.textContent = images[currentIndex].alt;
 });
 
-document.querySelector('.right').addEventListener('click', () => {
+document.querySelector('.left').addEventListener('click', () => {
   currentIndex = (currentIndex === images.length - 1) ? 0 : currentIndex + 1;
   modalImg.src = images[currentIndex].src;
   caption.textContent = images[currentIndex].alt;
@@ -253,12 +259,12 @@ modal.addEventListener('touchend', (e) => {
   // Check if swipe was left or right
   if (touchStartX > touchEndX + 50) {
     // Swiped left: Move to next image
-    currentIndex = (currentIndex === images.length - 1) ? 0 : currentIndex + 1;
+    currentIndex = (currentIndex === images.length - 1) ? 0 : currentIndex - 1;
     modalImg.src = images[currentIndex].src;
     caption.textContent = images[currentIndex].alt;
   } else if (touchStartX + 50 < touchEndX) {
     // Swiped right: Move to previous image
-    currentIndex = (currentIndex === 0) ? images.length - 1 : currentIndex - 1;
+    currentIndex = (currentIndex === 0) ? images.length - 1 : currentIndex + 1;
     modalImg.src = images[currentIndex].src;
     caption.textContent = images[currentIndex].alt;
   }
