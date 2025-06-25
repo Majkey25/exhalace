@@ -108,6 +108,10 @@ section {
     opacity: 0;
     background: transparent;
   }
+  section[id] {
+  scroll-margin-top: 100px; 
+}
+
 
   /* Hero section */
   .hero {
