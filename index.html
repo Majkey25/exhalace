@@ -181,7 +181,7 @@
       <p><strong>Štěpán Šrámek</strong><br>kytara</p>
       <p><strong>Mirek Kostelecký</strong><br>bicí</p>
     </div>
-    <button class="collapsible">Zobrazit členy</button>
+    <button class="collapsible" id="scrollBtn">Zobrazit členy</button>
     
     <div class="content">
       <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 20px;">
@@ -244,6 +244,12 @@
       } else {
         content.style.display = "block";
       }
+    });
+  });
+  document.getElementById("scrollBtn").addEventListener("click", function () {
+    window.scrollBy({
+      top: 320,
+      behavior: "smooth",
     });
   });
     </script>
