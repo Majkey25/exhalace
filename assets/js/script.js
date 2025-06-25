@@ -14,7 +14,7 @@ window.addEventListener('load', () => {
         footerText.innerHTML = `Made by Matěj Teplý &copy; ${currentYear} All rights reserved.`;
       } else {
         // Phone Version
-        footerText.innerHTML = `Made by Matěj Teplý ${currentYear}.`;
+        footerText.innerHTML = `Made by Matěj Teplý &copy; ${currentYear}.`;
       }
     }
 
