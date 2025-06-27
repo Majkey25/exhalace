@@ -778,18 +778,21 @@ footer {
 .song-item a:hover {
   text-decoration: underline;
 }
+.hero-content p,
+section p {
+  text-align: justify;
+  margin: 0 auto;
+  max-width: 100%;
+  width: 100%;
+  padding: 0 10px;
+  line-height: 1.7;
+}
 @media (max-width: 768px) {
   .hero-content p,
   section p {
-    text-align: justify;
-    padding: 0 20px;
-    max-width: unset;
-    margin: 0 auto;
-    line-height: 1.6;
-  }
-
-  .hero-content {
-    align-items: flex-start;
-    text-align: left;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 16px !important;
+    text-align: justify !important;
   }
 }
