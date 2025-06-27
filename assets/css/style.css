@@ -781,6 +781,6 @@ footer {
 @media (max-width: 768px) {
   .hero-content p,
   section p {
-    font-size: 1rem; /* nebo zkus 0.9rem či 14px */
+    font-size: 0.8rem;
   }
 }
