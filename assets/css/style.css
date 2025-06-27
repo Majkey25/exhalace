@@ -781,6 +781,6 @@ footer {
 @media (max-width: 768px) {
   .hero-content p,
   section p {
-    font-size: 0.8rem;
+    font-size: 0.6rem;
   }
 }
