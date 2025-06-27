@@ -136,7 +136,7 @@ section {
   }
   .hero-content {
     z-index: 2;
-    
+    max-width: 800px;
     position: absolute;
     top: 40%;
     left: 50%;
@@ -777,4 +777,10 @@ footer {
 
 .song-item a:hover {
   text-decoration: underline;
+}
+@media (max-width: 768px) {
+  .hero-content p,
+  section p {
+    font-size: 1rem; /* nebo zkus 0.9rem či 14px */
+  }
 }
