@@ -24,6 +24,7 @@ body {
   min-height: 100vh;
   position: relative;
   line-height: 1.6;
+  padding-bottom: 72px;
 }
 
 body::before,
@@ -283,7 +284,7 @@ section p {
   left: 0;
   width: 100%;
   text-align: center;
-  padding: 10px 0 12px;
+  padding: 8px 0 9px;
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -299,10 +300,10 @@ section p {
 
 .footer-chip {
   background: rgba(255, 255, 255, 0.08);
-  padding: 6px 22px;
+  padding: 4px 16px;
   border-radius: 999px;
   color: white;
-  font-size: 1rem;
+  font-size: 0.92rem;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -381,6 +382,7 @@ section p {
 /* Gallery Section */
 .gallery {
   padding: 20px;
+  margin-bottom: 120px;
   text-align: center;
 }
 
