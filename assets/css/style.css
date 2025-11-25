@@ -27,6 +27,9 @@ body {
   padding-bottom: 72px;
 }
 
+body.menu-open {
+  overflow: hidden;
+}
 body::before,
 body::after {
   content: '';
@@ -328,22 +331,29 @@ section p {
   nav ul {
     flex-direction: column;
     gap: 12px;
-    width: 100%;
-    padding: 16px 0;
-    position: absolute;
-    top: 72px;
-    left: 0;
+    width: calc(100% - 32px);
+    padding: 18px 0;
+    position: fixed;
+    top: 70px;
+    left: 16px;
+    right: 16px;
     background: rgba(13, 13, 13, 0.96);
     backdrop-filter: blur(14px);
-    display: none;
-    transition: transform 0.3s ease;
-    transform: translateX(-100%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    box-shadow: 0 22px 38px rgba(0, 0, 0, 0.45);
+    display: block;
+    transform: translateY(-130%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.28s ease, opacity 0.28s ease;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    z-index: 120;
   }
 
   nav ul.active {
-    transform: translateX(0);
-    display: block;
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
   }
 
   nav ul li {
@@ -365,6 +375,8 @@ section p {
     cursor: pointer;
     padding: 10px;
     margin: 0;
+    position: relative;
+    z-index: 130;
   }
 }
 /* ------------- */

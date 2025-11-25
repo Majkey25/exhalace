@@ -1,6 +1,8 @@
 window.addEventListener('load', () => {
   const menu = document.querySelector('nav ul');
   const footerText = document.getElementById('footer-text');
+  const body = document.body;
+  const toggleButton = document.getElementById('menu-toggle');
 
   const setFooterContent = () => {
     const year = new Date().getFullYear();
@@ -12,7 +14,15 @@ window.addEventListener('load', () => {
   window.addEventListener('resize', setFooterContent);
   setFooterContent();
 
-  document.getElementById('menu-toggle').addEventListener('click', () => {
+  toggleButton.addEventListener('click', () => {
     menu.classList.toggle('active');
+    body.classList.toggle('menu-open', menu.classList.contains('active'));
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 1320 && menu.classList.contains('active')) {
+      menu.classList.remove('active');
+      body.classList.remove('menu-open');
+    }
   });
 });
