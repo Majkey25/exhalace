@@ -1,28 +1,18 @@
 window.addEventListener('load', () => {
-    const menu = document.querySelector('nav ul'); // Select the menu directly
-    const footer = document.querySelector('footer');
-    const items = Array.from(menu.children);
+  const menu = document.querySelector('nav ul');
+  const footerText = document.getElementById('footer-text');
 
-    // Update the footer content
-    function updateFooterContent() {
-      const footerText = document.getElementById('footer-text');
-      const footerLink = document.getElementById('footer-link');
-      const currentYear = new Date().getFullYear(); // Get the current year
+  const setFooterContent = () => {
+    const year = new Date().getFullYear();
+    const desktop = window.innerWidth >= 500;
+    const base = `Made by Matěj Teplý © ${year}`;
+    footerText.innerHTML = desktop ? `${base} · All rights reserved.` : `${base}.`;
+  };
 
-      if (window.innerWidth >= 500) {
-        // PC Version
-        footerText.innerHTML = `Made by Matěj Teplý &copy; ${currentYear} All rights reserved.`;
-      } else {
-        // Phone Version
-        footerText.innerHTML = `Made by Matěj Teplý &copy; ${currentYear}.`;
-      }
-    }
+  window.addEventListener('resize', setFooterContent);
+  setFooterContent();
 
-    window.addEventListener('resize', updateFooterContent);
-    updateFooterContent(); // Initialize footer on page load
-
-    // Hamburger menu toggle
-    document.getElementById('menu-toggle').addEventListener('click', function() {
-        menu.classList.toggle('active'); // Toggle the 'active' class on the nav ul
-    });
+  document.getElementById('menu-toggle').addEventListener('click', () => {
+    menu.classList.toggle('active');
+  });
 });
