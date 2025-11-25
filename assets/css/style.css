@@ -551,11 +551,13 @@ section p {
 }
 
 .song-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 14px;
-  margin: 28px 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 28px auto 10px;
   padding: 0 24px 32px;
+  width: 100%;
+  max-width: 900px;
 }
 
 .song-item {
@@ -566,8 +568,8 @@ section p {
   font-size: 1.05rem;
   color: #f8f8f8;
   display: flex;
-  justify-content: center;
-  text-align: center;
+  justify-content: flex-start;
+  text-align: left;
   letter-spacing: 0.2px;
   position: relative;
   overflow: hidden;
@@ -622,7 +624,6 @@ section p {
   }
 
   .song-list {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     padding: 0 16px 26px;
   }
 
