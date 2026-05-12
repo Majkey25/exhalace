@@ -200,8 +200,6 @@ section p {
     align-items: center;
     z-index: 101;
     overflow: hidden;
-    transition: opacity 0.4s ease;
-    will-change: opacity;
   }
   .intro-logo {
     font-size: 4rem;
@@ -213,7 +211,6 @@ section p {
     will-change: transform, opacity;
   }
   .intro.active {
-    opacity: 0;
     pointer-events: none;
   }
   section[id] {

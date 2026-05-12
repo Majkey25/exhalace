@@ -232,12 +232,36 @@
       function startIntro() {
         const intro = document.getElementById('intro');
         const logo = document.querySelector('.intro-logo');
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Entry: slide up + fade in
         setTimeout(() => {
           logo.style.opacity = 1;
           logo.style.transform = 'translateY(0)';
         }, 200);
+
+        // Exit: merge into page
         setTimeout(() => {
           intro.classList.add('active');
+          if (reduceMotion) {
+            // Accessibility: simple fade only
+            logo.style.transition = 'opacity 0.4s ease-out';
+            logo.style.opacity = '0';
+            intro.style.transition = 'opacity 0.4s ease-out';
+            intro.style.opacity = '0';
+            setTimeout(() => { intro.style.display = 'none'; }, 450);
+          } else {
+            // Logo expands outward and dissolves
+            logo.style.transition = 'transform 0.85s cubic-bezier(0.2,0,0.8,1), opacity 0.6s ease-in';
+            logo.style.transform = 'scale(1.45)';
+            logo.style.opacity = '0';
+            // Background bleeds away slightly after logo starts expanding
+            setTimeout(() => {
+              intro.style.transition = 'opacity 0.7s ease-out';
+              intro.style.opacity = '0';
+            }, 130);
+            setTimeout(() => { intro.style.display = 'none'; }, 950);
+          }
         }, 2000);
       }
       if (document.readyState === 'loading') {
