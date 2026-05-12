@@ -200,20 +200,21 @@ section p {
     align-items: center;
     z-index: 101;
     overflow: hidden;
-    transition: all 1s ease;
+    transition: opacity 0.4s ease;
+    will-change: opacity;
   }
   .intro-logo {
     font-size: 4rem;
     font-weight: 700;
     color: #fff;
     opacity: 0;
-    transform: translateY(50px);
-    transition: all 1s ease;
+    transform: translateY(30px);
+    transition: transform 0.8s ease, opacity 0.8s ease;
+    will-change: transform, opacity;
   }
   .intro.active {
-    top: -100%;
     opacity: 0;
-    background: transparent;
+    pointer-events: none;
   }
   section[id] {
   scroll-margin-top: 100px; 
@@ -711,5 +712,23 @@ section p {
   section h1,
   section h2 {
     font-size: 1.6rem !important;
+  }
+}
+
+/* Disable expensive floating blur animations on mobile to save GPU */
+@media (max-width: 900px) {
+  body::before,
+  body::after {
+    animation: none;
+    filter: blur(30px);
+    opacity: 0.5;
+  }
+}
+
+/* Respect reduced-motion — only stop the decorative background float animation */
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after {
+    animation: none;
   }
 }

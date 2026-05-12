@@ -9,6 +9,8 @@
   <meta property="og:url" content="https://majkey25.github.io/exhalace/" />
   <meta property="og:type" content="website" />
   <title>EXHALACE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/images/icon.png" type="image/png">
   <link rel="stylesheet" href="assets/css/style.css">
@@ -87,7 +89,7 @@
   <!-- Intro -->
   <div class="intro" id="intro">
     <div class="intro-logo">
-      <img src="assets/images/logo-white.png" alt="EXHALACE logo" style="max-width: 700px; width: 100%; height: auto;">
+      <img src="assets/images/logo-white.png" alt="EXHALACE logo" style="max-width: 700px; width: 100%; height: auto;" loading="eager" decoding="async">
     </div>
   </div>
 
@@ -95,7 +97,7 @@
   <header>
     <div class="logo">
     <a href="index.html">
-      <img src="assets/images/logo-white.png" alt="EXHALACE logo" style="max-height: 50px; width: auto;">
+      <img src="assets/images/logo-white.png" alt="EXHALACE logo" style="max-height: 50px; width: auto;" loading="eager" decoding="async">
     </a>
     </div>
     <nav>
@@ -114,7 +116,7 @@
   <!-- Hero Section -->
   <section class="hero" id="home">
     <!-- <video autoplay muted loop> -->
-      <img src="assets/images/EXHALACE.png" class="hero-image" alt="EXHALACE">
+      <img src="assets/images/EXHALACE.jpg" class="hero-image" alt="EXHALACE" loading="eager" decoding="async">
       <!-- Tvůj prohlížeč nepodporuje video.
     </video> -->
     <div class="hero-content">
@@ -185,7 +187,7 @@
         </div>
       </div>
       <div class="members-photo">
-        <img src="assets/images/clenove/kapela.jpeg" alt="Kapela Exhalace 2026">
+        <img src="assets/images/clenove/kapela.jpeg" alt="Kapela Exhalace 2026" loading="lazy" decoding="async">
       </div>
     </div>
     <button class="collapsible" id="scrollBtn">Zobrazit členy</button>
@@ -193,23 +195,23 @@
     <div class="content">
       <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 20px;">
         <div class="member-card">
-          <img src="assets/images/clenove/jarda.jpg" alt="Jarda Valenta" style="max-width: 160px; border-radius: 10px;">
+          <img src="assets/images/clenove/jarda.jpg" alt="Jarda Valenta" style="max-width: 160px; border-radius: 10px;" loading="lazy" decoding="async">
           <p><strong>Jarda Valenta</strong><br><span style="color: gray; font-size: 16px;">Zpěv a housle</span></p>
         </div>
         <div class="member-card">
-          <img src="assets/images/clenove/stepan.jpg" alt="Štěpán Šrámek" style="max-width: 160px; border-radius: 10px;">
+          <img src="assets/images/clenove/stepan.jpg" alt="Štěpán Šrámek" style="max-width: 160px; border-radius: 10px;" loading="lazy" decoding="async">
           <p><strong>Štěpán Šrámek</strong><br><span style="color: gray; font-size: 16px;">Sólová kytara</span></p>
         </div>
         <div class="member-card">
-          <img src="assets/images/clenove/miroslav.jpg" alt="Miroslav Kostelecký" style="max-width: 160px; border-radius: 10px;">
+          <img src="assets/images/clenove/miroslav.jpg" alt="Miroslav Kostelecký" style="max-width: 160px; border-radius: 10px;" loading="lazy" decoding="async">
           <p><strong>Miroslav Kostelecký</strong><br><span style="color: gray; font-size: 16px;">Bicí</span></p>
         </div>
         <div class="member-card">
-          <img src="assets/images/clenove/libor.jpg" alt="Libor Vurst" style="max-width: 160px; border-radius: 10px;">
+          <img src="assets/images/clenove/libor.jpg" alt="Libor Vurst" style="max-width: 160px; border-radius: 10px;" loading="lazy" decoding="async">
           <p><strong>Libor Vurst</strong><br><span style="color: gray; font-size: 16px;">Basa a Zpěv</span></p>
         </div>
         <div class="member-card">
-          <img src="assets/images/clenove/matej.jpg" alt="Matěj Teplý" style="max-width: 160px; border-radius: 10px;">
+          <img src="assets/images/clenove/matej.jpg" alt="Matěj Teplý" style="max-width: 160px; border-radius: 10px;" loading="lazy" decoding="async">
           <p><strong>Matěj Teplý</strong><br><span style="color: gray; font-size: 16px;">Kytara, Saxofon a Zpěv</span></p>
         </div>
       </div>
@@ -225,22 +227,24 @@
         </p>
       </a>
     </footer>
-    <script src="assets/js/script.js"></script>
+    <script src="assets/js/script.js" defer></script>
     <script>
-      // Intro animace
-      window.addEventListener('load', () => {
+      function startIntro() {
         const intro = document.getElementById('intro');
         const logo = document.querySelector('.intro-logo');
-  
         setTimeout(() => {
           logo.style.opacity = 1;
           logo.style.transform = 'translateY(0)';
-        }, 500);
-  
+        }, 200);
         setTimeout(() => {
           intro.classList.add('active');
         }, 2000);
-      });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startIntro);
+      } else {
+        startIntro();
+      }
 
   document.querySelectorAll(".collapsible").forEach(button => {
     button.addEventListener("click", function () {
