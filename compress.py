@@ -3,13 +3,14 @@ Exhalace image compression script.
 Run once from the project root. Safe to re-run (skips already-small files).
 """
 import os
-from PIL import Image
+from PIL import Image, ImageOps
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 
 def compress_image(path, max_side, quality, force_jpeg=False):
     original_bytes = os.path.getsize(path)
     img = Image.open(path)
+    img = ImageOps.exif_transpose(img)
     orig_w, orig_h = img.width, img.height
 
     # Resize if too large
@@ -37,14 +38,16 @@ def compress_image(path, max_side, quality, force_jpeg=False):
 
 print("=== EXHALACE image compression ===\n")
 
-# 1. Hero background — #1 bottleneck (18.8 MB PNG)
-print("[1] Hero image EXHALACE.png")
-compress_image(
-    os.path.join(BASE, "assets/images/EXHALACE.png"),
-    max_side=1920,
-    quality=70,
-    force_jpeg=True
-)
+# 1. Hero background
+print("[1] Hero image")
+hero_png = os.path.join(BASE, "assets/images/EXHALACE.png")
+hero_jpg = os.path.join(BASE, "assets/images/EXHALACE.jpg")
+if os.path.exists(hero_png):
+    compress_image(hero_png, max_side=1920, quality=70, force_jpeg=True)
+elif os.path.exists(hero_jpg):
+    print("  EXHALACE.jpg already converted, skipping")
+else:
+    print("  EXHALACE hero image not found")
 
 # 2. Favicon (259 KB is absurd for a favicon)
 print("\n[2] Favicon icon.png")
