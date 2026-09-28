@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ASTRO_TELEMETRY_DISABLED: 1
+
+jobs:
+  verify:
+    name: Format, typecheck, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # Processed images are cached per workflow; rebuilding them all takes minutes.
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: node_modules/.astro
+          key: astro-${{ github.workflow }}-${{ hashFiles('src/assets/**', 'package-lock.json', 'astro.config.mjs') }}
+          restore-keys: astro-${{ github.workflow }}-
+      - run: npm run format:check
+      - run: npm run check
+      - run: npm run build
+      # Lighthouse on the built site; fails on accessibility, SEO or best-practice regressions
+      # and on a performance score below 0.8 (shared runners are noisy, so the bar sits lower).
+      - run: npx --yes @lhci/cli@0.15.1 autorun

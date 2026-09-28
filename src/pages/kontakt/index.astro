@@ -1,0 +1,432 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import { getAbout, getSettings } from '../../content';
+import { href, vlna } from '../../site';
+
+const settings = await getSettings();
+const about = await getAbout();
+const tel = settings.phone?.replace(/\s/g, '');
+const rider = settings.organisers
+  .split(/\n\s*\n/)
+  .map((p) => p.trim())
+  .filter(Boolean);
+const socials = [
+  { name: 'Facebook', url: settings.facebook },
+  { name: 'Instagram', url: settings.instagram },
+  { name: 'YouTube', url: settings.youtube },
+].filter((s): s is { name: string; url: string } => Boolean(s.url));
+const site = Astro.site ?? new URL('https://www.exhalace.cz');
+// Without JS the browser posts the form and FormSubmit sends the visitor to the thank-you page.
+const next = new URL(href('kontakt/dekujeme/'), site).href;
+const types = [
+  'Hospoda nebo bar',
+  'Pouť, hody, slavnost obce',
+  'Hasičská oslava',
+  'Ples nebo zábava',
+  'Soukromá oslava',
+  'Něco jiného',
+];
+---
+
+<Base
+  page="kontakt"
+  title="Kontakt"
+  description="Objednejte si kapelu Exhalace: telefon, e-mail, poptávkový formulář a technické informace pro pořadatele."
+>
+  <header class="page-head wrap">
+    <h1 class="h1">Kontakt</h1>
+    <p class="lead">{vlna('Máte dotaz? Chcete si s námi domluvit koncert? Ozvěte se nám.')}</p>
+  </header>
+
+  <section class="section section--tight" aria-label="Přímý kontakt">
+    <div class="wrap direct">
+      {tel && (
+        <a class="direct__phone display link" href={`tel:${tel}`}>
+          <Icon name="phone" />
+          {settings.phone}
+        </a>
+      )}
+      <a class="direct__mail link" href={`mailto:${settings.email}`}>
+        <Icon name="mail" />
+        {settings.email}
+      </a>
+      <ul class="direct__socials">
+        {socials.map((s) => (
+          <li>
+            <a class="link" href={s.url} rel="noopener" target="_blank">
+              {s.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="meta direct__home">
+        Domov kapely: {about.home} ·
+        <a
+          class="inline-link"
+          href={`https://mapy.com/fnc/v1/search?query=${encodeURIComponent(about.home)}`}
+          rel="noopener"
+          target="_blank"
+        >
+          Mapy.com
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-label="Poptávka a technické informace">
+    <div class="wrap booking">
+      <form
+        id="poptavka"
+        class="form"
+        action={`https://formsubmit.co/${settings.email}`}
+        method="POST"
+        data-endpoint={`https://formsubmit.co/ajax/${settings.email}`}
+      >
+        <h2 class="h2">Poptávka koncertu</h2>
+        <div class="form__row">
+          <label class="field">
+            <span class="label">Jméno *</span>
+            <input name="name" autocomplete="name" required maxlength="100" />
+          </label>
+          <label class="field">
+            <span class="label">E-mail *</span>
+            <input type="email" name="email" autocomplete="email" required maxlength="200" />
+          </label>
+        </div>
+        <div class="form__row">
+          <label class="field">
+            <span class="label">Telefon</span>
+            <input type="tel" name="phone" autocomplete="tel" maxlength="30" />
+          </label>
+          <label class="field">
+            <span class="label">Datum akce</span>
+            <input type="date" name="date" />
+          </label>
+        </div>
+        <div class="form__row">
+          <label class="field">
+            <span class="label">Obec a místo</span>
+            <input name="place" maxlength="150" />
+          </label>
+          <label class="field">
+            <span class="label">Typ akce</span>
+            <select name="type">
+              {types.map((t) => (
+                <option>{t}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <label class="field">
+          <span class="label">Zpráva *</span>
+          <textarea
+            name="message"
+            rows="6"
+            required
+            maxlength="5000"
+            placeholder="Kde, kdy, jak dlouho, venku nebo uvnitř, máte vlastní ozvučení?"
+          ></textarea>
+        </label>
+        <input
+          class="form__trap"
+          type="text"
+          name="_honey"
+          tabindex="-1"
+          autocomplete="off"
+          aria-hidden="true"
+        />
+        <input type="hidden" name="_subject" value="Poptávka z webu exhalace.cz" />
+        <input type="hidden" name="_template" value="table" />
+        <input type="hidden" name="_captcha" value="false" />
+        <input type="hidden" name="_next" value={next} />
+        <div class="form__foot">
+          <button class="btn btn--lamp" type="submit">
+            Odeslat poptávku <Icon name="arrow-right" />
+          </button>
+          <p class="meta">
+            {vlna('Zprávu doručí služba FormSubmit na náš e-mail. Údaje použijeme jen k odpovědi.')}
+          </p>
+        </div>
+        <p class="form__status" role="status" aria-live="polite"></p>
+      </form>
+
+      <aside id="technika" class="sheet sheet--taped rider" aria-labelledby="rider-title">
+        <div class="rider__head">
+          <h2 id="rider-title" class="h3">
+            Pro pořadatele
+          </h2>
+          <button class="btn btn--ink rider__print no-print" type="button" data-print>
+            <Icon name="printer" /> Tisk
+          </button>
+        </div>
+        <ul class="rider__list">
+          {rider.map((p) => (
+            <li>{vlna(p)}</li>
+          ))}
+        </ul>
+        <p class="rider__contact">
+          {settings.phone && `${settings.phone} · `}
+          {settings.email}
+        </p>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<script>
+  document.querySelector('[data-print]')?.addEventListener('click', () => print());
+
+  const form = document.querySelector<HTMLFormElement>('#poptavka');
+  const status = form?.querySelector('.form__status');
+  const button = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+  if (form && status && button) {
+    const say = (text: string, ok: boolean) => {
+      status.textContent = text;
+      status.classList.toggle('is-error', !ok);
+    };
+    const sent = 'Díky, poptávka dorazila. Ozveme se co nejdřív.';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
+      // Bots fill every field; people never see this one. Pretend it worked.
+      if (data._honey) return say(sent, true);
+      delete data._honey;
+      delete data._next;
+      data._subject = `Poptávka z webu: ${data.type}${data.place ? `, ${data.place}` : ''}${data.date ? `, ${data.date}` : ''}`;
+      data._replyto = data.email ?? '';
+      const label = button.innerHTML;
+      button.disabled = true;
+      button.textContent = 'Odesílám…';
+      try {
+        const res = await fetch(form.dataset.endpoint ?? form.action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const body = (await res.json().catch(() => ({}))) as { success?: string | boolean };
+        if (!res.ok || String(body.success) !== 'true') throw new Error(`status ${res.status}`);
+        form.reset();
+        say(sent, true);
+      } catch {
+        say('Odeslání se nepovedlo. Zavolejte nám, nebo napište na e-mail výše.', false);
+      } finally {
+        button.disabled = false;
+        button.innerHTML = label;
+      }
+    });
+  }
+</script>
+
+<style>
+  .direct {
+    display: grid;
+    justify-items: start;
+    gap: 1rem;
+  }
+
+  .direct :global(.icon) {
+    width: 0.8em;
+    height: 0.8em;
+    flex: none;
+  }
+
+  .direct__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    font-size: clamp(2.5rem, 1.5rem + 5vw, 5.5rem);
+    line-height: 1;
+  }
+
+  .direct__mail {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-size: clamp(1.25rem, 1rem + 1.2vw, 1.75rem);
+    font-weight: 600;
+  }
+
+  .direct__socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    margin-top: 0.5rem;
+    font-weight: 600;
+  }
+
+  .direct__home {
+    margin-top: 0.5rem;
+  }
+
+  .booking {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: clamp(3rem, 6vw, 6rem);
+    align-items: start;
+  }
+
+  .form {
+    display: grid;
+    gap: 1.25rem;
+    scroll-margin-top: calc(var(--header-h) + 1.5rem);
+  }
+
+  .form .h2 {
+    margin-bottom: 0.5rem;
+  }
+
+  .form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  .field {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.75rem 0.9rem;
+    border: 1.5px solid var(--edge);
+    border-radius: 3px;
+    background: var(--soot);
+    color: var(--bone);
+    font-size: 1.0625rem;
+    transition: border-color var(--afterglow);
+  }
+
+  .field textarea {
+    resize: vertical;
+  }
+
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: var(--ash);
+    opacity: 0.8;
+  }
+
+  .field input:hover,
+  .field select:hover,
+  .field textarea:hover {
+    border-color: var(--ash);
+  }
+
+  .field input:focus-visible,
+  .field select:focus-visible,
+  .field textarea:focus-visible {
+    border-color: var(--tungsten);
+    outline-offset: 0;
+  }
+
+  .field :user-invalid {
+    border-color: var(--error);
+  }
+
+  .form__trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .form__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+  }
+
+  .form__foot .meta {
+    max-width: 34ch;
+  }
+
+  .form__foot .btn:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .form__status:not(:empty) {
+    padding: 0.9rem 1rem;
+    border-left: 3px solid var(--tungsten);
+    background: var(--smoke);
+  }
+
+  .form__status.is-error {
+    border-left-color: var(--error);
+    color: var(--error);
+  }
+
+  .rider {
+    --tilt: 1deg;
+    display: grid;
+    gap: 1.25rem;
+    scroll-margin-top: calc(var(--header-h) + 1.5rem);
+  }
+
+  .rider__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .rider__print {
+    min-height: 2.5rem;
+    padding: 0.5rem 0.9rem;
+    font-size: 1rem;
+  }
+
+  .rider__list {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .rider__list li {
+    position: relative;
+    padding-left: 1.5rem;
+  }
+
+  .rider__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 0.6rem;
+    height: 2px;
+    background: var(--ink-red);
+  }
+
+  .rider__contact {
+    padding-top: 1rem;
+    border-top: 1px solid rgb(26 22 18 / 0.2);
+    font-weight: 600;
+  }
+
+  @media (width < 56rem) {
+    .booking {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (width < 30rem) {
+    .form__row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media print {
+    .direct,
+    .form {
+      display: none;
+    }
+  }
+</style>

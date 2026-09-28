@@ -1,0 +1,251 @@
+---
+import Icon from './Icon.astro';
+import Mark from './Mark.astro';
+import { dateParts, statusLabel, type Concert } from '../content';
+import { href } from '../site';
+
+interface Props {
+  concert: Concert;
+  /** The closest upcoming concert gets the breathing dot. */
+  next?: boolean;
+  /** Name the town for the morph into the detail page (only one element per page may carry it). */
+  morph?: boolean;
+  /** Past concerts show the year. */
+  past?: boolean;
+}
+
+const { concert: c, next = false, morph = false, past = false } = Astro.props;
+const d = dateParts(c.date);
+const sub = [c.title, c.venue].filter(Boolean).join(' · ');
+---
+
+<li class:list={['row', { 'row--off': c.inactive, 'row--past': past }]}>
+  <a class="row__link" href={href(`koncerty/${c.slug}/`)}>
+    <time class="row__date" datetime={c.time ? `${c.date}T${c.time}` : c.date}>
+      <span class="stencil row__day">{d.day}.</span>
+      <span class="label row__month">{past ? `${d.monthShort} ${d.year}` : d.month}</span>
+    </time>
+    <span class="row__main">
+      {next && (
+        <span class="row__next label">
+          <span class="row__dot" />
+          Nejbližší
+        </span>
+      )}
+      <span
+        class="row__town display"
+        style={morph ? `view-transition-name: ev-${c.slug}` : undefined}
+      >
+        {c.city}
+        {c.inactive && <Mark name="x" class="row__x" />}
+      </span>
+      {sub && <span class="row__sub">{sub}</span>}
+    </span>
+    <span class="row__when">
+      <span>
+        {d.weekday}
+        {c.time && ` · ${c.time}`}
+      </span>
+      {c.status && <span class="row__status label">{statusLabel[c.status]}</span>}
+    </span>
+    <Icon name="arrow-right" class="row__arrow" />
+  </a>
+</li>
+
+<style>
+  .row {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .row__link {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 0.5rem 2rem;
+    padding-block: clamp(1.25rem, 2.5vw, 2rem);
+    overflow: hidden;
+  }
+
+  /* A warm band of light slides in behind the row. */
+  .row__link::before {
+    content: '';
+    position: absolute;
+    inset: 0 -100vw;
+    z-index: -1;
+    background: linear-gradient(90deg, transparent, rgb(242 160 58 / 0.09) 40%, transparent);
+    opacity: 0;
+    transform: translateX(-30%);
+    transition:
+      opacity var(--afterglow),
+      transform var(--afterglow);
+  }
+
+  .row__link:hover::before,
+  .row__link:focus-visible::before {
+    opacity: 1;
+    transform: none;
+    transition-duration: 400ms;
+  }
+
+  .row__date {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .row__day {
+    font-size: clamp(2.75rem, 5vw, 4rem);
+  }
+
+  .row__main {
+    display: grid;
+    justify-items: start;
+    gap: 0.35rem;
+  }
+
+  .row__town {
+    position: relative;
+    font-size: clamp(2rem, 1.2rem + 3.2vw, 4.5rem);
+    line-height: 1;
+    padding-top: 0.06em;
+    transition:
+      color var(--afterglow),
+      text-shadow var(--afterglow);
+  }
+
+  .row__link:hover .row__town,
+  .row__link:focus-visible .row__town {
+    color: var(--tungsten);
+    text-shadow: 0 0 0.8em rgb(242 160 58 / 0.35);
+    transition-duration: 180ms;
+  }
+
+  .row__sub {
+    color: var(--ash);
+  }
+
+  .row__when {
+    display: grid;
+    justify-items: end;
+    gap: 0.35rem;
+    color: var(--ash);
+    text-align: right;
+  }
+
+  .row__when > span:first-child::first-letter {
+    text-transform: uppercase;
+  }
+
+  .row__status {
+    color: var(--bone);
+  }
+
+  .row__arrow {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--ash);
+    transition:
+      transform var(--afterglow),
+      color var(--afterglow);
+  }
+
+  .row__link:hover .row__arrow {
+    color: var(--tungsten);
+    transform: translateX(0.35rem);
+    transition-duration: 180ms;
+  }
+
+  .row__next {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--tungsten);
+  }
+
+  .row__dot {
+    position: relative;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--tungsten);
+  }
+
+  /* Breathes at a real pace: 4 s in, 6 s out. */
+  .row__dot::after {
+    content: '';
+    position: absolute;
+    inset: -0.45rem;
+    border-radius: 50%;
+    background: rgb(242 160 58 / 0.35);
+    animation: breathe 10s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes breathe {
+    0%,
+    100% {
+      transform: scale(0.6);
+      opacity: 0.2;
+    }
+    40% {
+      transform: scale(1.25);
+      opacity: 1;
+    }
+  }
+
+  /* Cancelled: the band's brush X is painted over the town. */
+  .row__x {
+    position: absolute;
+    inset: -20% auto -20% 50%;
+    height: 140%;
+    width: auto;
+    color: var(--x-red);
+    translate: -50% 0;
+    pointer-events: none;
+  }
+
+  .row--off .row__town,
+  .row--off .row__day {
+    opacity: 0.6;
+  }
+
+  .row--past .row__link {
+    grid-template-columns: 7.5rem minmax(0, 1fr) auto;
+    padding-block: 1rem;
+  }
+
+  .row--past .row__day {
+    font-size: 2rem;
+  }
+
+  .row--past .row__town {
+    font-size: clamp(1.4rem, 1rem + 1.4vw, 2.1rem);
+  }
+
+  .row--past .row__arrow {
+    display: none;
+  }
+
+  @media (width < 44rem) {
+    .row__link,
+    .row--past .row__link {
+      grid-template-columns: 4.75rem minmax(0, 1fr) auto;
+      column-gap: 1rem;
+    }
+
+    .row__when {
+      grid-column: 2;
+      justify-items: start;
+      text-align: left;
+    }
+
+    .row__arrow {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .row__day {
+      font-size: 2.5rem;
+    }
+  }
+</style>

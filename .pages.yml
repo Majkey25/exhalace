@@ -1,0 +1,221 @@
+# Pages CMS (https://pagescms.org): the band edits the site through forms, no coding.
+# Every save is a commit to main; the build validates it and only a valid site gets deployed.
+
+media:
+  - name: galerie
+    label: Fotky do galerie
+    input: src/assets/galerie
+    output: ../assets/galerie
+    extensions: [jpg, jpeg, png, webp, avif]
+  - name: clenove
+    label: Fotky členů
+    input: src/assets/clenove
+    output: ../assets/clenove
+    extensions: [jpg, jpeg, png, webp, avif]
+  - name: plakaty
+    label: Plakáty koncertů
+    input: src/assets/plakaty
+    output: ../assets/plakaty
+    extensions: [jpg, jpeg, png, webp, avif]
+  - name: hero
+    label: Obrázek na úvodu
+    input: src/assets/hero
+    output: ../assets/hero
+    extensions: [jpg, jpeg, png, webp, avif]
+
+content:
+  - name: koncerty
+    label: Koncerty
+    type: file
+    path: src/data/koncerty.yaml
+    format: yaml
+    list: true
+    fields:
+      - name: date
+        label: Datum
+        type: date
+        required: true
+        options: { format: yyyy-MM-dd }
+      - name: time
+        label: 'Začátek (např. 20:00)'
+        type: string
+        pattern:
+          { regex: '^$|^([01]\d|2[0-3]):[0-5]\d$', message: 'Zadej čas jako HH:MM, např. 20:00' }
+      - name: end
+        label: 'Konec (nepovinné)'
+        type: string
+        pattern: { regex: '^$|^([01]\d|2[0-3]):[0-5]\d$', message: 'Zadej čas jako HH:MM' }
+      - name: title
+        label: Název akce
+        description: 'Třeba „Michalská pouť“. U běžného koncertu nech prázdné, ukáže se místo.'
+        type: string
+      - { name: venue, label: 'Místo (klub, hospoda, areál)', type: string }
+      - { name: address, label: 'Adresa (nepovinné)', type: string }
+      - { name: city, label: Obec, type: string, required: true }
+      - name: map
+        label: Odkaz na mapu
+        description: 'Nepovinné. Bez odkazu web najde místo na Mapy.com sám.'
+        type: string
+        pattern: { regex: '^$|^https://', message: 'Odkaz musí začínat https://' }
+      - name: tickets
+        label: 'Odkaz na vstupenky nebo událost (nepovinné)'
+        type: string
+        pattern: { regex: '^$|^https://', message: 'Odkaz musí začínat https://' }
+      - name: status
+        label: Stav
+        type: select
+        options:
+          values:
+            - { value: free, label: Vstup zdarma }
+            - { value: sold-out, label: Vyprodáno }
+            - { value: postponed, label: Přesunuto }
+            - { value: cancelled, label: Zrušeno }
+      - { name: info, label: 'Popis (nepovinné)', type: text }
+      - name: poster
+        label: 'Plakát (nepovinné)'
+        type: image
+        options: { media: plakaty }
+
+  - name: repertoar
+    label: Repertoár
+    type: file
+    path: src/data/repertoar.yaml
+    format: yaml
+    list: true
+    fields:
+      - { name: title, label: Píseň, type: string, required: true }
+      - { name: artist, label: Interpret, type: string, required: true }
+
+  - name: galerie
+    label: Galerie
+    type: file
+    path: src/data/galerie.yaml
+    format: yaml
+    list: true
+    fields:
+      - name: photo
+        label: Fotka
+        type: image
+        required: true
+        options: { media: galerie }
+      - name: alt
+        label: Popis fotky
+        description: 'Krátce, co je na fotce. Čtou ho nevidomí a vyhledávače.'
+        type: string
+        required: true
+
+  - name: clenove
+    label: Sestava
+    type: file
+    path: src/data/clenove.yaml
+    format: yaml
+    list: true
+    fields:
+      - { name: name, label: Jméno, type: string, required: true }
+      - { name: role, label: 'Nástroj (např. Kytara, zpěv)', type: string, required: true }
+      - { name: previously, label: 'Dříve hrál v (nepovinné)', type: string }
+      - name: stage
+        label: Místo na pódiu (z pohledu diváků)
+        type: select
+        options:
+          values:
+            - { value: left, label: Vlevo }
+            - { value: center, label: Uprostřed }
+            - { value: right, label: Vpravo }
+            - { value: back, label: Vzadu (bicí) }
+      - name: photo
+        label: Fotka na výšku
+        type: image
+        required: true
+        options: { media: clenove }
+
+  - name: kapela
+    label: O kapele
+    type: file
+    path: src/data/kapela.yaml
+    format: yaml
+    fields:
+      - { name: lead, label: Úvodní věty, type: text, required: true }
+      - name: story
+        label: Příběh kapely
+        description: 'Kapitoly v pořadí na webu. Rok je nepovinný, ukáže se velký vedle textu.'
+        type: object
+        list: { min: 1, collapsible: { collapsed: true, summary: '{year} {text}' } }
+        fields:
+          - name: year
+            label: 'Rok (nepovinné)'
+            type: string
+            pattern: { regex: '^$|^\d{4}$', message: 'Rok piš čtyřmi číslicemi, např. 2019' }
+          - { name: text, label: Text, type: text, required: true }
+      - name: founded
+        label: Rok vzniku
+        type: string
+        required: true
+        pattern: { regex: '^\d{4}$', message: 'Rok piš čtyřmi číslicemi, např. 2019' }
+      - name: home
+        label: Odkud jsme
+        description: 'Celé místo, jak se má číst na webu, např. „Jalubí u Uherského Hradiště“.'
+        type: string
+        required: true
+
+  - name: videa
+    label: Videa
+    type: file
+    path: src/data/videa.yaml
+    format: yaml
+    list: true
+    fields:
+      - name: youtube
+        label: Odkaz na YouTube
+        type: string
+        required: true
+        pattern:
+          {
+            regex: '(youtube\.com/|youtu\.be/)|^[\w-]{11}$',
+            message: 'Vlož odkaz na YouTube, např. https://youtu.be/…',
+          }
+      - { name: title, label: Název, type: string, required: true }
+      - name: year
+        label: Rok
+        type: number
+        required: true
+        options: { min: 2000, max: 2100 }
+
+  - name: nastaveni
+    label: Nastavení webu
+    type: file
+    path: src/data/nastaveni.yaml
+    format: yaml
+    fields:
+      - name: email
+        label: E-mail
+        description: 'Sem chodí i zprávy z formuláře. Po změně přijde na nový e-mail jednou aktivační zpráva od FormSubmit.'
+        type: string
+        required: true
+        pattern: { regex: '^[^@\s]+@[^@\s]+\.[^@\s]+$', message: 'Zadej platný e-mail' }
+      - name: phone
+        label: 'Telefon (např. +420 604 525 780)'
+        type: string
+        pattern: { regex: '^$|^\+?[\d ]{9,17}$', message: 'Telefon piš jako +420 604 525 780' }
+      - { name: slogan, label: Slogan na úvodu, type: string, required: true }
+      - name: hero
+        label: Obrázek na úvodu
+        type: image
+        required: true
+        options: { media: hero }
+      - name: facebook
+        label: Facebook
+        type: string
+        pattern: { regex: '^$|^https://', message: 'Odkaz musí začínat https://' }
+      - name: instagram
+        label: Instagram
+        type: string
+        pattern: { regex: '^$|^https://', message: 'Odkaz musí začínat https://' }
+      - name: youtube
+        label: YouTube kanál
+        type: string
+        pattern: { regex: '^$|^https://', message: 'Odkaz musí začínat https://' }
+      - name: organisers
+        label: 'Pro pořadatele (prázdný řádek = nový odstavec)'
+        type: text
+        required: true

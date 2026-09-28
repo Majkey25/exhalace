@@ -1,0 +1,18 @@
+# Stránka Kapela. Příběh je seznam kapitol; rok je nepovinný a ukáže se vedle textu.
+
+lead: Hrajeme poctivý rock – předělávky známých i méně známých českých a slovenských rockových a punkových kapel. Nabízíme energickou a poctivou show na každou akci.
+story:
+  - year: '2019'
+    text: Kapela vznikla v roce 2019 pod názvem STAGE, kdy ji založili Marek Úředníček a Martin Kolaja (ex WORMS). I přes brzdící pandemii COVID-19 se podařilo v roce 2020 odehrát první koncerty a dostat kapelu na mapu klubové scény.
+  - text: S roky přicházely změny a s nimi i nová krev. Do sestavy postupně přibyli Štěpán Šrámek (kytara, ex Resthard), Mirek Kostelecký (bicí, ex Imortela, Iron Maiden Revival), Libor Vurst (basa, ex Koprock, Sunar, Menuet) a mladý frontman Maty Slačák, který kapelu posunul dál.
+  - year: '2023'
+    text: Rok 2023 byl ve znamení přerodu – přišli a odešli další členové. Za mikrofon s kytarou se postavil nejprve Maty Bláha (Rocksoar), ke kterému se později připojil zkušený tahoun Roman Doležal (ex Reflexy, Wayn). V nové sestavě vzniká cover známé balady Ak nie si moja (Vašo Patejdl), který v lednu 2024 doplnil videoklip na YouTube.
+  - year: '2024'
+    text: Druhá polovina roku 2024 však přináší další ztráty – kapelu opouští Maty Bláha i Štěpán Šrámek, kteří míří do jiných hudebních projektů. Poslední koncert této sestavy proběhl 30. listopadu 2024 v Jalubí – na domácí půdě a s plnou dávkou emocí.
+  - year: '2025'
+    text: Přestože se Exhalace na přelomu let 2024/2025 ocitla na pokraji ticha, rockové srdce neřeklo poslední slovo. V únoru 2025 se vrací Štěpán Šrámek a s ním přichází mladý a talentovaný kytarista Matěj Teplý. V březnu už kapela opět zkouší a rozjíždí nový restart.
+  - year: '2026'
+    text: Na začátku roku 2026 přichází další přirozená změna v sestavě. Roman Doležal se rozhodl ukončit své působení v kapele a předat mikrofon dál. Do Exhalace tak přichází Jarda Valenta, který přináší nový hlas i energii, a navíc rozšiřuje zvuk kapely o housle.
+  - text: V roce 2026 své působení v Exhalaci ukončil také Matěj Teplý a pokračuje v kapele WETHEGODS.
+founded: '2019'
+home: Jalubí u Uherského Hradiště

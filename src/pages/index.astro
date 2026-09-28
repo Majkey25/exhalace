@@ -1,0 +1,758 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import ConcertRow from '../components/ConcertRow.astro';
+import Icon from '../components/Icon.astro';
+import Mark from '../components/Mark.astro';
+import {
+  dateParts,
+  getAbout,
+  getConcerts,
+  getGallery,
+  getMembers,
+  getRepertoire,
+  getSettings,
+  repertoireSummary,
+} from '../content';
+import { bookingHref, href, vlna } from '../site';
+
+const settings = await getSettings();
+const about = await getAbout();
+const members = await getMembers();
+const photos = (await getGallery()).slice(0, 6);
+const { upcoming, past } = await getConcerts();
+const repertoire = await getRepertoire();
+const songCount = repertoire.reduce((n, a) => n + a.songs.length, 0);
+// One song from each of the most covered artists shows the range at a glance.
+const sample = [...repertoire]
+  .sort((a, b) => b.songs.length - a.songs.length)
+  .slice(0, 8)
+  .map((a) => ({ artist: a.artist, title: a.songs[0] }));
+
+// A cancelled or postponed date is never advertised as the next gig.
+const next = upcoming.find((c) => !c.inactive);
+const d = next && dateParts(next.date);
+const program = upcoming.length ? upcoming.slice(0, 4) : past.slice(0, 3);
+const tel = settings.phone?.replace(/\s/g, '');
+---
+
+<Base page="home" intro extraMarks={['x']}>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__photo">
+      <Picture
+        src={settings.hero}
+        formats={['avif']}
+        fallbackFormat="webp"
+        widths={[480, 640, 800, 960, 1280]}
+        sizes="(width >= 64rem) 44vw, 100vw"
+        alt=""
+        loading="eager"
+        fetchpriority="high"
+      />
+      <div class="haze hero__haze"></div>
+    </div>
+    <div class="hero__cone" aria-hidden="true"></div>
+
+    <div class="hero__text wrap">
+      <p class="label hero__kicker">{settings.slogan}</p>
+      <h1 id="hero-title" class="hero__title">
+        <span class="sr-only">Exhalace – {settings.slogan.toLowerCase()}</span>
+        <Mark name="logo" />
+      </h1>
+
+      {next && d ? (
+        <div class="hero__gig">
+          <p class="label hero__tag">
+            <span class="hero__dot" />
+            Příště hrajeme
+          </p>
+          <p class="hero__date stencil">
+            <time datetime={next.time ? `${next.date}T${next.time}` : next.date}>
+              <span aria-hidden="true">
+                {d.day}. {d.roman}.
+              </span>
+              <span class="sr-only">{d.long}</span>
+            </time>
+          </p>
+          <p class="hero__town display">{next.city}</p>
+          <p class="hero__meta">
+            {[next.title, next.venue, `${d.weekday}${next.time ? ` ${next.time}` : ''}`]
+              .filter(Boolean)
+              .join(' · ')}
+          </p>
+          <div class="actions">
+            <a class="btn btn--lamp" href={href(`koncerty/${next.slug}/`)}>
+              Detail koncertu
+              <Icon name="arrow-right" />
+            </a>
+            <a
+              class="btn"
+              href={href(`koncerty/${next.slug}.ics`)}
+              download={`exhalace-${next.slug}.ics`}
+            >
+              <Icon name="calendar" />
+              Do kalendáře
+            </a>
+          </div>
+        </div>
+      ) : (
+        <div class="hero__gig">
+          <p class="label hero__tag">Příští koncert chystáme</p>
+          <p class="lead">
+            {vlna(
+              'Zrovna nemáme vypsaný termín. Hrajeme v hospodách, na poutích i hasičských oslavách a rádi přijedeme i k vám.',
+            )}
+          </p>
+          <div class="actions">
+            <a class="btn btn--lamp" href={bookingHref}>
+              Poptat koncert
+              <Icon name="arrow-right" />
+            </a>
+            <a class="btn" href={href('koncerty/')}>
+              Kde jsme hráli
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="program-title">
+    <div class="wrap rail">
+      <p class="rail__label label">Program</p>
+      <div>
+        <div class="head">
+          <h2 id="program-title" class="h2">
+            {upcoming.length ? 'Kde hrajeme' : 'Naposledy jsme hráli'}
+          </h2>
+          <a class="link head__more" href={href('koncerty/')}>
+            Všechny koncerty <Icon name="arrow-right" />
+          </a>
+        </div>
+        <ul class="rows" data-rise>
+          {program.map((c, i) => (
+            <ConcertRow concert={c} next={c === next} past={!upcoming.length} />
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band" aria-labelledby="band-title">
+    <div class="wrap rail">
+      <p class="rail__label label">Kapela</p>
+      <div class="band__grid">
+        <div class="band__text">
+          <h2 id="band-title" class="h2">
+            Sestava
+          </h2>
+          <p class="lead">{vlna(about.lead)}</p>
+          <ul class="band__names">
+            {members.map((m, i) => (
+              <li>
+                <a class="band__name" href={href(`kapela/#clen-${i + 1}`)}>
+                  <span class="display">{m.name}</span>
+                  <span class="meta">{m.role}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <a class="btn" href={href('kapela/')}>
+            Příběh kapely <Icon name="arrow-right" />
+          </a>
+        </div>
+        <div class="band__frame" aria-hidden="true">
+          {members.map((m) => (
+            <Picture
+              src={m.photo}
+              formats={['avif']}
+              fallbackFormat="webp"
+              widths={[300, 480, 720]}
+              sizes="(width >= 64rem) 30vw, 25vw"
+              alt=""
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section setlist" aria-labelledby="setlist-title">
+    <div class="wrap rail">
+      <p class="rail__label label">Repertoár</p>
+      <div class="setlist__grid">
+        <div>
+          <h2 id="setlist-title" class="h2">
+            Co zahrajeme
+          </h2>
+          <p class="lead">
+            {repertoireSummary(repertoire)}. Předělávky známých i méně známých českých a slovenských
+            rockových a punkových kapel.
+          </p>
+          <a class="btn" href={href('repertoar/')}>
+            Celý repertoár <Icon name="arrow-right" />
+          </a>
+        </div>
+        <div class="sheet sheet--tilt sheet--taped setlist__sheet" data-rise>
+          <p class="label">Setlist</p>
+          <ol class="setlist__list">
+            {sample.map((s) => (
+              <li>
+                <span class="setlist__song">{s.title}</span>
+                <span class="setlist__artist">{s.artist}</span>
+              </li>
+            ))}
+          </ol>
+          <Mark name="x" class="setlist__x" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section organisers" aria-labelledby="organisers-title">
+    <div class="haze organisers__haze"></div>
+    <div class="wrap rail">
+      <p class="rail__label label">Pro pořadatele</p>
+      <div class="organisers__grid">
+        <h2 id="organisers-title" class="h2">
+          Zahrajeme i u vás
+        </h2>
+        <p class="lead">
+          {vlna(
+            'Nabízíme energickou a poctivou show na každou akci. Pódiový aparát včetně bicích vozíme vlastní, na všem ostatním se domluvíme.',
+          )}
+        </p>
+        <ul class="organisers__facts">
+          <li>
+            <span class="stencil">{songCount}</span>
+            <span class="label">písní</span>
+          </li>
+          <li>
+            <span class="stencil">{repertoire.length}</span>
+            <span class="label">interpretů</span>
+          </li>
+          <li>
+            <span class="stencil">{about.founded}</span>
+            <span class="label">vznik kapely</span>
+          </li>
+        </ul>
+        <div class="organisers__contact">
+          {tel && (
+            <a class="organisers__phone display link" href={`tel:${tel}`}>
+              {settings.phone}
+            </a>
+          )}
+          <div class="actions">
+            <a class="btn btn--lamp" href={bookingHref}>
+              Poptat termín <Icon name="arrow-right" />
+            </a>
+            <a class="btn" href={href('kontakt/#technika')}>
+              Technické info
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight ribbon" aria-labelledby="ribbon-title">
+    <div class="wrap">
+      <div class="head">
+        <h2 id="ribbon-title" class="h2">
+          Z koncertů
+        </h2>
+        <a class="link head__more" href={href('galerie/')}>
+          Celá galerie <Icon name="arrow-right" />
+        </a>
+      </div>
+      <ul class="ribbon__row">
+        {photos.map((p) => (
+          <li class="shot" style={`--r: ${(p.photo.width / p.photo.height).toFixed(3)}`}>
+            <Picture
+              src={p.photo}
+              formats={['avif']}
+              fallbackFormat="webp"
+              widths={[320, 480, 720]}
+              sizes="(width >= 64rem) 20vw, 45vw"
+              alt={p.alt}
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---------- Hero: the poster for the next gig ---------- */
+
+  .hero {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    align-items: end;
+    min-height: max(100svh, 40rem);
+    padding-block: calc(var(--header-h) + 3rem) clamp(3rem, 8vh, 6rem);
+    overflow: hidden;
+  }
+
+  .hero__photo {
+    position: absolute;
+    inset: 0 0 0 auto;
+    z-index: -2;
+    width: min(46vw, 48rem);
+    /* The photo fades into the soot on the left and at the bottom. */
+    mask-image:
+      linear-gradient(to right, transparent, #000 40%),
+      linear-gradient(to top, transparent, #000 35%);
+    mask-composite: intersect;
+  }
+
+  .hero__photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 30%;
+  }
+
+  .hero__haze {
+    opacity: 0.4;
+    background-position: 30% 100%;
+  }
+
+  /* One tungsten lamp from the top right. */
+  .hero__cone {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(200deg, rgb(242 160 58 / 0.16), transparent 45%),
+      radial-gradient(ellipse at 15% 110%, rgb(58 50 43 / 0.55), transparent 60%);
+    pointer-events: none;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .hero__haze {
+        animation: haze-rise linear both;
+        animation-timeline: scroll(root);
+        animation-range: 0 100vh;
+      }
+    }
+  }
+
+  @keyframes haze-rise {
+    to {
+      opacity: 0.15;
+      transform: translateY(-12%) scale(1.08);
+    }
+  }
+
+  .hero__text {
+    display: grid;
+    justify-items: start;
+    gap: clamp(1rem, 2vw, 1.5rem);
+  }
+
+  .hero__kicker {
+    color: var(--bone);
+  }
+
+  .hero__title {
+    width: min(100%, 52rem);
+    color: var(--bone);
+  }
+
+  .hero__title :global(svg) {
+    width: 100%;
+    height: auto;
+  }
+
+  .hero__gig {
+    display: grid;
+    justify-items: start;
+    gap: 0.75rem;
+    margin-top: clamp(1rem, 3vw, 2rem);
+    max-width: 40rem;
+  }
+
+  .hero__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--tungsten);
+  }
+
+  .hero__dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--tungsten);
+    box-shadow: 0 0 0.75rem var(--tungsten);
+  }
+
+  .hero__date {
+    font-size: clamp(4.5rem, 2rem + 12vw, 12rem);
+  }
+
+  .hero__town {
+    font-size: clamp(2.5rem, 1.5rem + 5vw, 5.5rem);
+    line-height: 1;
+  }
+
+  .hero__meta {
+    color: var(--ash);
+  }
+
+  .hero__meta::first-letter {
+    text-transform: uppercase;
+  }
+
+  .hero__gig .lead {
+    color: var(--ash);
+  }
+
+  .hero__gig .actions {
+    margin-top: 0.75rem;
+  }
+
+  @media (width < 56rem) {
+    .hero {
+      align-items: end;
+      min-height: max(92svh, 36rem);
+    }
+
+    .hero__photo {
+      inset: 0;
+      width: 100%;
+      height: 72%;
+      mask-image: linear-gradient(to top, transparent, #000 45%);
+      mask-composite: add;
+    }
+  }
+
+  /* ---------- Shared section heads ---------- */
+
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-bottom: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .head__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+  }
+
+  .rows {
+    border-top: 1px solid var(--line);
+  }
+
+  /* ---------- Band: names in text, portrait lights up on hover ---------- */
+
+  .band__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 6rem);
+    align-items: center;
+  }
+
+  .band__text {
+    display: grid;
+    justify-items: start;
+    gap: 1.5rem;
+  }
+
+  .band__text .lead {
+    color: var(--ash);
+  }
+
+  .band__names {
+    display: grid;
+    width: 100%;
+    border-top: 1px solid var(--line);
+  }
+
+  .band__name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    padding-block: 0.9rem;
+    border-bottom: 1px solid var(--line);
+    transition: color var(--afterglow);
+  }
+
+  .band__name .display {
+    font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.6rem);
+    line-height: 1;
+  }
+
+  .band__name:hover,
+  .band__name:focus-visible {
+    color: var(--tungsten);
+    transition-duration: 180ms;
+  }
+
+  .band__frame {
+    display: grid;
+    aspect-ratio: 3 / 4;
+  }
+
+  .band__frame > :global(picture) {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transition: opacity var(--afterglow);
+  }
+
+  .band__frame > :global(picture:first-child) {
+    opacity: 1;
+  }
+
+  .band__frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.05);
+  }
+
+  /* Hovering or focusing a name shows that member (zero JS). */
+  .band__grid:has(.band__name:is(:hover, :focus-visible)) .band__frame > :global(picture) {
+    opacity: 0;
+  }
+
+  .band__grid:has(li:nth-child(1) > .band__name:is(:hover, :focus-visible))
+    .band__frame
+    > :global(:nth-child(1)),
+  .band__grid:has(li:nth-child(2) > .band__name:is(:hover, :focus-visible))
+    .band__frame
+    > :global(:nth-child(2)),
+  .band__grid:has(li:nth-child(3) > .band__name:is(:hover, :focus-visible))
+    .band__frame
+    > :global(:nth-child(3)),
+  .band__grid:has(li:nth-child(4) > .band__name:is(:hover, :focus-visible))
+    .band__frame
+    > :global(:nth-child(4)),
+  .band__grid:has(li:nth-child(5) > .band__name:is(:hover, :focus-visible))
+    .band__frame
+    > :global(:nth-child(5)),
+  .band__grid:has(li:nth-child(6) > .band__name:is(:hover, :focus-visible))
+    .band__frame
+    > :global(:nth-child(6)) {
+    opacity: 1;
+    transition-duration: 300ms;
+  }
+
+  @media (width < 56rem) {
+    .band__grid {
+      grid-template-columns: 1fr;
+    }
+
+    /* Phones: all portraits as a strip. */
+    .band__frame {
+      grid-row: 1;
+      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+      grid-auto-flow: column;
+      gap: 0.35rem;
+      aspect-ratio: auto;
+    }
+
+    .band__frame > :global(picture) {
+      grid-area: auto;
+      opacity: 1 !important;
+      aspect-ratio: 3 / 4;
+    }
+  }
+
+  /* ---------- Setlist teaser ---------- */
+
+  .setlist__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(3rem, 7vw, 7rem);
+    align-items: center;
+  }
+
+  .setlist__grid > div:first-child {
+    display: grid;
+    justify-items: start;
+    gap: 1.5rem;
+  }
+
+  .setlist__grid .lead {
+    color: var(--ash);
+  }
+
+  .setlist__sheet {
+    overflow: hidden;
+  }
+
+  .setlist__list {
+    display: grid;
+    margin-top: 1rem;
+    counter-reset: song;
+  }
+
+  .setlist__list li {
+    display: grid;
+    grid-template-columns: 2.25rem 1fr;
+    column-gap: 0.5rem;
+    padding-block: 0.55rem;
+    border-bottom: 1px solid rgb(26 22 18 / 0.15);
+    counter-increment: song;
+  }
+
+  .setlist__list li::before {
+    content: counter(song, decimal-leading-zero);
+    grid-row: span 2;
+    font: 800 1.1rem/1.4 var(--font-stencil);
+    color: var(--ink-muted);
+  }
+
+  .setlist__song {
+    font: 800 1.35rem/1.15 var(--font-display);
+    text-transform: uppercase;
+  }
+
+  .setlist__artist {
+    color: var(--ink-muted);
+    font-size: 0.9375rem;
+  }
+
+  /* The band's X marks the sheet like a tick in the margin. */
+  .setlist__x {
+    position: absolute;
+    right: -1.5rem;
+    bottom: -2rem;
+    width: 9rem;
+    height: auto;
+    color: var(--ink-red);
+    opacity: 0.85;
+    rotate: 8deg;
+  }
+
+  @media (width < 56rem) {
+    .setlist__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- Organisers ---------- */
+
+  .organisers {
+    position: relative;
+    isolation: isolate;
+    background: var(--smoke);
+  }
+
+  .organisers__haze {
+    z-index: -1;
+    opacity: 0.18;
+    background-position: 100% 0;
+  }
+
+  .organisers__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2rem clamp(3rem, 7vw, 7rem);
+  }
+
+  .organisers__grid .lead {
+    color: var(--ash);
+  }
+
+  .organisers__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 3rem;
+  }
+
+  .organisers__facts li {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .organisers__facts .stencil {
+    font-size: clamp(3rem, 2rem + 3vw, 4.5rem);
+    color: var(--tungsten);
+  }
+
+  .organisers__contact {
+    display: grid;
+    justify-items: start;
+    align-content: start;
+    gap: 1.5rem;
+  }
+
+  .organisers__phone {
+    font-size: clamp(2rem, 1.2rem + 3vw, 3.5rem);
+    line-height: 1;
+  }
+
+  @media (width < 56rem) {
+    .organisers__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- Photo ribbon: justified row, no cropping ---------- */
+
+  .ribbon__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    --h: clamp(9rem, 18vw, 15rem);
+  }
+
+  .ribbon__row li {
+    flex: var(--r) 1 calc(var(--r) * var(--h));
+    aspect-ratio: var(--r);
+  }
+
+  .ribbon__row::after {
+    content: '';
+    flex: 999 1 0;
+  }
+
+  .shot {
+    position: relative;
+    display: block;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .shot :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 800ms var(--ease);
+  }
+
+  /* The haze over the photo clears on hover. */
+  .shot::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(20 17 15 / 0.55), transparent 55%);
+    transition:
+      transform 800ms var(--ease),
+      opacity 800ms var(--ease);
+  }
+
+  @media (hover: hover) {
+    .shot:hover :global(img) {
+      transform: scale(1.035);
+    }
+
+    .shot:hover::after {
+      opacity: 0;
+      transform: translateY(-35%);
+    }
+  }
+</style>

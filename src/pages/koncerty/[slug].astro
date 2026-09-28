@@ -1,0 +1,292 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import ConcertRow from '../../components/ConcertRow.astro';
+import Icon from '../../components/Icon.astro';
+import Mark from '../../components/Mark.astro';
+import {
+  concertJsonLd,
+  dateParts,
+  getConcerts,
+  mapUrl,
+  statusLabel,
+  type Concert,
+} from '../../content';
+import { bookingHref, href, vlna } from '../../site';
+
+export async function getStaticPaths() {
+  const { all, upcoming } = await getConcerts();
+  return all.map((concert) => ({
+    params: { slug: concert.slug },
+    props: { concert, isPast: !upcoming.includes(concert), upcoming },
+  }));
+}
+
+interface Props {
+  concert: Concert;
+  isPast: boolean;
+  upcoming: Concert[];
+}
+
+const { concert: c, isPast, upcoming } = Astro.props;
+const d = dateParts(c.date);
+const site = Astro.site ?? new URL('https://www.exhalace.cz');
+const url = new URL(href(`koncerty/${c.slug}/`), site).href;
+const more = upcoming.filter((u) => u !== c).slice(0, 3);
+const when = [d.long, c.time && (c.end ? `${c.time}–${c.end}` : c.time)].filter(Boolean).join(', ');
+const where = [c.venue, c.city].filter(Boolean).join(', ');
+---
+
+<Base
+  page="koncerty"
+  title={`${c.name}, ${d.short}`}
+  description={`Exhalace ${isPast ? 'hrála' : 'hraje'} ${d.date}${c.time ? ` od ${c.time}` : ''}: ${where}.`}
+  extraMarks={['x', 'monogram']}
+>
+  <article class="section concert" aria-labelledby="concert-title">
+    <div class="wrap">
+      <a class="link back" href={href('koncerty/')}>
+        <Icon name="arrow-left" /> Všechny koncerty
+      </a>
+
+      <div class:list={['concert__grid', { 'concert__grid--poster': c.poster }]}>
+        <div class="concert__main">
+          <p class="concert__date stencil" aria-hidden="true">
+            {d.day}. {d.roman}.
+          </p>
+          {c.title && <p class="label concert__title">{c.title}</p>}
+          <h1
+            id="concert-title"
+            class="h1 concert__town"
+            style={`view-transition-name: ev-${c.slug}`}
+          >
+            {c.city}
+          </h1>
+          {(c.status || isPast) && (
+            <p class="concert__status label">{c.status ? statusLabel[c.status] : 'Proběhlo'}</p>
+          )}
+
+          <dl class="facts">
+            <div>
+              <dt class="label">Kdy</dt>
+              <dd>
+                <time datetime={c.time ? `${c.date}T${c.time}` : c.date}>{when}</time>
+              </dd>
+            </div>
+            <div>
+              <dt class="label">Kde</dt>
+              <dd>
+                {c.venue && <strong>{c.venue}</strong>}
+                {c.address && <span>{c.address}</span>}
+                <span>{c.city}</span>
+              </dd>
+            </div>
+          </dl>
+
+          {c.info && <p class="lead concert__info">{vlna(c.info)}</p>}
+
+          <div class="actions">
+            {!isPast && c.tickets && !c.inactive && (
+              <a class="btn btn--lamp" href={c.tickets} rel="noopener" target="_blank">
+                <Icon name="ticket" /> Vstupenky
+              </a>
+            )}
+            <a class="btn" href={mapUrl(c)} rel="noopener" target="_blank">
+              <Icon name="pin" /> Navigovat
+            </a>
+            {!isPast && (
+              <a
+                class="btn"
+                href={href(`koncerty/${c.slug}.ics`)}
+                download={`exhalace-${c.slug}.ics`}
+              >
+                <Icon name="calendar" /> Přidat do kalendáře
+              </a>
+            )}
+            {isPast && (
+              <a class="btn btn--lamp" href={bookingHref}>
+                Pozvěte nás k sobě <Icon name="arrow-right" />
+              </a>
+            )}
+          </div>
+        </div>
+
+        {c.poster && (
+          <figure class="sheet sheet--taped concert__poster">
+            <Picture
+              src={c.poster}
+              formats={['avif']}
+              fallbackFormat="webp"
+              widths={[400, 700, 1000]}
+              sizes="(width >= 56rem) 35vw, 100vw"
+              alt={`Plakát: ${c.name}`}
+              loading="eager"
+            />
+          </figure>
+        )}
+        {!c.poster && <Mark name="monogram" class="concert__mark" />}
+      </div>
+
+      {more.length > 0 && (
+        <section class="more" aria-labelledby="more-title">
+          <h2 id="more-title" class="h2">
+            Další koncerty
+          </h2>
+          <ul class="rows">
+            {more.map((m) => (
+              <ConcertRow concert={m} />
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(concertJsonLd(c, url)).replace(/</g, '\\u003c')}
+    />
+  </article>
+</Base>
+
+<style>
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    margin-bottom: clamp(1.5rem, 4vw, 3rem);
+    font-weight: 600;
+  }
+
+  /* Without an organiser poster, the band's monogram fills the right side like a stamp. */
+  .concert__mark {
+    width: min(100%, 24rem);
+    height: auto;
+    justify-self: center;
+    align-self: center;
+    color: var(--bone);
+    opacity: 0.14;
+    rotate: -6deg;
+  }
+
+  .concert__grid:not(.concert__grid--poster) {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+
+  .concert__grid {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 6rem);
+  }
+
+  .concert__grid--poster {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .concert__main {
+    display: grid;
+    justify-items: start;
+    gap: 1rem;
+  }
+
+  .concert__date {
+    font-size: clamp(3.5rem, 2rem + 6vw, 7rem);
+    color: var(--tungsten);
+  }
+
+  .concert__title {
+    color: var(--bone);
+  }
+
+  .concert__town {
+    overflow-wrap: anywhere;
+  }
+
+  .concert__status {
+    padding: 0.4rem 0.75rem;
+    border: 1.5px solid var(--bone);
+    color: var(--bone);
+  }
+
+  .facts {
+    display: grid;
+    width: 100%;
+    max-width: 44rem;
+    margin-top: 1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .facts > div {
+    display: grid;
+    grid-template-columns: 7rem 1fr;
+    gap: 0.5rem 1.5rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .facts dd {
+    display: grid;
+    gap: 0.15rem;
+    font-size: 1.125rem;
+  }
+
+  .facts dd::first-letter {
+    text-transform: uppercase;
+  }
+
+  .facts strong {
+    font: 800 1.5rem/1.1 var(--font-display);
+    text-transform: uppercase;
+  }
+
+  .concert__info {
+    color: var(--ash);
+  }
+
+  .concert__main .actions {
+    margin-top: 1rem;
+  }
+
+  .concert__poster {
+    --tilt: 1.2deg;
+    padding: 0.75rem;
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+  }
+
+  .concert__poster :global(img) {
+    width: 100%;
+  }
+
+  .more {
+    margin-top: var(--gap-out);
+  }
+
+  .more .h2 {
+    margin-bottom: 1.5rem;
+  }
+
+  .rows {
+    border-top: 1px solid var(--line);
+  }
+
+  @media (width < 56rem) {
+    .concert__grid--poster,
+    .concert__grid:not(.concert__grid--poster) {
+      grid-template-columns: 1fr;
+    }
+
+    .concert__mark {
+      display: none;
+    }
+
+    .concert__poster {
+      position: static;
+    }
+  }
+
+  @media (width < 30rem) {
+    .facts > div {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

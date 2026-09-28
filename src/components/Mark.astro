@@ -1,0 +1,24 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { marks, type Mark } from '../brand';
+
+interface Props extends HTMLAttributes<'svg'> {
+  name: Mark;
+  /** Accessible name; without it the mark is decorative. */
+  label?: string;
+}
+
+// The rest carries the parent's style scope, so parents can size the mark.
+const { name, label, ...rest } = Astro.props;
+---
+
+<svg
+  viewBox={marks[name].viewBox}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+  {...rest}
+>
+  <use href={`#${name}`}></use>
+</svg>

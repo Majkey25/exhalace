@@ -1,0 +1,624 @@
+---
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import Mark from '../components/Mark.astro';
+import { marks, type Mark as MarkName } from '../brand';
+import { getAbout, getSettings } from '../content';
+import { bookingHref, href, nav, type Page } from '../site';
+
+interface Props {
+  /** Current page for the nav; the home page passes 'home', the 404 page nothing. */
+  page?: Page | 'home';
+  title?: string;
+  description?: string;
+  /** The home page plays the intro once per session. */
+  intro?: boolean;
+  /** Utility pages (404, thank you) stay out of search results. */
+  noindex?: boolean;
+  /** Brand marks the page uses besides the logo; each traced path weighs 18–30 KB. */
+  extraMarks?: Exclude<MarkName, 'logo'>[];
+}
+
+const { page, title, description, intro = false, noindex = false, extraMarks = [] } = Astro.props;
+const symbols: MarkName[] = ['logo', ...extraMarks];
+const settings = await getSettings();
+const about = await getAbout();
+const site = Astro.site ?? new URL('https://www.exhalace.cz');
+const url = (path: string) => new URL(path, site).href;
+const pageTitle = title ? `${title} — Exhalace` : `Exhalace — ${settings.slogan.toLowerCase()}`;
+const pageDescription =
+  description ??
+  `Exhalace, rocková kapela (${about.home}). Předělávky známých i méně známých českých a slovenských rockových a punkových kapel. Energická a poctivá show na každou akci.`;
+const socials = [
+  { name: 'Facebook', url: settings.facebook },
+  { name: 'Instagram', url: settings.instagram },
+  { name: 'YouTube', url: settings.youtube },
+].filter((s): s is { name: string; url: string } => Boolean(s.url));
+const tel = settings.phone?.replace(/\s/g, '');
+// Prerender a page when the visitor hovers its link, so navigation feels instant (Chromium).
+const speculation = {
+  prerender: [{ where: { href_matches: href('*') }, eagerness: 'moderate' }],
+};
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'MusicGroup',
+  name: 'Exhalace',
+  alternateName: ['EXHALACE', 'STAGE'],
+  url: url(href()),
+  image: url(href('og.jpg')),
+  genre: ['Rock', 'Punk rock'],
+  foundingDate: about.founded,
+  location: { '@type': 'Place', name: `${about.home}, Česko` },
+  email: settings.email,
+  ...(tel && { telephone: tel }),
+  sameAs: socials.map((s) => s.url),
+};
+---
+
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <meta name="theme-color" content="#14110f" />
+    <link rel="icon" type="image/svg+xml" href={href('favicon.svg')} />
+    <link rel="apple-touch-icon" href={href('apple-touch-icon.png')} />
+    {page && <link rel="canonical" href={url(Astro.url.pathname)} />}
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Exhalace" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={url(Astro.url.pathname)} />
+    <meta property="og:image" content={url(href('og.jpg'))} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="cs_CZ" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <Font cssVariable="--font-display" preload={[{ subset: 'latin' }, { subset: 'latin-ext' }]} />
+    <Font cssVariable="--font-stencil" preload={[{ subset: 'latin' }]} />
+    <Font cssVariable="--font-body" preload={[{ subset: 'latin' }]} />
+    <script is:inline>
+      (() => {
+        const d = document.documentElement;
+        d.classList.add('js');
+        try {
+          if (sessionStorage.getItem('exh-intro')) d.classList.add('no-intro');
+          else sessionStorage.setItem('exh-intro', '1');
+        } catch {
+          d.classList.add('no-intro');
+        }
+      })();
+    </script>
+    {page === 'home' && (
+      <script type="application/ld+json" set:html={JSON.stringify(ld).replace(/</g, '\\u003c')} />
+    )}
+    <script type="speculationrules" set:html={JSON.stringify(speculation)} />
+    {/* The intro and hero haze are the first big paint on the home page. */}
+    {intro && <link rel="preload" as="image" href={href('smoke.webp')} fetchpriority="high" />}
+  </head>
+  <body>
+    <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+      {symbols.map((name) => (
+        <symbol id={name} viewBox={marks[name].viewBox} set:html={marks[name].body} />
+      ))}
+      {/* Heat shimmer for the footer wordmark, only referenced on hover. */}
+      <filter id="shimmer" x="-2%" y="-10%" width="104%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.06" numOctaves="1" seed="4">
+          <animate
+            attributeName="baseFrequency"
+            dur="3s"
+            values="0.012 0.06;0.016 0.09;0.012 0.06"
+            repeatCount="indefinite"
+          ></animate>
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" scale="6"></feDisplacementMap>
+      </filter>
+    </svg>
+
+    {intro && (
+      <div class="intro" aria-hidden="true">
+        <div class="intro__glow" />
+        <div class="intro__smoke haze" />
+        <Mark name="logo" class="intro__logo" />
+      </div>
+    )}
+
+    <a class="skip" href="#main">
+      Přeskočit na obsah
+    </a>
+
+    <header class="header">
+      <div class="header__bar wrap">
+        <a class="header__logo" href={href()} aria-label="Exhalace – úvod">
+          <Mark name="logo" />
+        </a>
+        <nav class="header__nav" aria-label="Hlavní">
+          <ul>
+            {nav.map((n) => (
+              <li>
+                <a
+                  class="link"
+                  href={href(`${n.key}/`)}
+                  aria-current={n.key === page ? 'page' : undefined}
+                >
+                  {n.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <a class="btn btn--lamp header__cta" href={bookingHref}>
+          <span class="header__cta-long">Poptat koncert</span>
+          <span class="header__cta-short">Poptat</span>
+        </a>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="footer">
+      <div class="wrap footer__grid">
+        <p class="footer__slogan h2">{settings.slogan}</p>
+        <div class="footer__col">
+          <p class="label">Objednávky</p>
+          {tel && (
+            <a class="link footer__big" href={`tel:${tel}`}>
+              {settings.phone}
+            </a>
+          )}
+          <a class="link" href={`mailto:${settings.email}`}>
+            {settings.email}
+          </a>
+        </div>
+        <div class="footer__col">
+          <p class="label">Sledujte nás</p>
+          <ul>
+            {socials.map((s) => (
+              <li>
+                <a class="link" href={s.url} rel="noopener" target="_blank">
+                  {s.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <nav class="footer__col" aria-label="Patička">
+          <p class="label">Web</p>
+          <ul>
+            {nav.map((n) => (
+              <li>
+                <a class="link" href={href(`${n.key}/`)}>
+                  {n.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+      <div class="footer__sink">
+        <div class="haze"></div>
+        <a class="footer__mark wrap" href={href()} aria-label="Exhalace – úvod">
+          <Mark name="logo" />
+        </a>
+      </div>
+      <div class="wrap footer__row meta">
+        <p>
+          © {new Date().getFullYear()} Exhalace · {about.home}
+        </p>
+        <p>
+          Web:
+          <a
+            class="inline-link"
+            href="https://majkey25.github.io/My-website-for-fun/"
+            rel="noopener"
+            target="_blank"
+          >
+            Matěj Teplý
+          </a>
+        </p>
+        <a class="link footer__top" href="#main">
+          Nahoru <Icon name="arrow-up" />
+        </a>
+      </div>
+    </footer>
+
+    <nav class="bottom-nav" aria-label="Hlavní">
+      <ul>
+        {nav.map((n) => (
+          <li>
+            <a href={href(`${n.key}/`)} aria-current={n.key === page ? 'page' : undefined}>
+              {n.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <script>
+      // Intro: any input skips it; it leaves the DOM once it has faded out.
+      const intro = document.querySelector('.intro');
+      if (intro) {
+        const done = () => intro.remove();
+        if (document.documentElement.classList.contains('no-intro')) done();
+        intro.addEventListener('animationend', (e) => e.target === intro && done());
+        for (const type of ['pointerdown', 'keydown', 'wheel', 'touchmove'])
+          addEventListener(type, done, { once: true, passive: true });
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  /* ---------- Intro "Nádech": a lamp warms up, the smoke rises, the band name appears ---------- */
+
+  .intro {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: var(--soot);
+    animation: intro-out 0.5s cubic-bezier(0.4, 0, 1, 1) 1.5s forwards;
+    /* Decorative: the first click goes straight to the page underneath. */
+    pointer-events: none;
+  }
+
+  :global(.no-intro) .intro,
+  :global(html:not(.js)) .intro {
+    display: none;
+  }
+
+  .intro__glow {
+    position: absolute;
+    width: min(120vw, 70rem);
+    aspect-ratio: 1;
+    background: radial-gradient(closest-side, rgb(242 160 58 / 0.32), transparent 70%);
+    animation: glow 1.2s var(--ease) both;
+  }
+
+  .intro__smoke {
+    opacity: 1;
+    animation: smoke-up 1.4s var(--ease) 0.1s both;
+  }
+
+  .intro__logo {
+    position: relative;
+    width: min(86vw, 60rem);
+    color: var(--bone);
+    animation: logo-in 0.8s var(--ease) 0.35s both;
+  }
+
+  @keyframes glow {
+    from {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+  }
+
+  @keyframes smoke-up {
+    from {
+      opacity: 0.9;
+      transform: translateY(8%);
+    }
+    to {
+      opacity: 0.15;
+      transform: translateY(-18%) scale(1.12);
+    }
+  }
+
+  @keyframes logo-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.4rem);
+    }
+  }
+
+  @keyframes intro-out {
+    to {
+      opacity: 0;
+      transform: translateY(-3vh);
+      visibility: hidden;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .intro {
+      display: none;
+    }
+  }
+
+  /* ---------- Header ---------- */
+
+  .header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    height: var(--header-h);
+    view-transition-name: header;
+  }
+
+  /* Transparent over the hero, filled once the page scrolls; a soft haze instead of a rule. */
+  .header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgb(20 17 15 / 0.94);
+    box-shadow: 0 0.5rem 2rem rgb(20 17 15 / 0.9);
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .header::before {
+      animation: header-fill linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 5rem;
+    }
+  }
+
+  @keyframes header-fill {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .header__bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    height: 100%;
+  }
+
+  .header__logo {
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--bone);
+    transition: color var(--afterglow);
+  }
+
+  .header__logo:hover {
+    color: var(--tungsten);
+    transition-duration: 180ms;
+  }
+
+  .header__logo svg {
+    width: auto;
+    height: 1.5rem;
+  }
+
+  .header__nav {
+    margin-left: auto;
+  }
+
+  .header__nav ul {
+    display: flex;
+    gap: clamp(1.25rem, 2.5vw, 2.25rem);
+    font-weight: 600;
+    font-size: 0.9375rem;
+  }
+
+  .header__cta {
+    min-height: 2.75rem;
+    padding: 0.55rem 1rem;
+    font-size: 1rem;
+  }
+
+  .header__cta-short {
+    display: none;
+  }
+
+  @media (width < 56rem) {
+    .header__nav {
+      display: none;
+    }
+
+    .header__cta {
+      margin-left: auto;
+    }
+
+    .header__cta-long {
+      display: none;
+    }
+
+    .header__cta-short {
+      display: inline;
+    }
+
+    .header__logo svg {
+      height: 1.25rem;
+    }
+  }
+
+  /* ---------- Bottom nav on phones: thumb reach, no menu to open ---------- */
+
+  .bottom-nav {
+    display: none;
+  }
+
+  @media (width < 56rem) {
+    :global(body) {
+      padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
+    }
+
+    .bottom-nav {
+      position: fixed;
+      inset: auto 0 0;
+      z-index: 50;
+      display: block;
+      padding-bottom: env(safe-area-inset-bottom);
+      background: rgb(20 17 15 / 0.97);
+      border-top: 1px solid var(--line);
+    }
+
+    .bottom-nav ul {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    .bottom-nav a {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 3.5rem;
+      padding-inline: 0.15rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--ash);
+    }
+
+    .bottom-nav a[aria-current='page'] {
+      color: var(--tungsten);
+    }
+
+    .bottom-nav a[aria-current='page']::before {
+      content: '';
+      position: absolute;
+      inset: -1px 25% auto;
+      height: 2px;
+      background: var(--tungsten);
+    }
+  }
+
+  /* ---------- Footer: the band name sinks into the haze ---------- */
+
+  .footer {
+    position: relative;
+    margin-top: var(--gap-in);
+    border-top: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 1.4fr repeat(3, 1fr);
+    gap: 2.5rem;
+    padding-block: clamp(3.5rem, 8vw, 6rem) 2rem;
+  }
+
+  .footer__slogan {
+    max-width: 12ch;
+  }
+
+  .footer__col {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 0.9rem;
+  }
+
+  .footer__col ul {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  /* Tap targets reach 44px through an invisible extension; the text box stays tight. */
+  .footer__col a::before {
+    content: '';
+    position: absolute;
+    inset: -0.7rem -0.25rem;
+  }
+
+  .footer__col .label {
+    margin-bottom: 0.5rem;
+  }
+
+  .footer__big {
+    font: 800 1.75rem/1.1 var(--font-display);
+  }
+
+  .footer__sink {
+    position: relative;
+  }
+
+  .footer__sink .haze {
+    opacity: 0.25;
+  }
+
+  .footer__mark {
+    position: relative;
+    display: block;
+    padding-block: 1rem 0;
+    color: var(--bone);
+  }
+
+  .footer__mark svg {
+    width: 100%;
+    height: auto;
+  }
+
+  /* The bottom third of the name disappears into the soot. */
+  .footer__sink::after {
+    content: '';
+    position: absolute;
+    inset: 35% 0 0;
+    background: linear-gradient(to bottom, transparent, var(--soot) 75%);
+    pointer-events: none;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .footer__mark {
+        animation: surface linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 100%;
+      }
+    }
+  }
+
+  @keyframes surface {
+    from {
+      transform: translateY(12%);
+    }
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .footer__mark:hover svg {
+      filter: url(#shimmer);
+    }
+  }
+
+  .footer__row {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    margin-top: -2.5rem;
+    padding-block: 0 2rem;
+  }
+
+  .footer__top {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  @media (width < 64rem) {
+    .footer__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .footer__slogan {
+      grid-column: 1 / -1;
+      max-width: none;
+    }
+  }
+
+  @media (width < 36rem) {
+    .footer__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .footer__col:first-of-type {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
