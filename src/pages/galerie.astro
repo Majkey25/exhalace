@@ -302,6 +302,15 @@ const photos = await Promise.all(
   }
 
   @media (width < 40rem) {
+    /* Phones: arrows sit at the bottom, so the photo and caption leave room for them. */
+    .lightbox {
+      padding-bottom: 4.5rem;
+    }
+
+    .lightbox__img {
+      max-height: calc(100dvh - 13rem);
+    }
+
     .lightbox__prev,
     .lightbox__next {
       top: auto;

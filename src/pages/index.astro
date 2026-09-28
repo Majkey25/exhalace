@@ -29,7 +29,8 @@ const sample = [...repertoire]
   .slice(0, 8)
   .map((a) => ({ artist: a.artist, title: a.songs[0] }));
 
-const [next] = upcoming;
+// A cancelled or postponed date is never advertised as the next gig.
+const next = upcoming.find((c) => !c.inactive);
 const d = next && dateParts(next.date);
 const program = upcoming.length ? upcoming.slice(0, 4) : past.slice(0, 3);
 const tel = settings.phone?.replace(/\s/g, '');
@@ -130,7 +131,7 @@ const tel = settings.phone?.replace(/\s/g, '');
         </div>
         <ul class="rows" data-rise>
           {program.map((c, i) => (
-            <ConcertRow concert={c} next={upcoming.length > 0 && i === 0} past={!upcoming.length} />
+            <ConcertRow concert={c} next={c === next} past={!upcoming.length} />
           ))}
         </ul>
       </div>

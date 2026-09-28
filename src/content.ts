@@ -90,9 +90,6 @@ export const mapUrl = (c: Concert) =>
     [c.venue, c.address, c.city].filter(Boolean).join(', '),
   )}`;
 
-/** Where it happens, e.g. "Restaurace U Petra, Vracov". */
-export const place = (c: Concert) => [c.title && c.venue, c.city].filter(Boolean).join(', ');
-
 /** Date pieces for lists and detail pages, in Czech. */
 export const dateParts = (iso: string) => {
   const d = new Date(`${iso}T12:00:00Z`);
@@ -117,6 +114,13 @@ export const dateParts = (iso: string) => {
 
 const eventStatus = { cancelled: 'EventCancelled', postponed: 'EventPostponed' } as const;
 
+/** The calendar day after an ISO date: nextDay('2026-12-31') -> '2027-01-01'. */
+export const nextDay = (date: string) => {
+  const d = new Date(`${date}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
+};
+
 /** schema.org MusicEvent for search engines. */
 export const concertJsonLd = (c: Concert, url: string) => ({
   '@context': 'https://schema.org',
@@ -124,7 +128,8 @@ export const concertJsonLd = (c: Concert, url: string) => ({
   name: `Exhalace — ${c.name}`,
   url,
   startDate: c.time ? `${c.date}T${c.time}` : c.date,
-  ...(c.end && { endDate: `${c.date}T${c.end}` }),
+  // An end at or before the start is after midnight, on the next day.
+  ...(c.time && c.end && { endDate: `${c.end > c.time ? c.date : nextDay(c.date)}T${c.end}` }),
   eventStatus: `https://schema.org/${c.status === 'cancelled' || c.status === 'postponed' ? eventStatus[c.status] : 'EventScheduled'}`,
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
   location: {

@@ -18,8 +18,14 @@ const thumb = ok ? max : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 ---
 
 <div class="video">
-  {/* YouTube loads only after a click: no third-party requests or cookies before that. */}
-  <button class="video__play" type="button" data-video={id} aria-label={`Přehrát video: ${title}`}>
+  {/* YouTube loads only after a click: no third-party requests or cookies before that.
+      Without JS the link simply opens the video on YouTube. */}
+  <a
+    class="video__play"
+    href={`https://www.youtube.com/watch?v=${id}`}
+    data-video={id}
+    aria-label={`Přehrát video: ${title}`}
+  >
     <Picture
       src={thumb}
       inferSize
@@ -32,18 +38,19 @@ const thumb = ok ? max : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
     <span class="video__btn">
       <Icon name="play" />
     </span>
-  </button>
+  </a>
 </div>
 
 <script>
-  document.querySelectorAll<HTMLButtonElement>('[data-video]').forEach((button) =>
-    button.addEventListener('click', () => {
+  document.querySelectorAll<HTMLAnchorElement>('[data-video]').forEach((link) =>
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
       const frame = document.createElement('iframe');
-      frame.src = `https://www.youtube-nocookie.com/embed/${button.dataset.video}?autoplay=1&rel=0`;
-      frame.title = button.getAttribute('aria-label') ?? 'Video';
+      frame.src = `https://www.youtube-nocookie.com/embed/${link.dataset.video}?autoplay=1&rel=0`;
+      frame.title = link.getAttribute('aria-label') ?? 'Video';
       frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
       frame.allowFullscreen = true;
-      button.replaceWith(frame);
+      link.replaceWith(frame);
       frame.focus();
     }),
   );

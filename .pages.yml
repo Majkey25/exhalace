@@ -40,11 +40,11 @@ content:
         label: 'Začátek (např. 20:00)'
         type: string
         pattern:
-          { regex: '^([01]\d|2[0-3]):[0-5]\d$', message: 'Zadej čas jako HH:MM, např. 20:00' }
+          { regex: '^$|^([01]\d|2[0-3]):[0-5]\d$', message: 'Zadej čas jako HH:MM, např. 20:00' }
       - name: end
         label: 'Konec (nepovinné)'
         type: string
-        pattern: { regex: '^([01]\d|2[0-3]):[0-5]\d$', message: 'Zadej čas jako HH:MM' }
+        pattern: { regex: '^$|^([01]\d|2[0-3]):[0-5]\d$', message: 'Zadej čas jako HH:MM' }
       - name: title
         label: Název akce
         description: 'Třeba „Michalská pouť“. U běžného koncertu nech prázdné, ukáže se místo.'
@@ -56,11 +56,11 @@ content:
         label: Odkaz na mapu
         description: 'Nepovinné. Bez odkazu web najde místo na Mapy.com sám.'
         type: string
-        pattern: { regex: '^https://', message: 'Odkaz musí začínat https://' }
+        pattern: { regex: '^$|^https://', message: 'Odkaz musí začínat https://' }
       - name: tickets
         label: 'Odkaz na vstupenky nebo událost (nepovinné)'
         type: string
-        pattern: { regex: '^https://', message: 'Odkaz musí začínat https://' }
+        pattern: { regex: '^$|^https://', message: 'Odkaz musí začínat https://' }
       - name: status
         label: Stav
         type: select
@@ -145,7 +145,7 @@ content:
           - name: year
             label: 'Rok (nepovinné)'
             type: string
-            pattern: { regex: '^\d{4}$', message: 'Rok piš čtyřmi číslicemi, např. 2019' }
+            pattern: { regex: '^$|^\d{4}$', message: 'Rok piš čtyřmi číslicemi, např. 2019' }
           - { name: text, label: Text, type: text, required: true }
       - name: founded
         label: Rok vzniku
@@ -165,9 +165,21 @@ content:
     format: yaml
     list: true
     fields:
-      - { name: youtube, label: Odkaz na YouTube, type: string, required: true }
+      - name: youtube
+        label: Odkaz na YouTube
+        type: string
+        required: true
+        pattern:
+          {
+            regex: '(youtube\.com/|youtu\.be/)|^[\w-]{11}$',
+            message: 'Vlož odkaz na YouTube, např. https://youtu.be/…',
+          }
       - { name: title, label: Název, type: string, required: true }
-      - { name: year, label: Rok, type: number, required: true }
+      - name: year
+        label: Rok
+        type: number
+        required: true
+        options: { min: 2000, max: 2100 }
 
   - name: nastaveni
     label: Nastavení webu
@@ -180,16 +192,29 @@ content:
         description: 'Sem chodí i zprávy z formuláře. Po změně přijde na nový e-mail jednou aktivační zpráva od FormSubmit.'
         type: string
         required: true
-      - { name: phone, label: 'Telefon (např. +420 604 525 780)', type: string }
+        pattern: { regex: '^[^@\s]+@[^@\s]+\.[^@\s]+$', message: 'Zadej platný e-mail' }
+      - name: phone
+        label: 'Telefon (např. +420 604 525 780)'
+        type: string
+        pattern: { regex: '^$|^\+?[\d ]{9,17}$', message: 'Telefon piš jako +420 604 525 780' }
       - { name: slogan, label: Slogan na úvodu, type: string, required: true }
       - name: hero
         label: Obrázek na úvodu
         type: image
         required: true
         options: { media: hero }
-      - { name: facebook, label: Facebook, type: string }
-      - { name: instagram, label: Instagram, type: string }
-      - { name: youtube, label: YouTube kanál, type: string }
+      - name: facebook
+        label: Facebook
+        type: string
+        pattern: { regex: '^$|^https://', message: 'Odkaz musí začínat https://' }
+      - name: instagram
+        label: Instagram
+        type: string
+        pattern: { regex: '^$|^https://', message: 'Odkaz musí začínat https://' }
+      - name: youtube
+        label: YouTube kanál
+        type: string
+        pattern: { regex: '^$|^https://', message: 'Odkaz musí začínat https://' }
       - name: organisers
         label: 'Pro pořadatele (prázdný řádek = nový odstavec)'
         type: text

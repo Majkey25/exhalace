@@ -16,6 +16,7 @@ const months = group(upcoming, (c) => {
   return `${d.month} ${d.year}`;
 });
 const years = group(past, (c) => c.date.slice(0, 4));
+const next = upcoming.find((c) => !c.inactive);
 const count = ['koncert', 'koncerty', 'koncertů'] as const;
 ---
 
@@ -42,7 +43,7 @@ const count = ['koncert', 'koncerty', 'koncertů'] as const;
             <h2 class="rail__label label">{label}</h2>
             <ul class="rows">
               {list.map((c) => (
-                <ConcertRow concert={c} next={c === upcoming[0]} morph />
+                <ConcertRow concert={c} next={c === next} morph />
               ))}
             </ul>
           </div>

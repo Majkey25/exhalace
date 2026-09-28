@@ -50,22 +50,20 @@ const https = (field: string) =>
 const koncerty = defineCollection({
   loader: yamlFile('src/data/koncerty.yaml'),
   schema: ({ image }) =>
-    z
-      .strictObject({
-        title: optional(text),
-        date: z.iso.date({ error: 'Datum piš jako RRRR-MM-DD, např. 2026-11-14' }),
-        time: optional(time),
-        end: optional(time),
-        venue: optional(text),
-        address: optional(text),
-        city: text,
-        map: optional(https('Odkaz na mapu')),
-        tickets: optional(https('Odkaz na vstupenky')),
-        status: optional(z.enum(['cancelled', 'postponed', 'sold-out', 'free'])),
-        info: optional(text),
-        poster: optional(image()),
-      })
-      .refine((e) => e.title || e.venue, { error: 'Vyplň název akce nebo místo konání' }),
+    z.strictObject({
+      title: optional(text),
+      date: z.iso.date({ error: 'Datum piš jako RRRR-MM-DD, např. 2026-11-14' }),
+      time: optional(time),
+      end: optional(time),
+      venue: optional(text),
+      address: optional(text),
+      city: text,
+      map: optional(https('Odkaz na mapu')),
+      tickets: optional(https('Odkaz na vstupenky')),
+      status: optional(z.enum(['cancelled', 'postponed', 'sold-out', 'free'])),
+      info: optional(text),
+      poster: optional(image()),
+    }),
 });
 
 const galerie = defineCollection({
