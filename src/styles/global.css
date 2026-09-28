@@ -1,30 +1,26 @@
-/* Exhalace: a dark stage full of haze, one tungsten lamp, and paper sheets for the organisers. */
+/* Exhalace: the dark, glassy look of the band's first site, rebuilt with modern craft. */
 
 :root {
-  --soot: #14110f;
-  --smoke: #1f1b18;
-  --bone: #efe7dc;
-  --ash: #a89f94;
-  --edge: #6f665c;
-  --line: rgb(239 231 220 / 0.12);
-  --tungsten: #f2a03a;
+  --bg: #050505;
+  --surface: rgb(255 255 255 / 0.04);
+  --surface-strong: rgb(255 255 255 / 0.07);
+  --border: rgb(255 255 255 / 0.09);
+  --border-strong: rgb(255 255 255 / 0.2);
+  --text: #ffffff;
+  --dim: #c8c8c8;
+  --faint: #9a9a9a;
+  --accent: #ff4f84;
   --x-red: #d51a00;
-  --error: #ff7a66;
-  --paper: #ebe3d5;
-  --ink: #1a1612;
-  --ink-muted: #5a5046;
-  --ink-red: #a62a1f;
+  --error: #ff7a7a;
 
   --pad: clamp(1.25rem, 4vw, 3rem);
-  --max: 88rem;
-  --header-h: 4rem;
-  --gap-in: clamp(2rem, 5vw, 4rem);
-  --gap-out: clamp(5rem, 13vw, 11rem);
-
-  /* Lamps heat up fast and fade slowly; hover uses both halves. */
-  --warm: 180ms cubic-bezier(0.55, 0, 0.8, 0.4);
-  --afterglow: 650ms cubic-bezier(0.2, 0.6, 0.3, 1);
-  --ease: cubic-bezier(0.25, 0.1, 0.1, 1);
+  --max: 76rem;
+  --header-h: 4.5rem;
+  --radius: 1.25rem;
+  --radius-lg: 1.75rem;
+  --shadow: 0 1.25rem 3rem rgb(0 0 0 / 0.45);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --section: clamp(4.5rem, 10vw, 8rem);
 
   color-scheme: dark;
 }
@@ -46,17 +42,40 @@ html {
 }
 
 body {
+  position: relative;
   min-height: 100svh;
-  background: var(--soot);
-  color: var(--bone);
-  font: 400 1.0625rem/1.6 var(--font-body);
+  background: radial-gradient(circle at 20% 15%, #161616, var(--bg) 60%) fixed;
+  color: var(--text);
+  font: 400 1.0625rem/1.7 var(--font);
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
 }
 
+/* Soft coloured light drifting behind everything, as on the first site. Gradients are already
+   soft, so no blur filter is needed; only transform animates. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 28%, rgb(255 79 132 / 0.13), transparent 32%),
+    radial-gradient(circle at 82% 18%, rgb(64 165 255 / 0.11), transparent 30%),
+    radial-gradient(circle at 55% 85%, rgb(120 255 197 / 0.07), transparent 34%);
+  animation: drift 26s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  to {
+    transform: translate3d(3%, -2%, 0) scale(1.05);
+  }
+}
+
 img,
 svg,
-video {
+video,
+iframe {
   display: block;
   max-width: 100%;
 }
@@ -92,13 +111,13 @@ ol {
 }
 
 :focus-visible {
-  outline: 3px solid var(--tungsten);
+  outline: 2px solid var(--text);
   outline-offset: 3px;
 }
 
 ::selection {
-  background: var(--tungsten);
-  color: var(--soot);
+  background: var(--accent);
+  color: #000;
 }
 
 .sr-only {
@@ -114,11 +133,12 @@ ol {
   position: fixed;
   top: 0.75rem;
   left: 0.75rem;
-  z-index: 100;
-  padding: 0.75rem 1rem;
-  background: var(--tungsten);
-  color: var(--soot);
-  font-weight: 700;
+  z-index: 200;
+  padding: 0.75rem 1.1rem;
+  border-radius: 999px;
+  background: var(--text);
+  color: #000;
+  font-weight: 600;
   transform: translateY(-200%);
 }
 
@@ -134,206 +154,156 @@ ol {
 
 /* ---------- Type ---------- */
 
-.display,
-.h1,
-.h2,
-.h3,
-.label {
-  font-family: var(--font-display);
+/* FarCry Logo Font v1.1 by Mike "Gumby" Anderson, the typeface of the band's logo. It has
+   capitals, digits and basic punctuation only (no Czech accents), so it is used sparingly:
+   page titles that fit (see logoTypeFits) and concert dates. */
+@font-face {
+  font-family: 'FarCry';
+  src: url('/fonts/farcry.woff2') format('woff2');
   font-weight: 800;
-  text-transform: uppercase;
+  font-display: swap;
 }
 
-/* Czech capitals carry marks above the cap height (Ř Š Č Ž), so leading never drops below 1. */
-.h1 {
-  font-size: clamp(3.5rem, 1.5rem + 9vw, 10rem);
-  line-height: 1;
-  padding-top: 0.08em;
+/* Text set in it comes through logoText(), which picks the matching C and F glyphs. */
+.logo-type {
+  font-family: 'FarCry', var(--font);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
   text-wrap: balance;
+}
+
+.title {
+  font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
 }
 
 .h2 {
-  font-size: clamp(2.5rem, 1.6rem + 4vw, 5rem);
-  line-height: 1;
-  text-wrap: balance;
+  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
 }
 
 .h3 {
-  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
-  line-height: 1.1;
+  font-size: clamp(1.2rem, 1.1rem + 0.5vw, 1.5rem);
+  letter-spacing: -0.01em;
 }
 
-.label {
-  font-size: 1rem;
-  line-height: 1.2;
-  letter-spacing: 0.12em;
-  color: var(--ash);
-}
-
-.stencil {
-  font-family: var(--font-stencil);
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  line-height: 0.85;
+/* Small caps line above a heading, in the first site's pink. */
+.eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
 }
 
 .lead {
-  max-width: 44ch;
-  font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
-  font-weight: 500;
-  line-height: 1.45;
+  font-size: clamp(1.125rem, 1.05rem + 0.35vw, 1.3rem);
+  line-height: 1.65;
+  color: var(--dim);
   text-wrap: pretty;
+}
+
+.dim {
+  color: var(--dim);
+}
+
+.meta {
+  font-size: 0.9375rem;
+  color: var(--faint);
 }
 
 .prose {
   display: grid;
   gap: 1.1em;
-  max-width: 64ch;
-  color: var(--ash);
+  color: var(--dim);
   text-wrap: pretty;
 }
 
-.prose strong {
-  color: var(--bone);
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   font-weight: 600;
 }
 
-.meta {
-  font-size: 0.9375rem;
-  line-height: 1.45;
-  color: var(--ash);
+.link-arrow .icon {
+  transition: transform 0.35s var(--ease);
 }
 
-/* ---------- Links: the filament warms up from the middle ---------- */
-
-.link {
-  position: relative;
-  display: inline-block;
-  transition: color var(--afterglow);
+.link-arrow:hover .icon {
+  transform: translateX(0.25rem);
 }
 
-.link::after {
-  content: '';
-  position: absolute;
-  inset: auto 0 -0.2em;
-  height: 2px;
-  background: var(--tungsten);
-  transform: scaleX(0);
-  transition: transform var(--afterglow);
-}
-
-.link:hover,
-.link:focus-visible,
-.link[aria-current='page'] {
-  color: var(--tungsten);
-  transition-duration: 180ms;
-  transition-timing-function: cubic-bezier(0.55, 0, 0.8, 0.4);
-}
-
-.link:hover::after,
-.link:focus-visible::after,
-.link[aria-current='page']::after {
-  transform: scaleX(1);
-  transition: transform var(--warm);
-}
-
-/* Links inside running text keep an underline, so colour is never the only cue. */
-.prose a,
 .inline-link {
-  text-decoration: underline 1px var(--ash);
+  text-decoration: underline 1px var(--faint);
   text-underline-offset: 0.2em;
-  transition:
-    color var(--afterglow),
-    text-decoration-color var(--afterglow);
+  transition: text-decoration-color 0.3s;
 }
 
-.prose a:hover,
 .inline-link:hover {
-  color: var(--tungsten);
-  text-decoration-color: var(--tungsten);
-  transition-duration: 180ms;
+  text-decoration-color: var(--text);
 }
 
-/* ---------- Buttons ---------- */
+/* ---------- Pill buttons ---------- */
 
 .btn {
-  position: relative;
-  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
+  gap: 0.55rem;
   min-height: 3rem;
-  padding: 0.75rem 1.4rem;
-  border: 1.5px solid var(--bone);
-  border-radius: 3px;
-  font: 800 1.125rem/1 var(--font-display);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  padding: 0.75rem 1.6rem;
+  border: 1.5px solid var(--text);
+  border-radius: 999px;
+  font-size: 0.975rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   transition:
-    color var(--afterglow),
-    border-color var(--afterglow),
-    background-color var(--afterglow);
+    background-color 0.3s var(--ease),
+    color 0.3s var(--ease),
+    border-color 0.3s var(--ease),
+    transform 0.3s var(--ease);
 }
 
 .btn:hover {
-  color: var(--tungsten);
-  border-color: var(--tungsten);
-  transition-duration: 180ms;
+  background: var(--text);
+  color: #0d0d0d;
 }
 
 .btn:active {
-  transform: translateY(1px);
+  transform: scale(0.98);
 }
 
-.btn--lamp {
-  border-color: var(--tungsten);
-  background: var(--tungsten);
-  color: var(--soot);
+.btn--solid {
+  background: var(--text);
+  color: #0d0d0d;
 }
 
-/* The primary button glows like a lamp coming up to temperature. */
-.btn--lamp::before {
-  content: '';
-  position: absolute;
-  inset: -40%;
-  z-index: -1;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgb(242 160 58 / 0.45), transparent);
-  opacity: 0;
-  transform: scale(0.6);
-  transition:
-    opacity var(--afterglow),
-    transform var(--afterglow);
+.btn--solid:hover {
+  background: #e6e6e6;
+  border-color: #e6e6e6;
 }
 
-.btn--lamp:hover {
-  color: var(--soot);
-  background: #ffb456;
-  border-color: #ffb456;
+.btn--ghost {
+  border-color: var(--border-strong);
 }
 
-.btn--lamp:hover::before {
-  opacity: 1;
-  transform: scale(1);
-  transition-duration: 400ms;
-}
-
-.btn--ink {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--paper);
-}
-
-.btn--ink:hover {
-  color: var(--paper);
-  background: #3a322b;
-  border-color: #3a322b;
+.btn--ghost:hover {
+  border-color: var(--text);
 }
 
 .btn .icon {
-  width: 1.1em;
-  height: 1.1em;
+  width: 1.05em;
+  height: 1.05em;
   flex: none;
 }
 
@@ -353,124 +323,92 @@ ol {
   stroke-linejoin: round;
 }
 
-/* ---------- Sections and the vertical rail ---------- */
+/* ---------- Glass surfaces ---------- */
+
+.glass {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.card {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition:
+    transform 0.4s var(--ease),
+    border-color 0.4s var(--ease),
+    background-color 0.4s var(--ease);
+}
+
+a.card:hover,
+.card--lift:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-strong);
+  background: var(--surface-strong);
+}
+
+/* ---------- Sections ---------- */
 
 .section {
-  padding-block: var(--gap-out);
+  padding-block: var(--section);
 }
 
-.section--tight {
-  padding-block: var(--gap-in);
-}
-
-/* Page top leaves room for the fixed header. */
 main > .section:first-child,
 main > .page-head {
   padding-top: calc(var(--header-h) + clamp(3rem, 8vw, 6rem));
 }
 
-.rail {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.rail__label {
-  color: var(--ash);
-}
-
-/* Desktop: section labels sit in a left rail and read upwards, like rising smoke. */
-@media (width >= 64rem) {
-  .rail {
-    grid-template-columns: 6rem minmax(0, 1fr);
-    gap: 0 2rem;
-  }
-
-  .rail__label {
-    position: sticky;
-    top: calc(var(--header-h) + 2rem);
-    align-self: start;
-    justify-self: start;
-    writing-mode: vertical-rl;
-    rotate: 180deg;
-  }
-}
-
 .page-head {
-  padding-bottom: var(--gap-in);
+  padding-bottom: clamp(2rem, 5vw, 3rem);
+  text-align: center;
 }
 
 .page-head .lead {
-  margin-top: 1.5rem;
-  color: var(--ash);
+  max-width: 44rem;
+  margin: 1.25rem auto 0;
 }
 
-/* ---------- Paper sheets (setlist, rider) ---------- */
-
-.sheet {
-  --tilt: 0deg;
-  position: relative;
-  padding: clamp(1.5rem, 4vw, 3rem);
-  background: var(--paper);
-  color: var(--ink);
-  rotate: var(--tilt);
-  box-shadow: 0 1.5rem 3rem -1rem rgb(0 0 0 / 0.6);
+.section-head {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+  text-align: center;
 }
 
-.sheet :focus-visible {
-  outline-color: var(--ink);
+.section-head .lead {
+  max-width: 44rem;
 }
 
-.sheet .label {
-  color: var(--ink-muted);
+.section-foot {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(2rem, 5vw, 3rem);
 }
 
-.sheet--tilt {
-  --tilt: -1.5deg;
-}
-
-/* A strip of gaffer tape holding the sheet. */
-.sheet--taped::before {
-  content: '';
-  position: absolute;
-  top: -0.9rem;
-  left: 50%;
-  width: 7rem;
-  height: 1.8rem;
-  background: rgb(42 38 34 / 0.92);
-  translate: -50% 0;
-  rotate: 2deg;
-}
-
-/* ---------- Haze ---------- */
-
-.haze {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: url('/smoke.webp') center / cover no-repeat;
-  opacity: 0.35;
-}
-
-/* ---------- Scroll reveals: the fog lifts (CSS only, static where unsupported) ---------- */
+/* ---------- Scroll reveal: fade up once, CSS only, static where unsupported ---------- */
 
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    [data-rise] {
-      animation: rise linear both;
+    [data-reveal] {
+      animation: reveal linear both;
       animation-timeline: view();
-      animation-range: entry 0% entry 55%;
+      animation-range: entry 0% entry 45%;
     }
   }
 }
 
-@keyframes rise {
+@keyframes reveal {
   from {
-    opacity: 0.001;
-    transform: translateY(1.75rem);
+    opacity: 0;
+    transform: translateY(1.5rem);
   }
 }
 
-/* ---------- Page transitions: the old page exhales, the new one comes in ---------- */
+/* ---------- Page transitions: a short crossfade, the header stays ---------- */
 
 @media (prefers-reduced-motion: no-preference) {
   @view-transition {
@@ -479,29 +417,23 @@ main > .page-head {
 }
 
 ::view-transition-old(root) {
-  animation: exhale-out 0.24s cubic-bezier(0.4, 0, 1, 1) both;
+  animation: 0.22s ease-in both fade-out;
 }
 
 ::view-transition-new(root) {
-  animation: inhale-in 0.42s cubic-bezier(0, 0, 0.2, 1) both;
+  animation: 0.35s var(--ease) both fade-in;
 }
 
-::view-transition-group(*) {
-  animation-duration: 0.42s;
-  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-@keyframes exhale-out {
+@keyframes fade-out {
   to {
     opacity: 0;
-    transform: translateY(-1.5vh) scale(1.01);
   }
 }
 
-@keyframes inhale-in {
+@keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(1vh);
+    transform: translateY(0.75rem);
   }
 }
 
@@ -520,54 +452,52 @@ main > .page-head {
 
 @media (prefers-contrast: more) {
   :root {
-    --ash: var(--bone);
-    --line: rgb(239 231 220 / 0.4);
+    --dim: #fff;
+    --faint: #ddd;
+    --border: rgb(255 255 255 / 0.4);
   }
 
-  .haze {
+  body::before {
     display: none;
   }
 }
 
 @media (forced-colors: active) {
-  .haze {
+  body::before {
     display: none;
   }
 
-  .btn {
-    border: 2px solid ButtonText;
+  .btn,
+  .card,
+  .glass {
+    border: 1px solid CanvasText;
   }
 }
 
-/* Organisers print the setlist and the rider: ink on paper, no chrome. */
+/* Organisers print the song list and the rider: black on white, no chrome. */
 @media print {
-  :root {
-    --soot: #fff;
-    --bone: #000;
-    --ash: #333;
-  }
-
   body {
     background: #fff;
     color: #000;
   }
 
+  body::before,
   .header,
-  .bottom-nav,
   .footer,
-  .no-print,
-  .haze {
+  .no-print {
     display: none !important;
   }
 
-  .sheet {
+  .glass,
+  .card {
+    border: 0;
     box-shadow: none;
-    rotate: none;
-    padding: 0;
+    background: none;
   }
 
-  .sheet--taped::before {
-    display: none;
+  :root {
+    --dim: #222;
+    --faint: #444;
   }
 
   main > .section:first-child,

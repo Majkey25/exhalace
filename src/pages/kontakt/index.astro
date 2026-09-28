@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
+import PageTitle from '../../components/PageTitle.astro';
 import { getAbout, getSettings } from '../../content';
 import { href, vlna } from '../../site';
 
@@ -11,11 +12,13 @@ const rider = settings.organisers
   .split(/\n\s*\n/)
   .map((p) => p.trim())
   .filter(Boolean);
-const socials = [
-  { name: 'Facebook', url: settings.facebook },
-  { name: 'Instagram', url: settings.instagram },
-  { name: 'YouTube', url: settings.youtube },
-].filter((s): s is { name: string; url: string } => Boolean(s.url));
+const socials = (
+  [
+    { name: 'Facebook', url: settings.facebook, icon: 'facebook' },
+    { name: 'Instagram', url: settings.instagram, icon: 'instagram' },
+    { name: 'YouTube', url: settings.youtube, icon: 'youtube' },
+  ] as const
+).filter((s): s is typeof s & { url: string } => Boolean(s.url));
 const site = Astro.site ?? new URL('https://www.exhalace.cz');
 // Without JS the browser posts the form and FormSubmit sends the visitor to the thank-you page.
 const next = new URL(href('kontakt/dekujeme/'), site).href;
@@ -27,6 +30,12 @@ const types = [
   'Soukromá oslava',
   'Něco jiného',
 ];
+// OpenStreetMap embed around the band's home (no script, loads only when scrolled to).
+const { map_lat: lat, map_lng: lng } = settings;
+const map =
+  lat !== undefined && lng !== undefined
+    ? `https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.04},${lat - 0.018},${lng + 0.04},${lat + 0.018}&layer=mapnik&marker=${lat},${lng}`
+    : undefined;
 ---
 
 <Base
@@ -34,83 +43,82 @@ const types = [
   title="Kontakt"
   description="Objednejte si kapelu Exhalace: telefon, e-mail, poptávkový formulář a technické informace pro pořadatele."
 >
-  <header class="page-head wrap">
-    <h1 class="h1">Kontakt</h1>
-    <p class="lead">{vlna('Máte dotaz? Chcete si s námi domluvit koncert? Ozvěte se nám.')}</p>
-  </header>
+  <PageTitle title="Kontakt" eyebrow="Ozvěte se nám">
+    <p class="lead">{vlna('Máte dotazy? Chcete si s námi domluvit koncert? Ozvěte se nám!')}</p>
+  </PageTitle>
 
-  <section class="section section--tight" aria-label="Přímý kontakt">
-    <div class="wrap direct">
+  <section class="section-tight wrap narrow" aria-label="Přímý kontakt">
+    <ul class="direct" data-reveal>
       {tel && (
-        <a class="direct__phone display link" href={`tel:${tel}`}>
-          <Icon name="phone" />
-          {settings.phone}
-        </a>
+        <li>
+          <a class="card card--lift direct__item" href={`tel:${tel}`}>
+            <Icon name="phone" />
+            <span class="meta">Telefon</span>
+            <span class="direct__value">{settings.phone}</span>
+          </a>
+        </li>
       )}
-      <a class="direct__mail link" href={`mailto:${settings.email}`}>
-        <Icon name="mail" />
-        {settings.email}
-      </a>
-      <ul class="direct__socials">
-        {socials.map((s) => (
-          <li>
-            <a class="link" href={s.url} rel="noopener" target="_blank">
-              {s.name}
-            </a>
-          </li>
-        ))}
-      </ul>
-      <p class="meta direct__home">
-        Domov kapely: {about.home} ·
-        <a
-          class="inline-link"
-          href={`https://mapy.com/fnc/v1/search?query=${encodeURIComponent(about.home)}`}
-          rel="noopener"
-          target="_blank"
-        >
-          Mapy.com
+      <li>
+        <a class="card card--lift direct__item" href={`mailto:${settings.email}`}>
+          <Icon name="mail" />
+          <span class="meta">E-mail</span>
+          <span class="direct__value">{settings.email}</span>
         </a>
-      </p>
-    </div>
+      </li>
+      <li class="card direct__item">
+        <span class="meta">Sledujte nás</span>
+        <span class="direct__socials">
+          {socials.map((s) => (
+            <a href={s.url} rel="noopener" target="_blank" aria-label={s.name}>
+              <Icon name={s.icon} />
+            </a>
+          ))}
+        </span>
+      </li>
+    </ul>
   </section>
 
-  <section class="section" aria-label="Poptávka a technické informace">
-    <div class="wrap booking">
+  <section class="section-tight wrap" aria-label="Poptávka a technické informace">
+    <div class="booking">
       <form
         id="poptavka"
-        class="form"
+        class="form glass"
         action={`https://formsubmit.co/${settings.email}`}
         method="POST"
         data-endpoint={`https://formsubmit.co/ajax/${settings.email}`}
+        data-reveal
       >
-        <h2 class="h2">Poptávka koncertu</h2>
+        <div>
+          <p class="eyebrow">Poptávka</p>
+          <h2 class="h3">Chcete nás na své akci?</h2>
+        </div>
         <div class="form__row">
           <label class="field">
-            <span class="label">Jméno *</span>
+            <span>Jméno *</span>
             <input name="name" autocomplete="name" required maxlength="100" />
           </label>
           <label class="field">
-            <span class="label">E-mail *</span>
+            <span>E-mail *</span>
             <input type="email" name="email" autocomplete="email" required maxlength="200" />
           </label>
         </div>
         <div class="form__row">
           <label class="field">
-            <span class="label">Telefon</span>
+            <span>Telefon</span>
             <input type="tel" name="phone" autocomplete="tel" maxlength="30" />
           </label>
           <label class="field">
-            <span class="label">Datum akce</span>
+            <span>Datum akce</span>
             <input type="date" name="date" />
           </label>
         </div>
         <div class="form__row">
           <label class="field">
-            <span class="label">Obec a místo</span>
+            <span>Obec a místo</span>
             <input name="place" maxlength="150" />
           </label>
           <label class="field">
-            <span class="label">Typ akce</span>
+            <span>Typ akce</span>
             <select name="type">
               {types.map((t) => (
                 <option>{t}</option>
@@ -119,10 +127,10 @@ const types = [
           </label>
         </div>
         <label class="field">
-          <span class="label">Zpráva *</span>
+          <span>Zpráva *</span>
           <textarea
             name="message"
-            rows="6"
+            rows="5"
             required
             maxlength="5000"
             placeholder="Kde, kdy, jak dlouho, venku nebo uvnitř, máte vlastní ozvučení?"
@@ -141,7 +149,7 @@ const types = [
         <input type="hidden" name="_captcha" value="false" />
         <input type="hidden" name="_next" value={next} />
         <div class="form__foot">
-          <button class="btn btn--lamp" type="submit">
+          <button class="btn btn--solid" type="submit">
             Odeslat poptávku <Icon name="arrow-right" />
           </button>
           <p class="meta">
@@ -151,12 +159,15 @@ const types = [
         <p class="form__status" role="status" aria-live="polite"></p>
       </form>
 
-      <aside id="technika" class="sheet sheet--taped rider" aria-labelledby="rider-title">
+      <aside id="technika" class="rider glass" aria-labelledby="rider-title" data-reveal>
         <div class="rider__head">
-          <h2 id="rider-title" class="h3">
-            Pro pořadatele
-          </h2>
-          <button class="btn btn--ink rider__print no-print" type="button" data-print>
+          <div>
+            <p class="eyebrow">Technika</p>
+            <h2 id="rider-title" class="h3">
+              Pro pořadatele
+            </h2>
+          </div>
+          <button class="btn btn--ghost rider__print no-print" type="button" data-print>
             <Icon name="printer" /> Tisk
           </button>
         </div>
@@ -165,17 +176,53 @@ const types = [
             <li>{vlna(p)}</li>
           ))}
         </ul>
-        <p class="rider__contact">
-          {settings.phone && `${settings.phone} · `}
-          {settings.email}
-        </p>
       </aside>
     </div>
   </section>
+
+  {map && (
+    <section class="section wrap narrow no-print" aria-labelledby="map-title">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Odkud jsme</p>
+        <h2 id="map-title" class="h2">
+          Kde nás najdete?
+        </h2>
+        <p class="dim">{about.home}</p>
+      </div>
+      {/* The iframe is added only when the map scrolls near, so it never competes with the page. */}
+      <div class="map glass" data-reveal data-map={map} data-title={`Mapa: ${about.home}`}></div>
+      <p class="map__credit">
+        <a
+          class="link-arrow"
+          href={`https://mapy.com/fnc/v1/showmap?center=${lng},${lat}&zoom=13&marker=true`}
+          rel="noopener"
+          target="_blank"
+        >
+          Otevřít v Mapy.com <Icon name="external" />
+        </a>
+      </p>
+    </section>
+  )}
 </Base>
 
 <script>
   document.querySelector('[data-print]')?.addEventListener('click', () => print());
+
+  const mapBox = document.querySelector<HTMLElement>('[data-map]');
+  if (mapBox) {
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        const frame = document.createElement('iframe');
+        frame.src = mapBox.dataset.map ?? '';
+        frame.title = mapBox.dataset.title ?? 'Mapa';
+        mapBox.append(frame);
+        io.disconnect();
+      },
+      { rootMargin: '300px 0px' },
+    );
+    io.observe(mapBox);
+  }
 
   const form = document.querySelector<HTMLFormElement>('#poptavka');
   const status = form?.querySelector('.form__status');
@@ -220,72 +267,100 @@ const types = [
 </script>
 
 <style>
+  .narrow {
+    width: min(100%, 60rem);
+  }
+
+  .section-tight {
+    padding-bottom: clamp(2rem, 5vw, 3rem);
+  }
+
   .direct {
     display: grid;
-    justify-items: start;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
     gap: 1rem;
   }
 
-  .direct :global(.icon) {
-    width: 0.8em;
-    height: 0.8em;
-    flex: none;
+  .direct > li {
+    display: grid;
   }
 
-  .direct__phone {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35em;
-    font-size: clamp(2.5rem, 1.5rem + 5vw, 5.5rem);
-    line-height: 1;
+  .direct__item {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 0.35rem;
+    padding: 1.5rem 1.25rem;
+    text-align: center;
   }
 
-  .direct__mail {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5em;
-    font-size: clamp(1.25rem, 1rem + 1.2vw, 1.75rem);
-    font-weight: 600;
+  .direct__item > :global(.icon) {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-bottom: 0.25rem;
+    color: var(--accent);
+  }
+
+  .direct__value {
+    font-size: 1.15rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
   }
 
   .direct__socials {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.75rem;
-    margin-top: 0.5rem;
-    font-weight: 600;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
   }
 
-  .direct__home {
-    margin-top: 0.5rem;
+  .direct__socials a {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    transition:
+      background-color 0.3s var(--ease),
+      color 0.3s var(--ease);
+  }
+
+  .direct__socials a:hover {
+    background: #fff;
+    color: #0d0d0d;
+  }
+
+  .direct__socials :global(.icon) {
+    width: 1.15rem;
+    height: 1.15rem;
   }
 
   .booking {
     display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    gap: clamp(3rem, 6vw, 6rem);
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 1.25rem;
     align-items: start;
   }
 
-  .form {
+  .form,
+  .rider {
     display: grid;
-    gap: 1.25rem;
+    gap: 1.1rem;
+    padding: clamp(1.5rem, 4vw, 2.25rem);
     scroll-margin-top: calc(var(--header-h) + 1.5rem);
-  }
-
-  .form .h2 {
-    margin-bottom: 0.5rem;
   }
 
   .form__row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
+    gap: 1rem;
   }
 
   .field {
     display: grid;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
   }
 
   .field input,
@@ -293,13 +368,19 @@ const types = [
   .field textarea {
     width: 100%;
     min-height: 3rem;
-    padding: 0.75rem 0.9rem;
-    border: 1.5px solid var(--edge);
-    border-radius: 3px;
-    background: var(--soot);
-    color: var(--bone);
-    font-size: 1.0625rem;
-    transition: border-color var(--afterglow);
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 0.8rem;
+    background: rgb(0 0 0 / 0.3);
+    font-size: 1rem;
+    font-weight: 400;
+    transition:
+      border-color 0.3s var(--ease),
+      background-color 0.3s var(--ease);
+  }
+
+  .field select option {
+    background: #111;
   }
 
   .field textarea {
@@ -308,21 +389,21 @@ const types = [
 
   .field input::placeholder,
   .field textarea::placeholder {
-    color: var(--ash);
-    opacity: 0.8;
+    color: var(--faint);
   }
 
   .field input:hover,
   .field select:hover,
   .field textarea:hover {
-    border-color: var(--ash);
+    border-color: rgb(255 255 255 / 0.4);
   }
 
   .field input:focus-visible,
   .field select:focus-visible,
   .field textarea:focus-visible {
-    border-color: var(--tungsten);
-    outline-offset: 0;
+    border-color: #fff;
+    background: rgb(0 0 0 / 0.45);
+    outline-offset: 1px;
   }
 
   .field :user-invalid {
@@ -341,11 +422,11 @@ const types = [
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 1rem 1.5rem;
+    gap: 1rem 1.25rem;
   }
 
   .form__foot .meta {
-    max-width: 34ch;
+    flex: 1 1 14rem;
   }
 
   .form__foot .btn:disabled {
@@ -354,61 +435,73 @@ const types = [
   }
 
   .form__status:not(:empty) {
-    padding: 0.9rem 1rem;
-    border-left: 3px solid var(--tungsten);
-    background: var(--smoke);
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 0.8rem;
+    background: var(--surface);
   }
 
   .form__status.is-error {
-    border-left-color: var(--error);
+    border-color: var(--error);
     color: var(--error);
-  }
-
-  .rider {
-    --tilt: 1deg;
-    display: grid;
-    gap: 1.25rem;
-    scroll-margin-top: calc(var(--header-h) + 1.5rem);
   }
 
   .rider__head {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: start;
     justify-content: space-between;
     gap: 1rem;
   }
 
   .rider__print {
-    min-height: 2.5rem;
-    padding: 0.5rem 0.9rem;
-    font-size: 1rem;
+    min-height: 2.75rem;
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
   }
 
   .rider__list {
     display: grid;
-    gap: 0.9rem;
+    gap: 0.85rem;
+    color: var(--dim);
   }
 
   .rider__list li {
     position: relative;
-    padding-left: 1.5rem;
+    padding-left: 1.4rem;
   }
 
   .rider__list li::before {
     content: '';
     position: absolute;
     left: 0;
-    top: 0.65em;
-    width: 0.6rem;
-    height: 2px;
-    background: var(--ink-red);
+    top: 0.7em;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--accent);
   }
 
-  .rider__contact {
-    padding-top: 1rem;
-    border-top: 1px solid rgb(26 22 18 / 0.2);
-    font-weight: 600;
+  .map {
+    padding: 0.5rem;
+    overflow: hidden;
+  }
+
+  .map {
+    min-height: calc(clamp(18rem, 40vw, 26rem) + 1rem);
+  }
+
+  .map :global(iframe) {
+    width: 100%;
+    height: clamp(18rem, 40vw, 26rem);
+    border: 0;
+    border-radius: calc(var(--radius-lg) - 0.5rem);
+    filter: grayscale(0.6) contrast(1.05);
+  }
+
+  .map__credit {
+    margin-top: 0.75rem;
+    text-align: center;
   }
 
   @media (width < 56rem) {

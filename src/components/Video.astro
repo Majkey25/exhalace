@@ -61,7 +61,7 @@ const thumb = ok ? max : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
     position: relative;
     aspect-ratio: 16 / 9;
     overflow: hidden;
-    background: var(--smoke);
+    background: var(--surface);
   }
 
   .video__play,
@@ -77,10 +77,10 @@ const thumb = ok ? max : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: saturate(0.8);
+    filter: brightness(0.8);
     transition:
-      filter var(--afterglow),
-      transform 800ms var(--ease);
+      filter 0.5s var(--ease),
+      transform 0.8s var(--ease);
   }
 
   .video__btn {
@@ -91,11 +91,11 @@ const thumb = ok ? max : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
     width: 5rem;
     height: 5rem;
     border-radius: 50%;
-    background: var(--tungsten);
-    color: var(--soot);
+    background: #fff;
+    color: #0d0d0d;
     translate: -50% -50%;
-    box-shadow: 0 0 0 0 rgb(242 160 58 / 0.4);
-    transition: box-shadow var(--afterglow);
+    box-shadow: 0 0 0 0 rgb(255 255 255 / 0.3);
+    transition: box-shadow 0.5s var(--ease);
   }
 
   .video__btn :global(.icon) {
@@ -106,12 +106,11 @@ const thumb = ok ? max : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
   }
 
   .video__play:hover :global(img) {
-    filter: saturate(1);
+    filter: brightness(1);
     transform: scale(1.02);
   }
 
   .video__play:hover .video__btn {
-    box-shadow: 0 0 0 1.25rem rgb(242 160 58 / 0.15);
-    transition-duration: 300ms;
+    box-shadow: 0 0 0 1.1rem rgb(255 255 255 / 0.15);
   }
 </style>

@@ -1,22 +1,21 @@
 ---
 import Base from '../../layouts/Base.astro';
-import ConcertRow from '../../components/ConcertRow.astro';
+import ConcertCard from '../../components/ConcertCard.astro';
 import Icon from '../../components/Icon.astro';
-import { dateParts, getConcerts, type Concert } from '../../content';
+import PageTitle from '../../components/PageTitle.astro';
+import { getConcerts, type Concert } from '../../content';
 import { bookingHref, plural, vlna } from '../../site';
 
 const { upcoming, past } = await getConcerts();
-const group = (list: Concert[], key: (c: Concert) => string) => {
-  const map = new Map<string, Concert[]>();
-  for (const c of list) map.set(key(c), [...(map.get(key(c)) ?? []), c]);
-  return [...map];
-};
-const months = group(upcoming, (c) => {
-  const d = dateParts(c.date);
-  return `${d.month} ${d.year}`;
-});
-const years = group(past, (c) => c.date.slice(0, 4));
 const next = upcoming.find((c) => !c.inactive);
+const years = [
+  ...past
+    .reduce((map, c) => {
+      const year = c.date.slice(0, 4);
+      return map.set(year, [...(map.get(year) ?? []), c]);
+    }, new Map<string, Concert[]>())
+    .entries(),
+];
 const count = ['koncert', 'koncerty', 'koncertů'] as const;
 ---
 
@@ -24,62 +23,51 @@ const count = ['koncert', 'koncerty', 'koncertů'] as const;
   page="koncerty"
   title="Koncerty"
   description="Kde a kdy hraje Exhalace: nadcházející koncerty s mapou a kalendářem a přehled odehraných akcí."
-  extraMarks={['x']}
 >
-  <header class="page-head wrap">
-    <h1 class="h1">Koncerty</h1>
+  <PageTitle title="Koncerty" eyebrow="Kde nás uslyšíte">
     <p class="lead">
       {upcoming.length
-        ? `${plural(upcoming.length, ['nadcházející koncert', 'nadcházející koncerty', 'nadcházejících koncertů'])}. Každý má mapu a soubor do kalendáře.`
+        ? 'Ke každému koncertu najdete mapu a soubor do kalendáře.'
         : vlna('Nové termíny chystáme. Sledujte nás, nebo si nás rovnou pozvěte na svou akci.')}
     </p>
-  </header>
+  </PageTitle>
 
-  {upcoming.length > 0 ? (
-    <section class="section section--tight" aria-label="Nadcházející koncerty">
-      <div class="wrap months">
-        {months.map(([label, list]) => (
-          <div class="rail">
-            <h2 class="rail__label label">{label}</h2>
-            <ul class="rows">
-              {list.map((c) => (
-                <ConcertRow concert={c} next={c === next} morph />
-              ))}
-            </ul>
-          </div>
+  <section class="section-tight wrap narrow" aria-label="Nadcházející koncerty">
+    {upcoming.length > 0 ? (
+      <ul class="list" data-reveal>
+        {upcoming.map((c) => (
+          <ConcertCard concert={c} next={c === next} />
         ))}
+      </ul>
+    ) : (
+      <div class="empty glass" data-reveal>
+        <p class="h3">Zrovna nemáme vypsaný koncert</p>
+        <a class="btn btn--solid" href={bookingHref}>
+          Pozvěte nás <Icon name="arrow-right" />
+        </a>
       </div>
-    </section>
-  ) : (
-    <section class="section section--tight" aria-label="Poptávka">
-      <div class="wrap">
-        <div class="empty">
-          <p class="h3">Zrovna nemáme vypsaný koncert.</p>
-          <div class="actions">
-            <a class="btn btn--lamp" href={bookingHref}>
-              Pozvěte nás <Icon name="arrow-right" />
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-  )}
+    )}
+  </section>
 
   {years.length > 0 && (
-    <section class="section section--tight" aria-labelledby="past-title">
-      <div class="wrap">
-        <h2 id="past-title" class="h2 past__title">
+    <section class="section wrap narrow" aria-labelledby="past-title">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Archiv</p>
+        <h2 id="past-title" class="h2">
           Odehráli jsme
         </h2>
+      </div>
+      <div class="archive glass" data-reveal>
         {years.map(([year, list], i) => (
           <details class="year" open={i === 0}>
             <summary class="year__head">
-              <span class="stencil year__num">{year}</span>
-              <span class="label">{plural(list.length, count)}</span>
+              <span class="logo-type year__num">{year}</span>
+              <span class="meta">{plural(list.length, count)}</span>
+              <Icon name="chevron-down" class="year__chevron" />
             </summary>
-            <ul class="rows">
+            <ul class="list">
               {list.map((c) => (
-                <ConcertRow concert={c} past morph />
+                <ConcertCard concert={c} past />
               ))}
             </ul>
           </details>
@@ -90,67 +78,73 @@ const count = ['koncert', 'koncerty', 'koncertů'] as const;
 </Base>
 
 <style>
-  .months {
-    display: grid;
-    gap: var(--gap-in);
+  .narrow {
+    width: min(100%, 60rem);
   }
 
-  .rows {
-    border-top: 1px solid var(--line);
+  .section-tight {
+    padding-bottom: clamp(2rem, 5vw, 3rem);
+  }
+
+  .list {
+    display: grid;
+    gap: 0.75rem;
   }
 
   .empty {
     display: grid;
-    justify-items: start;
-    gap: 1.5rem;
-    padding: clamp(2rem, 5vw, 3.5rem);
-    border: 1px solid var(--line);
-    background: var(--smoke);
+    justify-items: center;
+    gap: 1.25rem;
+    padding: clamp(2rem, 5vw, 3rem);
+    text-align: center;
   }
 
-  .past__title {
-    margin-bottom: 1.5rem;
+  .archive {
+    padding: clamp(0.75rem, 2vw, 1.25rem);
   }
 
-  .year {
-    border-top: 1px solid var(--line);
+  .year + .year {
+    border-top: 1px solid var(--border);
   }
 
   .year__head {
     display: flex;
     align-items: baseline;
-    gap: 1.25rem;
-    padding-block: 1.25rem;
+    gap: 1rem;
+    min-height: 3.5rem;
+    padding: 0.75rem;
+    border-radius: var(--radius);
     cursor: pointer;
     list-style: none;
+    transition: background-color 0.3s var(--ease);
   }
 
   .year__head::-webkit-details-marker {
     display: none;
   }
 
-  .year__head::after {
-    content: '';
-    width: 0.75rem;
-    height: 0.75rem;
-    margin-left: auto;
-    border-right: 2px solid currentColor;
-    border-bottom: 2px solid currentColor;
-    rotate: 45deg;
-    transition: rotate var(--afterglow);
-  }
-
-  .year[open] .year__head::after {
-    rotate: 225deg;
+  .year__head:hover {
+    background: var(--surface);
   }
 
   .year__num {
-    font-size: clamp(2.5rem, 2rem + 2vw, 3.5rem);
-    transition: color var(--afterglow);
+    font-size: 1.9rem;
+    line-height: 1;
   }
 
-  .year__head:hover .year__num {
-    color: var(--tungsten);
-    transition-duration: 180ms;
+  .year__head :global(.year__chevron) {
+    align-self: center;
+    margin-left: auto;
+    width: 1.25rem;
+    height: 1.25rem;
+    transition: rotate 0.35s var(--ease);
+  }
+
+  .year[open] :global(.year__chevron) {
+    rotate: 180deg;
+  }
+
+  .year .list {
+    padding: 0 0 0.75rem;
   }
 </style>

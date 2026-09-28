@@ -1,90 +1,64 @@
 ---
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
-import { getRepertoire, getSettings, repertoireSummary, slugify as slug } from '../content';
+import PageTitle from '../components/PageTitle.astro';
+import { getSettings, getSongs } from '../content';
 import { bookingHref } from '../site';
 
-const repertoire = await getRepertoire();
+const songs = await getSongs();
 const settings = await getSettings();
-// Poster sizes: the more songs by an artist, the bigger the name.
-const size = (n: number) => (n >= 4 ? 'xl' : n >= 2 ? 'l' : 'm');
-const summary = repertoireSummary(repertoire);
 ---
 
 <Base
   page="repertoar"
   title="Repertoár"
-  description={`Co Exhalace hraje: ${summary}, předělávky českých a slovenských rockových a punkových kapel. Seznam k tisku pro pořadatele.`}
+  description="Co Exhalace hraje: předělávky českých a slovenských rockových a punkových kapel. Seznam k tisku pro pořadatele."
 >
-  <header class="page-head wrap">
-    <h1 class="h1">Repertoár</h1>
-    <p class="lead">{summary}. A další pecky pro vás připravujeme…</p>
-    <div class="actions no-print head-actions">
-      <button class="btn" type="button" data-print>
-        <Icon name="printer" /> Vytisknout
-      </button>
-      <a class="btn btn--lamp" href={bookingHref}>
-        Poptat koncert <Icon name="arrow-right" />
-      </a>
-    </div>
-  </header>
+  <PageTitle title="Setlist" eyebrow="Repertoár">
+    <p class="lead">Skladby, které od nás uslyšíte.</p>
+  </PageTitle>
 
-  <section class="section section--tight no-print" aria-label="Interpreti">
-    <div class="wrap">
-      <ul class="lineup">
-        {repertoire.map((a) => (
-          <li>
-            <a
-              class:list={['lineup__name', `lineup__name--${size(a.songs.length)}`]}
-              href={`#${slug(a.artist)}`}
-            >
-              {a.artist}
-            </a>
+  <section class="section-tight wrap narrow" aria-labelledby="list-title">
+    <div class="songs glass" data-reveal>
+      <div class="songs__head no-print">
+        <h2 id="list-title" class="sr-only">
+          Seznam skladeb
+        </h2>
+        <label class="search" hidden>
+          <span class="sr-only">Hledat píseň nebo kapelu</span>
+          <Icon name="search" />
+          <input
+            type="search"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Hledat píseň nebo kapelu"
+          />
+        </label>
+        <button class="btn btn--ghost" type="button" data-print>
+          <Icon name="printer" /> Vytisknout
+        </button>
+      </div>
+      <p class="songs__count meta no-print" aria-live="polite"></p>
+      <ul class="songs__list">
+        {songs.map((s) => (
+          <li class="song" data-q={`${s.title} ${s.artist}`}>
+            <span class="song__title">{s.title}</span>
+            <span class="song__artist">{s.artist}</span>
           </li>
         ))}
       </ul>
+      <p class="songs__empty dim" hidden>
+        Nic takového nehrajeme. Zkuste jiný název.
+      </p>
+      <p class="songs__teaser">A další pecky pro vás připravujeme…</p>
+      <p class="songs__print">
+        Objednávky: {settings.phone} · {settings.email} · www.exhalace.cz
+      </p>
     </div>
-  </section>
-
-  <section class="section section--tight" aria-labelledby="list-title">
-    <div class="wrap">
-      <div class="sheet songs">
-        <div class="songs__head">
-          <h2 id="list-title" class="h2">
-            Seznam písní
-          </h2>
-          <label class="search no-print" hidden>
-            <span class="label">Hledat píseň nebo kapelu</span>
-            <span class="search__field">
-              <Icon name="search" />
-              <input type="search" autocomplete="off" spellcheck="false" />
-            </span>
-          </label>
-          <p class="songs__count label" aria-live="polite"></p>
-        </div>
-        <div class="songs__groups">
-          {repertoire.map((a) => (
-            <section class="group" id={slug(a.artist)} aria-labelledby={`g-${slug(a.artist)}`}>
-              <h3 id={`g-${slug(a.artist)}`} class="group__artist">
-                {a.artist}
-              </h3>
-              <ul>
-                {a.songs.map((s) => (
-                  <li class="song" data-q={`${s} ${a.artist}`}>
-                    {s}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
-        </div>
-        <p class="songs__empty" hidden>
-          Nic takového nehrajeme. Zkuste jiný název.
-        </p>
-        <p class="songs__print">
-          Objednávky: {settings.phone} · {settings.email} · www.exhalace.cz
-        </p>
-      </div>
+    <div class="section-foot no-print">
+      <a class="btn btn--solid" href={bookingHref}>
+        Poptat koncert <Icon name="arrow-right" />
+      </a>
     </div>
   </section>
 </Base>
@@ -97,7 +71,6 @@ const summary = repertoireSummary(repertoire);
   const input = search?.querySelector('input');
   const count = document.querySelector('.songs__count');
   const empty = document.querySelector<HTMLElement>('.songs__empty');
-  const groups = [...document.querySelectorAll<HTMLElement>('.group')];
   const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const songs = [...document.querySelectorAll<HTMLElement>('.song')].map((el) => ({
     el,
@@ -115,9 +88,8 @@ const summary = repertoireSummary(repertoire);
         s.el.hidden = !hit;
         if (hit) shown++;
       }
-      for (const g of groups) g.hidden = !g.querySelector('.song:not([hidden])');
       empty.hidden = shown > 0;
-      // Announce the count once typing pauses, not on every key.
+      // Announce the result once typing pauses, not on every key.
       clearTimeout(timer);
       timer = window.setTimeout(() => {
         count.textContent = q ? `Nalezeno: ${shown}` : '';
@@ -127,131 +99,113 @@ const summary = repertoireSummary(repertoire);
 </script>
 
 <style>
-  .head-actions {
-    margin-top: 2rem;
+  .narrow {
+    width: min(100%, 64rem);
   }
 
-  /* Every covered band set like a festival poster line-up. */
-  .lineup {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.2rem 1.4rem;
+  .section-tight {
+    padding-bottom: var(--section);
   }
 
-  .lineup__name {
-    display: inline-block;
-    padding-block: 0.2rem;
-    font-family: var(--font-display);
-    font-weight: 800;
-    text-transform: uppercase;
-    line-height: 1.05;
-    color: var(--ash);
-    transition: color var(--afterglow);
-  }
-
-  .lineup__name:hover,
-  .lineup__name:focus-visible {
-    color: var(--tungsten);
-    transition-duration: 180ms;
-  }
-
-  .lineup__name--xl {
-    font-size: clamp(2.5rem, 1.5rem + 4vw, 5rem);
-    color: var(--bone);
-  }
-
-  .lineup__name--l {
-    font-size: clamp(1.75rem, 1.2rem + 2.2vw, 3rem);
-    color: var(--bone);
-  }
-
-  .lineup__name--m {
-    font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  .songs {
+    display: grid;
+    gap: 1.25rem;
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+    background:
+      radial-gradient(circle at 10% 0%, rgb(255 79 132 / 0.1), transparent 40%),
+      radial-gradient(circle at 90% 100%, rgb(64 165 255 / 0.08), transparent 40%), var(--surface);
   }
 
   .songs__head {
     display: flex;
     flex-wrap: wrap;
-    align-items: end;
+    align-items: center;
     justify-content: space-between;
-    gap: 1.5rem 2rem;
-    margin-bottom: 2rem;
+    gap: 1rem;
   }
 
   .search {
-    display: grid;
-    gap: 0.5rem;
-    width: min(100%, 22rem);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex: 1 1 18rem;
+    max-width: 26rem;
+    min-height: 3rem;
+    padding-inline: 1.1rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: rgb(0 0 0 / 0.25);
+    transition: border-color 0.3s var(--ease);
   }
 
   .search[hidden] {
     display: none;
   }
 
-  .search__field {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding-inline: 0.9rem;
-    border: 1.5px solid var(--ink-muted);
-    background: #f6f1e8;
-  }
-
-  .search__field:focus-within {
-    outline: 3px solid var(--ink);
+  .search:focus-within {
+    border-color: #fff;
+    outline: 2px solid #fff;
     outline-offset: 2px;
   }
 
   .search input {
     width: 100%;
-    min-height: 3rem;
+    min-height: 2.75rem;
     border: 0;
     background: none;
-    color: var(--ink);
-    font-size: 1.0625rem;
+    font-size: 1rem;
     outline: none;
   }
 
-  .songs__count {
-    width: 100%;
-    min-height: 1.2em;
+  .search input::placeholder {
+    color: var(--faint);
   }
 
-  .songs__groups {
-    columns: 17rem;
-    column-gap: 2.5rem;
-  }
-
-  .group {
-    break-inside: avoid;
-    padding-bottom: 1.5rem;
-  }
-
-  .group[hidden] {
+  .songs__count:empty {
     display: none;
   }
 
-  .group__artist {
-    padding-bottom: 0.35rem;
-    margin-bottom: 0.35rem;
-    border-bottom: 2px solid var(--ink);
-    font: 800 1.35rem/1.15 var(--font-display);
-    text-transform: uppercase;
-    scroll-margin-top: calc(var(--header-h) + 2rem);
+  .songs__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: 0.6rem;
   }
 
+  /* Rounded rows like the first site's list, with the artist on a second line. */
   .song {
-    padding-block: 0.3rem;
-    border-bottom: 1px solid rgb(26 22 18 / 0.12);
+    display: grid;
+    gap: 0.1rem;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.9rem;
+    background: rgb(255 255 255 / 0.03);
+    transition:
+      border-color 0.3s var(--ease),
+      background-color 0.3s var(--ease);
+  }
+
+  .song:hover {
+    border-color: var(--border-strong);
+    background: rgb(255 255 255 / 0.06);
   }
 
   .song[hidden] {
     display: none;
   }
 
-  .songs__empty {
-    font-size: 1.125rem;
+  .song__title {
+    font-weight: 600;
+  }
+
+  .song__artist {
+    color: var(--faint);
+    font-size: 0.9rem;
+  }
+
+  .songs__teaser {
+    margin-top: 0.5rem;
+    color: var(--dim);
+    text-align: center;
   }
 
   .songs__print {
@@ -259,13 +213,28 @@ const summary = repertoireSummary(repertoire);
   }
 
   @media print {
-    .songs__groups {
-      columns: 2;
+    .songs__list {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* The printed setlist ignores the search filter. */
+    .song[hidden] {
+      display: grid;
+    }
+
+    .songs__empty {
+      display: none;
+    }
+
+    .song {
+      border: 0;
+      border-bottom: 1px solid #ccc;
+      border-radius: 0;
+      padding: 0.3rem 0;
     }
 
     .songs__print {
       display: block;
-      margin-top: 2rem;
       padding-top: 1rem;
       border-top: 1px solid #000;
     }

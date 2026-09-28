@@ -78,8 +78,6 @@ const clenove = defineCollection({
       name: text,
       role: text,
       previously: optional(text),
-      // Where they stand on stage, seen from the audience; lays out the line-up page.
-      stage: optional(z.enum(['back', 'left', 'center', 'right'])),
       photo: image(),
     }),
 });
@@ -108,7 +106,8 @@ const repertoar = defineCollection({
 
 // A YouTube link in any common form, or a bare 11-character video id.
 const youtubeId = z.string().transform((value, ctx) => {
-  const id = /(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/.exec(value)?.[1] ?? value.trim();
+  const id =
+    /(?:v=|youtu\.be\/|shorts\/|embed\/|live\/)([\w-]{11})/.exec(value)?.[1] ?? value.trim();
   if (!/^[\w-]{11}$/.test(id)) {
     ctx.addIssue({ code: 'custom', message: 'Vlož odkaz na YouTube, např. https://youtu.be/…' });
     return z.NEVER;
@@ -137,6 +136,9 @@ const nastaveni = defineCollection({
       instagram: optional(https('Instagram')),
       youtube: optional(https('YouTube')),
       organisers: text,
+      // Pin for the "Kde nás najdete" map on the contact page; no map without both.
+      map_lat: optional(z.coerce.number().min(-90).max(90)),
+      map_lng: optional(z.coerce.number().min(-180).max(180)),
     }),
 });
 

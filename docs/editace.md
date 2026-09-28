@@ -21,7 +21,7 @@ https://github.com/Majkey25/exhalace/actions (zelená = hotovo).
 | Sestava        | Jméno, nástroj, kde dřív hrál, fotka na výšku.                                     |
 | O kapele       | Úvodní věty, příběh po kapitolách (s rokem), rok vzniku, odkud jste.               |
 | Videa          | Odkaz na YouTube, název, rok.                                                      |
-| Nastavení webu | E-mail a telefon, slogan a obrázek na úvodu, sociální sítě, info pro pořadatele.   |
+| Nastavení webu | E-mail a telefon, slogan a obrázek na úvodu, sítě, info pro pořadatele, mapa.      |
 
 ## Nový koncert
 

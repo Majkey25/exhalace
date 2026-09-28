@@ -1,0 +1,131 @@
+---
+import Icon from './Icon.astro';
+import { dateParts, statusLabel, type Concert } from '../content';
+import { href } from '../site';
+
+interface Props {
+  concert: Concert;
+  /** The closest upcoming concert is marked. */
+  next?: boolean;
+  /** Past concerts show the year and a quieter card. */
+  past?: boolean;
+}
+
+const { concert: c, next = false, past = false } = Astro.props;
+const d = dateParts(c.date);
+const where = [c.venue, c.city].filter(Boolean).join(', ');
+const when = [d.weekday, c.time].filter(Boolean).join(' · ');
+---
+
+<li>
+  <a
+    class:list={['card concert', { 'concert--off': c.inactive, 'concert--past': past }]}
+    href={href(`koncerty/${c.slug}/`)}
+  >
+    <time class="concert__date" datetime={c.time ? `${c.date}T${c.time}` : c.date}>
+      <span class="logo-type concert__day">{d.numeric}</span>
+      <span class="meta">{past ? d.year : when}</span>
+    </time>
+    <span class="concert__body">
+      {next && <span class="eyebrow">Nejbližší koncert</span>}
+      <span class="h3 concert__name">{c.title ?? c.city}</span>
+      <span class="dim">{c.title ? where : c.venue}</span>
+      {c.status && <span class="concert__status">{statusLabel[c.status]}</span>}
+    </span>
+    <span class="concert__go" aria-hidden="true">
+      <Icon name="arrow-right" />
+    </span>
+  </a>
+</li>
+
+<style>
+  .concert {
+    display: grid;
+    grid-template-columns: 8.5rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem 1.75rem;
+    padding: clamp(1.1rem, 2.5vw, 1.6rem) clamp(1.1rem, 3vw, 2rem);
+  }
+
+  .concert__date {
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .concert__day {
+    font-size: clamp(1.9rem, 1.5rem + 1.4vw, 2.6rem);
+    line-height: 1;
+  }
+
+  .concert__date .meta::first-letter {
+    text-transform: uppercase;
+  }
+
+  .concert__body {
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .concert__status {
+    justify-self: start;
+    margin-top: 0.4rem;
+    padding: 0.2rem 0.75rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+
+  .concert__go {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    transition:
+      background-color 0.35s var(--ease),
+      color 0.35s var(--ease),
+      transform 0.35s var(--ease);
+  }
+
+  .concert:hover .concert__go {
+    background: #fff;
+    color: #0d0d0d;
+    transform: translateX(0.2rem);
+  }
+
+  .concert--off .concert__day {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    opacity: 0.6;
+  }
+
+  .concert--past {
+    grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+    padding-block: 0.9rem;
+    background: transparent;
+  }
+
+  .concert--past .concert__day {
+    font-size: 1.5rem;
+  }
+
+  .concert--past .concert__name {
+    font-size: 1.1rem;
+  }
+
+  @media (width < 36rem) {
+    .concert,
+    .concert--past {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .concert__date {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+  }
+</style>

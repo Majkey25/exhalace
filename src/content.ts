@@ -1,5 +1,4 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { plural } from './site';
 
 // Read helpers for the YAML content in src/data (all editable in Pages CMS).
 
@@ -19,22 +18,11 @@ export const getVideos = async () => inOrder(await getCollection('videa'));
 
 const collator = new Intl.Collator('cs');
 
-/** Songs grouped by artist, both in Czech alphabetical order. */
-export const getRepertoire = async () => {
-  const groups = new Map<string, string[]>();
-  for (const { data } of await getCollection('repertoar'))
-    groups.set(data.artist, [...(groups.get(data.artist) ?? []), data.title]);
-  return [...groups]
-    .sort(([a], [b]) => collator.compare(a, b))
-    .map(([artist, songs]) => ({ artist, songs: songs.sort(collator.compare) }));
-};
-
-/** "49 písní od 31 interpretů" with the right Czech plural forms. */
-export const repertoireSummary = (groups: { songs: string[] }[]) =>
-  `${plural(
-    groups.reduce((n, g) => n + g.songs.length, 0),
-    ['píseň', 'písně', 'písní'],
-  )} od ${plural(groups.length, ['interpreta', 'interpretů', 'interpretů'])}`;
+/** Songs in Czech alphabetical order by title (CH after H, Č after C). */
+export const getSongs = async () =>
+  (await getCollection('repertoar'))
+    .map((e) => e.data)
+    .sort((a, b) => collator.compare(a.title, b.title));
 
 export const slugify = (text: string) =>
   text
@@ -105,10 +93,8 @@ export const dateParts = (iso: string) => {
     long: f({ weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }),
     // "6. září 2025": reads right after a verb, unlike the weekday form.
     date: f({ day: 'numeric', month: 'long', year: 'numeric' }),
-    // Czech gig posters write the month in Roman numerals: 24. VII.
-    roman: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'][
-      d.getUTCMonth()
-    ],
+    // "25. 9." for the logo typeface, which has digits but no Czech letters.
+    numeric: `${d.getUTCDate()}. ${d.getUTCMonth() + 1}.`,
   };
 };
 

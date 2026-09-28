@@ -19,25 +19,25 @@ Official website of **Exhalace**, a Czech rock cover band from Jalubí near Uher
 
 ## Features
 
-- **Haze and tungsten look**: a warm soot-black stage, one amber lamp, and the band's own smoke cut from their artwork. A 2-second "breath" intro on the first visit, links that warm up like a filament, photos whose haze clears on hover, the footer name sinking into smoke. CSS only, off under `prefers-reduced-motion`.
-- **Built for fans and organisers**: the home page is the poster of the next gig; the repertoire is a searchable, printable setlist; the organiser info is a printable paper sheet next to the booking form.
+- **The band's first site, modernised**: the same dark, glassy look with Montserrat and soft drifting colour light, rebuilt with a proper type scale, rounded glass cards, pill buttons and calm motion. The logo intro rises, then opens up and dissolves, once per session. The logo's own FarCry face appears only on page titles and dates. All CSS, off under `prefers-reduced-motion`.
+- **Built for fans and organisers**: the whole band on the home page, concerts, line-up, a searchable and printable setlist, a booking form next to the printable organiser info, and a map.
 - **Concerts with their own pages**: map link, downloadable calendar file (`.ics`) and `MusicEvent` data. Finished gigs move to the archive during the nightly rebuild.
 - **Everything editable without code**: concerts, repertoire, gallery, line-up, story, videos and settings live in [`src/data`](src/data) and are edited through [Pages CMS](https://pagescms.org) ([guide in Czech](docs/editace.md)). Every field is validated at build time, so a broken edit never reaches the live site.
 - **Booking form without a server**: relayed by FormSubmit, with a honeypot and a no-JS fallback.
 - **Fast by default**: static HTML, no client framework, responsive AVIF/WebP images from the original photos, traced SVG logo and monogram, self-hosted fonts, YouTube only after a click.
-- **Czech details**: Czech collation for the song list, no one-letter prepositions at line ends, Roman-numeral months on gig posters, correct plural forms.
+- **Czech details**: Czech collation for the song list, no one-letter prepositions at line ends, correct plural forms.
 
 ## Stack
 
-| Layer     | Choice                                                                           |
-| --------- | -------------------------------------------------------------------------------- |
-| Framework | [Astro 7](https://astro.build), static output                                    |
-| Styling   | Plain CSS with custom properties, scroll-driven animations                       |
-| Images    | `astro:assets` + `sharp` (AVIF with WebP fallback)                               |
-| Fonts     | Astro Fonts API: Big Shoulders Display, Big Shoulders Stencil, Schibsted Grotesk |
-| Hosting   | GitHub Pages at www.exhalace.cz, deployed by GitHub Actions                      |
-| Content   | YAML in `src/data`, edited in Pages CMS, validated with Zod                      |
-| Quality   | Prettier, `astro check` (TypeScript strict), Lighthouse CI                       |
+| Layer     | Choice                                                                             |
+| --------- | ---------------------------------------------------------------------------------- |
+| Framework | [Astro 7](https://astro.build), static output                                      |
+| Styling   | Plain CSS with custom properties, scroll-driven animations                         |
+| Images    | `astro:assets` + `sharp` (AVIF with WebP fallback)                                 |
+| Fonts     | Montserrat (Astro Fonts API); FarCry Logo Font by Mike "Gumby" Anderson for titles |
+| Hosting   | GitHub Pages at www.exhalace.cz, deployed by GitHub Actions                        |
+| Content   | YAML in `src/data`, edited in Pages CMS, validated with Zod                        |
+| Quality   | Prettier, `astro check` (TypeScript strict), Lighthouse CI                         |
 
 ## CI/CD
 

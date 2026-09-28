@@ -21,5 +21,14 @@ export const bookingHref = href('kontakt/#poptavka');
 export const plural = (n: number, [one, few, many]: readonly [string, string, string]) =>
   `${n} ${n === 1 ? one : n >= 2 && n <= 4 ? few : many}`;
 
+/**
+ * The logo typeface (FarCry) has capitals, digits and basic punctuation only, no Czech accents.
+ * Titles use it only when every character is covered; otherwise they stay in Montserrat.
+ */
+export const logoTypeFits = (text: string) => /^[A-Za-z0-9 .,:;!?'"()&+/-]+$/.test(text);
+
+/** In FarCry the capital C hangs low and the F sits high; the lowercase c and f match the logo. */
+export const logoText = (text: string) => text.toUpperCase().replace(/C/g, 'c').replace(/F/g, 'f');
+
 /** Czech typography: one-letter prepositions and conjunctions never end a line. */
 export const vlna = (text: string) => text.replace(/(^|[\s(])([ksvzouaiKSVZOUAI]) /g, '$1$2 ');

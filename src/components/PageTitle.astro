@@ -1,0 +1,40 @@
+---
+import { logoText, logoTypeFits } from '../site';
+
+interface Props {
+  title: string;
+  /** Small pink line above the title. */
+  eyebrow?: string;
+}
+
+const { title, eyebrow } = Astro.props;
+const logo = logoTypeFits(title);
+---
+
+<header class="page-head wrap" data-reveal>
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  {logo ? (
+    <h1 class="title logo-type title--logo">
+      <span aria-hidden="true">{logoText(title)}</span>
+      <span class="sr-only">{title}</span>
+    </h1>
+  ) : (
+    <h1 class="title">{title}</h1>
+  )}
+  <slot />
+</header>
+
+<style>
+  .page-head {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+  }
+
+  /* The logo face runs a little small for its size and needs air between letters. */
+  .title--logo {
+    font-size: clamp(3rem, 2rem + 5vw, 6rem);
+    line-height: 1;
+    letter-spacing: 0.03em;
+  }
+</style>

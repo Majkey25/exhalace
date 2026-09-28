@@ -114,15 +114,6 @@ content:
       - { name: name, label: Jméno, type: string, required: true }
       - { name: role, label: 'Nástroj (např. Kytara, zpěv)', type: string, required: true }
       - { name: previously, label: 'Dříve hrál v (nepovinné)', type: string }
-      - name: stage
-        label: Místo na pódiu (z pohledu diváků)
-        type: select
-        options:
-          values:
-            - { value: left, label: Vlevo }
-            - { value: center, label: Uprostřed }
-            - { value: right, label: Vpravo }
-            - { value: back, label: Vzadu (bicí) }
       - name: photo
         label: Fotka na výšku
         type: image
@@ -171,7 +162,7 @@ content:
         required: true
         pattern:
           {
-            regex: '(youtube\.com/|youtu\.be/)|^[\w-]{11}$',
+            regex: '(v=|youtu\.be/|shorts/|embed/|live/)[\w-]{11}|^[\w-]{11}$',
             message: 'Vlož odkaz na YouTube, např. https://youtu.be/…',
           }
       - { name: title, label: Název, type: string, required: true }
@@ -219,3 +210,12 @@ content:
         label: 'Pro pořadatele (prázdný řádek = nový odstavec)'
         type: text
         required: true
+      - name: map_lat
+        label: 'Mapa na kontaktu: zeměpisná šířka (např. 49.11641)'
+        description: 'Obě souřadnice najdeš na Mapy.com (pravé tlačítko na místo). Bez nich se mapa neukáže.'
+        type: number
+        options: { min: -90, max: 90 }
+      - name: map_lng
+        label: 'Mapa na kontaktu: zeměpisná délka (např. 17.42777)'
+        type: number
+        options: { min: -180, max: 180 }

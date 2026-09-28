@@ -1,18 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
-import Mark from '../components/Mark.astro';
 import { href } from '../site';
 ---
 
-<Base title="Stránka nenalezena" description="Tahle stránka neexistuje." noindex extraMarks={['x']}>
-  <section class="section">
-    <div class="wrap lost">
-      <Mark name="x" class="lost__x" />
-      <h1 class="h1">Tady je jen kouř.</h1>
+<Base title="Stránka nenalezena" description="Tahle stránka neexistuje." noindex>
+  <section class="section wrap">
+    <div class="lost glass">
+      <p class="logo-type lost__code" aria-hidden="true">
+        404
+      </p>
+      <h1 class="h2">Tahle stránka tu není</h1>
       <p class="lead">Stránka, kterou hledáte, neexistuje nebo se přestěhovala.</p>
       <div class="actions">
-        <a class="btn btn--lamp" href={href('koncerty/')}>
+        <a class="btn btn--solid" href={href('koncerty/')}>
           Koncerty <Icon name="arrow-right" />
         </a>
         <a class="btn" href={href()}>
@@ -25,20 +26,22 @@ import { href } from '../site';
 
 <style>
   .lost {
-    position: relative;
     display: grid;
-    justify-items: start;
-    gap: 1.5rem;
+    justify-items: center;
+    gap: 1rem;
+    max-width: 40rem;
+    margin-inline: auto;
+    padding: clamp(2rem, 6vw, 3.5rem);
+    text-align: center;
   }
 
-  .lost__x {
-    position: absolute;
-    top: -2rem;
-    right: var(--pad);
-    z-index: -1;
-    width: min(60vw, 28rem);
-    height: auto;
-    color: var(--x-red);
-    opacity: 0.8;
+  .lost__code {
+    font-size: clamp(5rem, 3rem + 10vw, 9rem);
+    line-height: 1;
+  }
+
+  .lost .actions {
+    justify-content: center;
+    margin-top: 0.5rem;
   }
 </style>
