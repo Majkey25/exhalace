@@ -162,7 +162,7 @@ content:
         required: true
         pattern:
           {
-            regex: '(youtube\.com/|youtu\.be/)|^[\w-]{11}$',
+            regex: '(v=|youtu\.be/|shorts/|embed/|live/)[\w-]{11}|^[\w-]{11}$',
             message: 'Vlož odkaz na YouTube, např. https://youtu.be/…',
           }
       - { name: title, label: Název, type: string, required: true }

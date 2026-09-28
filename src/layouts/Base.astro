@@ -396,7 +396,7 @@ const ld = {
     inset: 5rem 0.75rem auto;
     width: auto;
     margin: 0;
-    padding: 1.25rem;
+    padding: 4rem 1.25rem 1.25rem;
     background: rgb(13 13 13 / 0.94);
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
@@ -567,6 +567,12 @@ const ld = {
 
     .footer__brand {
       grid-column: 1 / -1;
+    }
+  }
+
+  @media (width < 24rem) {
+    .footer__card {
+      grid-template-columns: 1fr;
     }
   }
 </style>

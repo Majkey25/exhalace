@@ -107,18 +107,23 @@ const photos = await Promise.all(
     dialog.querySelector('.lightbox__prev')?.addEventListener('click', () => show(index - 1));
     dialog.querySelector('.lightbox__next')?.addEventListener('click', () => show(index + 1));
     dialog.querySelector('.lightbox__close')?.addEventListener('click', () => dialog.close());
-    // A click on the dark backdrop (outside the photo) closes it.
-    dialog.addEventListener('click', (e) => e.target === dialog && dialog.close());
+    let startX = 0;
+    let swiped = false;
+    // A click on the dark backdrop (outside the photo) closes it, unless it ends a swipe.
+    dialog.addEventListener('click', (e) => e.target === dialog && !swiped && dialog.close());
     dialog.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowLeft') show(index - 1);
       if (e.key === 'ArrowRight') show(index + 1);
     });
 
-    let startX = 0;
-    dialog.addEventListener('pointerdown', (e) => (startX = e.clientX));
+    dialog.addEventListener('pointerdown', (e) => {
+      startX = e.clientX;
+      swiped = false;
+    });
     dialog.addEventListener('pointerup', (e) => {
       const dx = e.clientX - startX;
-      if (Math.abs(dx) > 50) show(index + (dx < 0 ? 1 : -1));
+      swiped = Math.abs(dx) > 50;
+      if (swiped) show(index + (dx < 0 ? 1 : -1));
     });
   }
 </script>
@@ -188,6 +193,8 @@ const photos = await Promise.all(
     background: transparent;
     color: var(--text);
     overflow: hidden;
+    /* Horizontal touch drags reach the swipe handler instead of cancelling it. */
+    touch-action: pan-y pinch-zoom;
     opacity: 0;
     transition:
       opacity 0.35s var(--ease),

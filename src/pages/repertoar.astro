@@ -217,6 +217,15 @@ const settings = await getSettings();
       grid-template-columns: 1fr 1fr;
     }
 
+    /* The printed setlist ignores the search filter. */
+    .song[hidden] {
+      display: grid;
+    }
+
+    .songs__empty {
+      display: none;
+    }
+
     .song {
       border: 0;
       border-bottom: 1px solid #ccc;
