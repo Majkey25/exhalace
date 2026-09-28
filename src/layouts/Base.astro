@@ -8,11 +8,11 @@ import { getAbout, getSettings } from '../content';
 import { bookingHref, href, nav, type Page } from '../site';
 
 interface Props {
-  /** Current page for the nav; the home page passes 'home', the 404 page nothing. */
+  /** Current page for the nav; the home page passes 'home', utility pages nothing. */
   page?: Page | 'home';
   title?: string;
   description?: string;
-  /** The home page plays the intro once per session. */
+  /** The home page plays the logo intro once per session. */
   intro?: boolean;
   /** Utility pages (404, thank you) stay out of search results. */
   noindex?: boolean;
@@ -30,11 +30,13 @@ const pageTitle = title ? `${title} — Exhalace` : `Exhalace — ${settings.slo
 const pageDescription =
   description ??
   `Exhalace, rocková kapela (${about.home}). Předělávky známých i méně známých českých a slovenských rockových a punkových kapel. Energická a poctivá show na každou akci.`;
-const socials = [
-  { name: 'Facebook', url: settings.facebook },
-  { name: 'Instagram', url: settings.instagram },
-  { name: 'YouTube', url: settings.youtube },
-].filter((s): s is { name: string; url: string } => Boolean(s.url));
+const socials = (
+  [
+    { name: 'Facebook', url: settings.facebook, icon: 'facebook' },
+    { name: 'Instagram', url: settings.instagram, icon: 'instagram' },
+    { name: 'YouTube', url: settings.youtube, icon: 'youtube' },
+  ] as const
+).filter((s): s is typeof s & { url: string } => Boolean(s.url));
 const tel = settings.phone?.replace(/\s/g, '');
 // Prerender a page when the visitor hovers its link, so navigation feels instant (Chromium).
 const speculation = {
@@ -63,7 +65,7 @@ const ld = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
-    <meta name="theme-color" content="#14110f" />
+    <meta name="theme-color" content="#050505" />
     <link rel="icon" type="image/svg+xml" href={href('favicon.svg')} />
     <link rel="apple-touch-icon" href={href('apple-touch-icon.png')} />
     {page && <link rel="canonical" href={url(Astro.url.pathname)} />}
@@ -78,9 +80,14 @@ const ld = {
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="cs_CZ" />
     <meta name="twitter:card" content="summary_large_image" />
-    <Font cssVariable="--font-display" preload={[{ subset: 'latin' }, { subset: 'latin-ext' }]} />
-    <Font cssVariable="--font-stencil" preload={[{ subset: 'latin' }]} />
-    <Font cssVariable="--font-body" preload={[{ subset: 'latin' }]} />
+    <Font cssVariable="--font" preload={[{ subset: 'latin' }]} />
+    <link
+      rel="preload"
+      href={href('fonts/farcry.woff2')}
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
     <script is:inline>
       (() => {
         const d = document.documentElement;
@@ -97,32 +104,16 @@ const ld = {
       <script type="application/ld+json" set:html={JSON.stringify(ld).replace(/</g, '\\u003c')} />
     )}
     <script type="speculationrules" set:html={JSON.stringify(speculation)} />
-    {/* The intro and hero haze are the first big paint on the home page. */}
-    {intro && <link rel="preload" as="image" href={href('smoke.webp')} fetchpriority="high" />}
   </head>
   <body>
     <svg width="0" height="0" aria-hidden="true" style="position:absolute">
       {symbols.map((name) => (
         <symbol id={name} viewBox={marks[name].viewBox} set:html={marks[name].body} />
       ))}
-      {/* Heat shimmer for the footer wordmark, only referenced on hover. */}
-      <filter id="shimmer" x="-2%" y="-10%" width="104%" height="120%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.06" numOctaves="1" seed="4">
-          <animate
-            attributeName="baseFrequency"
-            dur="3s"
-            values="0.012 0.06;0.016 0.09;0.012 0.06"
-            repeatCount="indefinite"
-          ></animate>
-        </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" scale="6"></feDisplacementMap>
-      </filter>
     </svg>
 
     {intro && (
       <div class="intro" aria-hidden="true">
-        <div class="intro__glow" />
-        <div class="intro__smoke haze" />
         <Mark name="logo" class="intro__logo" />
       </div>
     )}
@@ -132,7 +123,7 @@ const ld = {
     </a>
 
     <header class="header">
-      <div class="header__bar wrap">
+      <div class="header__bar">
         <a class="header__logo" href={href()} aria-label="Exhalace – úvod">
           <Mark name="logo" />
         </a>
@@ -140,95 +131,23 @@ const ld = {
           <ul>
             {nav.map((n) => (
               <li>
-                <a
-                  class="link"
-                  href={href(`${n.key}/`)}
-                  aria-current={n.key === page ? 'page' : undefined}
-                >
+                <a href={href(`${n.key}/`)} aria-current={n.key === page ? 'page' : undefined}>
                   {n.label}
                 </a>
               </li>
             ))}
           </ul>
         </nav>
-        <a class="btn btn--lamp header__cta" href={bookingHref}>
-          <span class="header__cta-long">Poptat koncert</span>
-          <span class="header__cta-short">Poptat</span>
+        <a class="btn btn--solid header__cta" href={bookingHref}>
+          Poptat koncert
         </a>
+        <button class="btn btn--ghost header__menu" type="button" popovertarget="menu">
+          <Icon name="menu" /> Menu
+        </button>
       </div>
     </header>
 
-    <main id="main">
-      <slot />
-    </main>
-
-    <footer class="footer">
-      <div class="wrap footer__grid">
-        <p class="footer__slogan h2">{settings.slogan}</p>
-        <div class="footer__col">
-          <p class="label">Objednávky</p>
-          {tel && (
-            <a class="link footer__big" href={`tel:${tel}`}>
-              {settings.phone}
-            </a>
-          )}
-          <a class="link" href={`mailto:${settings.email}`}>
-            {settings.email}
-          </a>
-        </div>
-        <div class="footer__col">
-          <p class="label">Sledujte nás</p>
-          <ul>
-            {socials.map((s) => (
-              <li>
-                <a class="link" href={s.url} rel="noopener" target="_blank">
-                  {s.name}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <nav class="footer__col" aria-label="Patička">
-          <p class="label">Web</p>
-          <ul>
-            {nav.map((n) => (
-              <li>
-                <a class="link" href={href(`${n.key}/`)}>
-                  {n.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
-      <div class="footer__sink">
-        <div class="haze"></div>
-        <a class="footer__mark wrap" href={href()} aria-label="Exhalace – úvod">
-          <Mark name="logo" />
-        </a>
-      </div>
-      <div class="wrap footer__row meta">
-        <p>
-          © {new Date().getFullYear()} Exhalace · {about.home}
-        </p>
-        <p>
-          Web:
-          <a
-            class="inline-link"
-            href="https://majkey25.github.io/My-website-for-fun/"
-            rel="noopener"
-            target="_blank"
-          >
-            Matěj Teplý
-          </a>
-        </p>
-        <a class="link footer__top" href="#main">
-          Nahoru <Icon name="arrow-up" />
-        </a>
-      </div>
-    </footer>
-
-    <nav class="bottom-nav" aria-label="Hlavní">
+    <nav id="menu" class="menu glass" popover aria-label="Menu">
       <ul>
         {nav.map((n) => (
           <li>
@@ -238,7 +157,68 @@ const ld = {
           </li>
         ))}
       </ul>
+      <a class="btn btn--solid" href={bookingHref}>
+        Poptat koncert
+      </a>
+      <button class="menu__close" type="button" popovertarget="menu" popovertargetaction="hide">
+        <Icon name="close" />
+        <span class="sr-only">Zavřít menu</span>
+      </button>
     </nav>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="footer">
+      <div class="wrap">
+        <div class="footer__card glass">
+          <div class="footer__brand">
+            <a class="footer__logo" href={href()} aria-label="Exhalace – úvod">
+              <Mark name="logo" />
+            </a>
+            <p class="dim">{settings.slogan}</p>
+            <ul class="footer__socials">
+              {socials.map((s) => (
+                <li>
+                  <a href={s.url} rel="noopener" target="_blank" aria-label={s.name}>
+                    <Icon name={s.icon} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div class="footer__col">
+            <p class="eyebrow">Kontakt</p>
+            {tel && <a href={`tel:${tel}`}>{settings.phone}</a>}
+            <a href={`mailto:${settings.email}`}>{settings.email}</a>
+            <a class="link-arrow" href={bookingHref}>
+              Poptat koncert <Icon name="arrow-right" />
+            </a>
+          </div>
+          <nav class="footer__col" aria-label="Patička">
+            <p class="eyebrow">Web</p>
+            {nav.map((n) => (
+              <a href={href(`${n.key}/`)}>{n.label}</a>
+            ))}
+          </nav>
+        </div>
+        <div class="footer__row">
+          <p class="meta">© {new Date().getFullYear()} Exhalace</p>
+          <a
+            class="footer__chip"
+            href="https://majkey25.github.io/My-website-for-fun/"
+            rel="noopener"
+            target="_blank"
+          >
+            Made by Matěj Teplý
+          </a>
+          <a class="meta footer__top" href="#main">
+            Nahoru <Icon name="arrow-up" />
+          </a>
+        </div>
+      </div>
+    </footer>
 
     <script>
       // Intro: any input skips it; it leaves the DOM once it has faded out.
@@ -250,24 +230,28 @@ const ld = {
         for (const type of ['pointerdown', 'keydown', 'wheel', 'touchmove'])
           addEventListener(type, done, { once: true, passive: true });
       }
+
+      // Mobile menu: close once a link is picked.
+      const menu = document.getElementById('menu');
+      menu?.addEventListener('click', (e) => {
+        if (e.target instanceof Element && e.target.closest('a')) menu.hidePopover();
+      });
     </script>
   </body>
 </html>
 
 <style>
-  /* ---------- Intro "Nádech": a lamp warms up, the smoke rises, the band name appears ---------- */
+  /* ---------- Intro: the logo rises, then opens up and dissolves into the page ---------- */
 
   .intro {
     position: fixed;
     inset: 0;
-    z-index: 90;
+    z-index: 150;
     display: grid;
     place-items: center;
-    overflow: hidden;
-    background: var(--soot);
-    animation: intro-out 0.5s cubic-bezier(0.4, 0, 1, 1) 1.5s forwards;
-    /* Decorative: the first click goes straight to the page underneath. */
+    background: #0d0d0d;
     pointer-events: none;
+    animation: intro-out 0.7s ease-out 1.65s forwards;
   }
 
   :global(.no-intro) .intro,
@@ -275,55 +259,33 @@ const ld = {
     display: none;
   }
 
-  .intro__glow {
-    position: absolute;
-    width: min(120vw, 70rem);
-    aspect-ratio: 1;
-    background: radial-gradient(closest-side, rgb(242 160 58 / 0.32), transparent 70%);
-    animation: glow 1.2s var(--ease) both;
-  }
-
-  .intro__smoke {
-    opacity: 1;
-    animation: smoke-up 1.4s var(--ease) 0.1s both;
-  }
-
   .intro__logo {
-    position: relative;
-    width: min(86vw, 60rem);
-    color: var(--bone);
-    animation: logo-in 0.8s var(--ease) 0.35s both;
-  }
-
-  @keyframes glow {
-    from {
-      opacity: 0;
-      transform: scale(0.3);
-    }
-  }
-
-  @keyframes smoke-up {
-    from {
-      opacity: 0.9;
-      transform: translateY(8%);
-    }
-    to {
-      opacity: 0.15;
-      transform: translateY(-18%) scale(1.12);
-    }
+    width: min(84vw, 44rem);
+    height: auto;
+    color: #fff;
+    animation:
+      logo-in 0.9s var(--ease) 0.15s both,
+      logo-out 0.9s cubic-bezier(0.2, 0, 0.8, 1) 1.5s forwards;
   }
 
   @keyframes logo-in {
     from {
       opacity: 0;
-      transform: translateY(0.4rem);
+      transform: translateY(1.75rem);
+    }
+  }
+
+  @keyframes logo-out {
+    to {
+      opacity: 0;
+      transform: scale(1.4);
+      filter: blur(6px);
     }
   }
 
   @keyframes intro-out {
     to {
       opacity: 0;
-      transform: translateY(-3vh);
       visibility: hidden;
     }
   }
@@ -334,63 +296,42 @@ const ld = {
     }
   }
 
-  /* ---------- Header ---------- */
+  /* ---------- Header: a floating glass bar ---------- */
 
   .header {
     position: fixed;
-    inset: 0 0 auto;
-    z-index: 50;
-    height: var(--header-h);
+    inset: 0.75rem 0 auto;
+    z-index: 100;
+    padding-inline: clamp(0.75rem, 2vw, 1.5rem);
     view-transition-name: header;
   }
 
-  /* Transparent over the hero, filled once the page scrolls; a soft haze instead of a rule. */
-  .header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgb(20 17 15 / 0.94);
-    box-shadow: 0 0.5rem 2rem rgb(20 17 15 / 0.9);
-  }
-
-  @supports (animation-timeline: scroll()) {
-    .header::before {
-      animation: header-fill linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0 5rem;
-    }
-  }
-
-  @keyframes header-fill {
-    from {
-      opacity: 0;
-    }
-  }
-
   .header__bar {
-    position: relative;
     display: flex;
     align-items: center;
-    gap: 2rem;
-    height: 100%;
+    gap: 1.25rem;
+    width: min(100%, 80rem);
+    min-height: 3.5rem;
+    margin-inline: auto;
+    padding: 0.4rem 0.5rem 0.4rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgb(13 13 13 / 0.72);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
+    box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 0.35);
   }
 
   .header__logo {
     display: flex;
     align-items: center;
     min-height: 2.75rem;
-    color: var(--bone);
-    transition: color var(--afterglow);
-  }
-
-  .header__logo:hover {
-    color: var(--tungsten);
-    transition-duration: 180ms;
+    color: #fff;
   }
 
   .header__logo svg {
     width: auto;
-    height: 1.5rem;
+    height: 1.4rem;
   }
 
   .header__nav {
@@ -399,225 +340,232 @@ const ld = {
 
   .header__nav ul {
     display: flex;
-    gap: clamp(1.25rem, 2.5vw, 2.25rem);
-    font-weight: 600;
-    font-size: 0.9375rem;
+    gap: 0.25rem;
   }
 
-  .header__cta {
+  .header__nav a,
+  .menu a:not(.btn) {
+    display: inline-flex;
+    align-items: center;
     min-height: 2.75rem;
-    padding: 0.55rem 1rem;
-    font-size: 1rem;
+    padding-inline: 1rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition:
+      background-color 0.3s var(--ease),
+      color 0.3s var(--ease);
   }
 
-  .header__cta-short {
+  .header__nav a:hover,
+  .menu a:not(.btn):hover {
+    background: rgb(255 255 255 / 0.1);
+  }
+
+  .header__nav a[aria-current='page'],
+  .menu a[aria-current='page'] {
+    background: rgb(255 255 255 / 0.14);
+  }
+
+  .header__cta,
+  .header__menu {
+    min-height: 2.75rem;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .header__menu {
     display: none;
+    margin-left: auto;
   }
 
-  @media (width < 56rem) {
-    .header__nav {
-      display: none;
-    }
-
+  @media (width < 60rem) {
+    .header__nav,
     .header__cta {
-      margin-left: auto;
-    }
-
-    .header__cta-long {
       display: none;
     }
 
-    .header__cta-short {
-      display: inline;
-    }
-
-    .header__logo svg {
-      height: 1.25rem;
+    .header__menu {
+      display: inline-flex;
     }
   }
 
-  /* ---------- Bottom nav on phones: thumb reach, no menu to open ---------- */
+  /* ---------- Mobile menu (native popover) ---------- */
 
-  .bottom-nav {
-    display: none;
+  .menu {
+    inset: 5rem 0.75rem auto;
+    width: auto;
+    margin: 0;
+    padding: 1.25rem;
+    background: rgb(13 13 13 / 0.94);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    color: var(--text);
+    opacity: 0;
+    transform: translateY(-0.75rem);
+    transition:
+      opacity 0.3s var(--ease),
+      transform 0.3s var(--ease),
+      display 0.3s allow-discrete,
+      overlay 0.3s allow-discrete;
   }
 
-  @media (width < 56rem) {
-    :global(body) {
-      padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
-    }
+  .menu:popover-open {
+    display: grid;
+    gap: 1rem;
+    opacity: 1;
+    transform: none;
+  }
 
-    .bottom-nav {
-      position: fixed;
-      inset: auto 0 0;
-      z-index: 50;
-      display: block;
-      padding-bottom: env(safe-area-inset-bottom);
-      background: rgb(20 17 15 / 0.97);
-      border-top: 1px solid var(--line);
-    }
-
-    .bottom-nav ul {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-    }
-
-    .bottom-nav a {
-      position: relative;
-      display: grid;
-      place-items: center;
-      min-height: 3.5rem;
-      padding-inline: 0.15rem;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--ash);
-    }
-
-    .bottom-nav a[aria-current='page'] {
-      color: var(--tungsten);
-    }
-
-    .bottom-nav a[aria-current='page']::before {
-      content: '';
-      position: absolute;
-      inset: -1px 25% auto;
-      height: 2px;
-      background: var(--tungsten);
+  @starting-style {
+    .menu:popover-open {
+      opacity: 0;
+      transform: translateY(-0.75rem);
     }
   }
 
-  /* ---------- Footer: the band name sinks into the haze ---------- */
+  .menu::backdrop {
+    background: rgb(0 0 0 / 0.5);
+  }
+
+  .menu ul {
+    display: grid;
+  }
+
+  .menu a:not(.btn) {
+    width: 100%;
+    font-size: 1.1rem;
+  }
+
+  .menu__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+  }
+
+  .menu__close:hover {
+    background: rgb(255 255 255 / 0.1);
+  }
+
+  /* ---------- Footer ---------- */
 
   .footer {
-    position: relative;
-    margin-top: var(--gap-in);
-    border-top: 1px solid var(--line);
-    overflow: hidden;
+    padding-block: var(--section) 1.5rem;
   }
 
-  .footer__grid {
+  .footer__card {
     display: grid;
-    grid-template-columns: 1.4fr repeat(3, 1fr);
+    grid-template-columns: 1.6fr 1fr 1fr;
     gap: 2.5rem;
-    padding-block: clamp(3.5rem, 8vw, 6rem) 2rem;
+    padding: clamp(1.75rem, 4vw, 3rem);
   }
 
-  .footer__slogan {
-    max-width: 12ch;
+  .footer__brand {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+  }
+
+  .footer__logo {
+    color: #fff;
+    justify-self: start;
+  }
+
+  .footer__logo svg {
+    width: min(16rem, 100%);
+    height: auto;
+  }
+
+  .footer__socials {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .footer__socials a {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    transition:
+      background-color 0.3s var(--ease),
+      color 0.3s var(--ease);
+  }
+
+  .footer__socials a:hover {
+    background: #fff;
+    color: #0d0d0d;
+  }
+
+  .footer__socials .icon {
+    width: 1.15rem;
+    height: 1.15rem;
   }
 
   .footer__col {
     display: grid;
     align-content: start;
     justify-items: start;
-    gap: 0.9rem;
   }
 
-  .footer__col ul {
-    display: grid;
-    gap: 0.9rem;
-  }
-
-  /* Tap targets reach 44px through an invisible extension; the text box stays tight. */
-  .footer__col a::before {
-    content: '';
-    position: absolute;
-    inset: -0.7rem -0.25rem;
-  }
-
-  .footer__col .label {
+  .footer__col .eyebrow {
     margin-bottom: 0.5rem;
   }
 
-  .footer__big {
-    font: 800 1.75rem/1.1 var(--font-display);
+  .footer__col a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--dim);
+    transition: color 0.3s var(--ease);
   }
 
-  .footer__sink {
-    position: relative;
-  }
-
-  .footer__sink .haze {
-    opacity: 0.25;
-  }
-
-  .footer__mark {
-    position: relative;
-    display: block;
-    padding-block: 1rem 0;
-    color: var(--bone);
-  }
-
-  .footer__mark svg {
-    width: 100%;
-    height: auto;
-  }
-
-  /* The bottom third of the name disappears into the soot. */
-  .footer__sink::after {
-    content: '';
-    position: absolute;
-    inset: 35% 0 0;
-    background: linear-gradient(to bottom, transparent, var(--soot) 75%);
-    pointer-events: none;
-  }
-
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .footer__mark {
-        animation: surface linear both;
-        animation-timeline: view();
-        animation-range: entry 0% entry 100%;
-      }
-    }
-  }
-
-  @keyframes surface {
-    from {
-      transform: translateY(12%);
-    }
-  }
-
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .footer__mark:hover svg {
-      filter: url(#shimmer);
-    }
+  .footer__col a:hover {
+    color: #fff;
   }
 
   .footer__row {
-    position: relative;
-    z-index: 1;
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: space-between;
-    gap: 0.75rem 2rem;
-    margin-top: -2.5rem;
-    padding-block: 0 2rem;
+    gap: 0.75rem 1.5rem;
+    padding-top: 1.5rem;
+  }
+
+  /* The first site's credit chip. */
+  .footer__chip {
+    padding: 0.35rem 1rem;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.06);
+    font-size: 0.875rem;
+    transition: background-color 0.3s var(--ease);
+  }
+
+  .footer__chip:hover {
+    background: rgb(255 255 255 / 0.12);
   }
 
   .footer__top {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
+    min-height: 2.75rem;
   }
 
-  @media (width < 64rem) {
-    .footer__grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .footer__slogan {
-      grid-column: 1 / -1;
-      max-width: none;
-    }
-  }
-
-  @media (width < 36rem) {
-    .footer__grid {
+  @media (width < 48rem) {
+    .footer__card {
       grid-template-columns: 1fr 1fr;
     }
 
-    .footer__col:first-of-type {
+    .footer__brand {
       grid-column: 1 / -1;
     }
   }

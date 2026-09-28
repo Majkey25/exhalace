@@ -3,10 +3,12 @@
 email: exhalace@email.cz
 phone: '+420 604 525 780'
 slogan: Rock, co má tah na bránu
-hero: ../assets/hero/koncert.jpg
+hero: ../assets/hero/kapela.jpg
 facebook: https://www.facebook.com/kapelaexhalace
 instagram: https://www.instagram.com/exhalace.official/
 youtube: https://www.youtube.com/@Exhalace
+map_lat: 49.11641
+map_lng: 17.42777
 organisers: |
   Nezbytnou podmínkou pro správnou funkci aparatury je bezpečná a dostatečně dimenzovaná elektrická přípojka v místě konání akce.
 

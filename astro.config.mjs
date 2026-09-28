@@ -10,30 +10,11 @@ export default defineConfig({
   image: { domains: ['i.ytimg.com'] },
   fonts: [
     {
-      // Headlines, labels, buttons: condensed village-poster capitals.
+      // The band's typeface since the first site: one variable file for headings and text.
       provider: fontProviders.fontsource(),
-      name: 'Big Shoulders Display',
-      cssVariable: '--font-display',
-      weights: [800],
-      styles: ['normal'],
-      subsets: ['latin', 'latin-ext'],
-      fallbacks: ['Arial Narrow', 'sans-serif'],
-    },
-    {
-      // Dates only: stencil digits echo the cut letters of the logo.
-      provider: fontProviders.fontsource(),
-      name: 'Big Shoulders Stencil Display',
-      cssVariable: '--font-stencil',
-      weights: [800],
-      styles: ['normal'],
-      subsets: ['latin'],
-      fallbacks: ['Arial Narrow', 'sans-serif'],
-    },
-    {
-      provider: fontProviders.fontsource(),
-      name: 'Schibsted Grotesk',
-      cssVariable: '--font-body',
-      weights: ['400 700'],
+      name: 'Montserrat',
+      cssVariable: '--font',
+      weights: ['400 800'],
       styles: ['normal'],
       subsets: ['latin', 'latin-ext'],
       fallbacks: ['system-ui', 'sans-serif'],

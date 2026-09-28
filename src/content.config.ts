@@ -78,8 +78,6 @@ const clenove = defineCollection({
       name: text,
       role: text,
       previously: optional(text),
-      // Where they stand on stage, seen from the audience; lays out the line-up page.
-      stage: optional(z.enum(['back', 'left', 'center', 'right'])),
       photo: image(),
     }),
 });
@@ -137,6 +135,9 @@ const nastaveni = defineCollection({
       instagram: optional(https('Instagram')),
       youtube: optional(https('YouTube')),
       organisers: text,
+      // Pin for the "Kde nás najdete" map on the contact page; no map without both.
+      map_lat: optional(z.coerce.number().min(-90).max(90)),
+      map_lng: optional(z.coerce.number().min(-180).max(180)),
     }),
 });
 
