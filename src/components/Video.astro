@@ -1,0 +1,110 @@
+---
+import { Picture } from 'astro:assets';
+import Icon from './Icon.astro';
+
+interface Props {
+  id: string;
+  title: string;
+}
+
+const { id, title } = Astro.props;
+// Not every video has a max-resolution thumbnail; fall back to the one that always exists.
+const max = `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
+const ok = await fetch(max, { method: 'HEAD' }).then(
+  (r) => r.ok,
+  () => false,
+);
+const thumb = ok ? max : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+---
+
+<div class="video">
+  {/* YouTube loads only after a click: no third-party requests or cookies before that. */}
+  <button class="video__play" type="button" data-video={id} aria-label={`Přehrát video: ${title}`}>
+    <Picture
+      src={thumb}
+      inferSize
+      formats={['avif']}
+      fallbackFormat="webp"
+      widths={[480, 800, 1280]}
+      sizes="(width >= 64rem) 60rem, 100vw"
+      alt=""
+    />
+    <span class="video__btn">
+      <Icon name="play" />
+    </span>
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-video]').forEach((button) =>
+    button.addEventListener('click', () => {
+      const frame = document.createElement('iframe');
+      frame.src = `https://www.youtube-nocookie.com/embed/${button.dataset.video}?autoplay=1&rel=0`;
+      frame.title = button.getAttribute('aria-label') ?? 'Video';
+      frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      frame.allowFullscreen = true;
+      button.replaceWith(frame);
+      frame.focus();
+    }),
+  );
+</script>
+
+<style>
+  .video {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--smoke);
+  }
+
+  .video__play,
+  .video :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .video__play :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.8);
+    transition:
+      filter var(--afterglow),
+      transform 800ms var(--ease);
+  }
+
+  .video__btn {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    display: grid;
+    place-items: center;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    background: var(--tungsten);
+    color: var(--soot);
+    translate: -50% -50%;
+    box-shadow: 0 0 0 0 rgb(242 160 58 / 0.4);
+    transition: box-shadow var(--afterglow);
+  }
+
+  .video__btn :global(.icon) {
+    width: 1.75rem;
+    height: 1.75rem;
+    fill: currentColor;
+    translate: 0.1rem 0;
+  }
+
+  .video__play:hover :global(img) {
+    filter: saturate(1);
+    transform: scale(1.02);
+  }
+
+  .video__play:hover .video__btn {
+    box-shadow: 0 0 0 1.25rem rgb(242 160 58 / 0.15);
+    transition-duration: 300ms;
+  }
+</style>

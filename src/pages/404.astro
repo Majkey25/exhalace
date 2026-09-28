@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Mark from '../components/Mark.astro';
+import { href } from '../site';
+---
+
+<Base title="Stránka nenalezena" description="Tahle stránka neexistuje." noindex extraMarks={['x']}>
+  <section class="section">
+    <div class="wrap lost">
+      <Mark name="x" class="lost__x" />
+      <h1 class="h1">Tady je jen kouř.</h1>
+      <p class="lead">Stránka, kterou hledáte, neexistuje nebo se přestěhovala.</p>
+      <div class="actions">
+        <a class="btn btn--lamp" href={href('koncerty/')}>
+          Koncerty <Icon name="arrow-right" />
+        </a>
+        <a class="btn" href={href()}>
+          Úvod
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lost {
+    position: relative;
+    display: grid;
+    justify-items: start;
+    gap: 1.5rem;
+  }
+
+  .lost__x {
+    position: absolute;
+    top: -2rem;
+    right: var(--pad);
+    z-index: -1;
+    width: min(60vw, 28rem);
+    height: auto;
+    color: var(--x-red);
+    opacity: 0.8;
+  }
+</style>

@@ -1,0 +1,41 @@
+# Koncerty. Upravuje se v administraci (Pages CMS).
+# Po datu se koncert sám přesune mezi proběhlé. Čas piš jako 20:00.
+
+- date: 2026-09-25
+  time: '20:00'
+  venue: Restaurace U Petra
+  city: Vracov
+  map: https://maps.app.goo.gl/etPvugrL7ZegSx8s8
+
+- date: 2026-07-24
+  time: '19:00'
+  venue: Restaurace U Petra
+  city: Vracov
+  map: https://maps.app.goo.gl/etPvugrL7ZegSx8s8
+
+- date: 2026-05-09
+  time: '20:00'
+  venue: Bar do schodů
+  city: Malenovice
+  map: https://maps.app.goo.gl/So4gF42VamqR2hfu6
+
+- title: Michalská pouť
+  date: 2025-09-28
+  time: '17:15'
+  end: '18:15'
+  venue: Park před Společenským domem
+  city: Otrokovice
+  map: https://maps.app.goo.gl/Pjc8Ssue1q3qgyyg9
+  info: Hodinové vystoupení v rámci Michalské pouti.
+
+- date: 2025-09-12
+  time: '18:00'
+  venue: Restaurace U Petra
+  city: Vracov
+  map: https://maps.app.goo.gl/etPvugrL7ZegSx8s8
+
+- title: Oslava hasičů v Perné
+  date: 2025-09-06
+  time: '20:00'
+  city: Perná u Valašského Meziříčí
+  map: https://maps.app.goo.gl/MYCVWGeES6Di2axp9
