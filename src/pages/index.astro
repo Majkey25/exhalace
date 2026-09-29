@@ -2,7 +2,6 @@
 import { Picture } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import ConcertCard from '../components/ConcertCard.astro';
-import Icon from '../components/Icon.astro';
 import Mark from '../components/Mark.astro';
 import Video from '../components/Video.astro';
 import {
@@ -49,7 +48,7 @@ const tel = settings.phone?.replace(/\s/g, '');
       </h1>
       <p class="lead hero__lead">{vlna(about.lead)}</p>
       <div class="actions hero__actions">
-        <a class="btn btn--solid" href={href('koncerty/')}>
+        <a class="btn" href={href('koncerty/')}>
           Koncerty
         </a>
         <a class="btn" href={bookingHref}>
@@ -58,25 +57,20 @@ const tel = settings.phone?.replace(/\s/g, '');
       </div>
       {next && d && (
         <a class="hero__next" href={href(`koncerty/${next.slug}/`)}>
-          <span class="eyebrow">Příště hrajeme</span>
+          <span class="hero__next-label">Příště hrajeme</span>
           <span class="logo-type hero__next-date">{d.numeric}</span>
           <span>
             {[next.title ?? next.city, next.venue].filter(Boolean).join(' · ')}
             {next.time && ` · ${next.time}`}
           </span>
-          <Icon name="arrow-right" />
         </a>
       )}
     </div>
-    <a class="hero__scroll" href="#kapela" aria-label="Dolů na obsah">
-      <Icon name="chevron-down" />
-    </a>
   </section>
 
   <section id="kapela" class="section" aria-labelledby="band-title">
     <div class="wrap">
       <div class="section-head" data-reveal>
-        <p class="eyebrow">O kapele</p>
         <h2 id="band-title" class="h2">
           Kdo jsme
         </h2>
@@ -101,8 +95,8 @@ const tel = settings.phone?.replace(/\s/g, '');
         ))}
       </ul>
       <div class="section-foot">
-        <a class="btn btn--ghost" href={href('kapela/')}>
-          Celý příběh kapely <Icon name="arrow-right" />
+        <a class="btn" href={href('kapela/')}>
+          Celý příběh kapely
         </a>
       </div>
     </div>
@@ -111,28 +105,19 @@ const tel = settings.phone?.replace(/\s/g, '');
   <section class="section" aria-labelledby="concerts-title">
     <div class="wrap narrow">
       <div class="section-head" data-reveal>
-        <p class="eyebrow">Koncerty</p>
         <h2 id="concerts-title" class="h2">
           {upcoming.length ? 'Kde nás uslyšíte' : 'Naposledy jsme hráli'}
         </h2>
+        {upcoming.length === 0 && <p class="lead">Nové termíny chystáme.</p>}
       </div>
-      {upcoming.length === 0 && (
-        <div class="empty glass" data-reveal>
-          <p class="h3">Nové termíny chystáme</p>
-          <p class="dim">{vlna('Chcete nás na své akci? Napište nebo zavolejte, domluvíme se.')}</p>
-          <a class="btn btn--solid" href={bookingHref}>
-            Poptat koncert
-          </a>
-        </div>
-      )}
       <ul class="concerts" data-reveal>
         {(upcoming.length ? upcoming.slice(0, 3) : past.slice(0, 3)).map((c) => (
-          <ConcertCard concert={c} next={c === next} past={!upcoming.length} />
+          <ConcertCard concert={c} past={!upcoming.length} />
         ))}
       </ul>
       <div class="section-foot">
-        <a class="link-arrow" href={href('koncerty/')}>
-          Všechny koncerty <Icon name="arrow-right" />
+        <a class="btn" href={href('koncerty/')}>
+          Všechny koncerty
         </a>
       </div>
     </div>
@@ -142,7 +127,6 @@ const tel = settings.phone?.replace(/\s/g, '');
     <section class="section" aria-labelledby="video-title">
       <div class="wrap narrow">
         <div class="section-head" data-reveal>
-          <p class="eyebrow">Video</p>
           <h2 id="video-title" class="h2">
             {video.title}
           </h2>
@@ -157,7 +141,6 @@ const tel = settings.phone?.replace(/\s/g, '');
   <section class="section" aria-labelledby="gallery-title">
     <div class="wrap">
       <div class="section-head" data-reveal>
-        <p class="eyebrow">Galerie</p>
         <h2 id="gallery-title" class="h2">
           Momentky z koncertů
         </h2>
@@ -177,8 +160,8 @@ const tel = settings.phone?.replace(/\s/g, '');
         ))}
       </ul>
       <div class="section-foot">
-        <a class="btn btn--ghost" href={href('galerie/')}>
-          Celá galerie <Icon name="arrow-right" />
+        <a class="btn" href={href('galerie/')}>
+          Celá galerie
         </a>
       </div>
     </div>
@@ -187,7 +170,6 @@ const tel = settings.phone?.replace(/\s/g, '');
   <section class="section" aria-labelledby="book-title">
     <div class="wrap narrow">
       <div class="book glass" data-reveal>
-        <p class="eyebrow">Pro pořadatele</p>
         <h2 id="book-title" class="h2">
           Chcete nás na své akci?
         </h2>
@@ -197,12 +179,12 @@ const tel = settings.phone?.replace(/\s/g, '');
           )}
         </p>
         <div class="actions">
-          <a class="btn btn--solid" href={bookingHref}>
+          <a class="btn" href={bookingHref}>
             Poptat koncert
           </a>
           {tel && (
             <a class="btn" href={`tel:${tel}`}>
-              <Icon name="phone" /> {settings.phone}
+              {settings.phone}
             </a>
           )}
         </div>
@@ -318,32 +300,12 @@ const tel = settings.phone?.replace(/\s/g, '');
     border-color: var(--border-strong);
   }
 
+  .hero__next-label {
+    color: var(--dim);
+  }
+
   .hero__next-date {
     font-size: 1.35rem;
-  }
-
-  .hero__scroll {
-    position: absolute;
-    bottom: 1.5rem;
-    left: 50%;
-    display: grid;
-    place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border: 1px solid var(--border-strong);
-    border-radius: 50%;
-    translate: -50% 0;
-    animation: nudge 2.4s var(--ease) infinite;
-  }
-
-  @keyframes nudge {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(0.35rem);
-    }
   }
 
   /* ---------- Sections ---------- */
@@ -391,15 +353,6 @@ const tel = settings.phone?.replace(/\s/g, '');
   .concerts {
     display: grid;
     gap: 0.75rem;
-  }
-
-  .empty {
-    display: grid;
-    justify-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-    padding: clamp(1.75rem, 4vw, 2.5rem);
-    text-align: center;
   }
 
   .video-frame {

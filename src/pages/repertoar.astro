@@ -14,7 +14,7 @@ const settings = await getSettings();
   title="Repertoár"
   description="Co Exhalace hraje: předělávky českých a slovenských rockových a punkových kapel. Seznam k tisku pro pořadatele."
 >
-  <PageTitle title="Setlist" eyebrow="Repertoár">
+  <PageTitle title="Setlist">
     <p class="lead">Skladby, které od nás uslyšíte.</p>
   </PageTitle>
 
@@ -56,8 +56,8 @@ const settings = await getSettings();
       </p>
     </div>
     <div class="section-foot no-print">
-      <a class="btn btn--solid" href={bookingHref}>
-        Poptat koncert <Icon name="arrow-right" />
+      <a class="btn" href={bookingHref}>
+        Poptat koncert
       </a>
     </div>
   </section>
@@ -167,39 +167,68 @@ const settings = await getSettings();
 
   .songs__list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
-    gap: 0.6rem;
+    gap: 0.75rem;
   }
 
-  /* Rounded rows like the first site's list, with the artist on a second line. */
+  @media (width >= 56rem) {
+    .songs__list {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* The first site's glass rows: "Song – Artist" on one line, lifted with a light sweep. */
   .song {
-    display: grid;
-    gap: 0.1rem;
-    padding: 0.7rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 0.9rem;
-    background: rgb(255 255 255 / 0.03);
+    position: relative;
+    display: block;
+    overflow: hidden;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgb(255 255 255 / 0.08);
+    border-radius: var(--radius);
+    background: rgb(255 255 255 / 0.04);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: #f8f8f8;
     transition:
-      border-color 0.3s var(--ease),
-      background-color 0.3s var(--ease);
+      transform 0.3s ease,
+      box-shadow 0.3s ease,
+      border-color 0.3s ease;
+  }
+
+  .song:nth-child(odd) {
+    background: rgb(255 255 255 / 0.03);
+  }
+
+  .song::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    background: linear-gradient(120deg, transparent, rgb(255 255 255 / 0.14), transparent);
+    transform: translateX(-120%);
+    opacity: 0;
+    pointer-events: none;
   }
 
   .song:hover {
-    border-color: var(--border-strong);
-    background: rgb(255 255 255 / 0.06);
+    transform: translateY(-4px);
+    border-color: rgb(255 255 255 / 0.16);
+    box-shadow: 0 16px 36px rgb(0 0 0 / 0.35);
+  }
+
+  .song:hover::after {
+    opacity: 1;
+    animation: sweep 0.9s ease forwards;
   }
 
   .song[hidden] {
     display: none;
   }
 
-  .song__title {
-    font-weight: 600;
+  .song__artist::before {
+    content: ' – ';
   }
 
   .song__artist {
-    color: var(--faint);
-    font-size: 0.9rem;
+    color: var(--dim);
   }
 
   .songs__teaser {
@@ -219,7 +248,7 @@ const settings = await getSettings();
 
     /* The printed setlist ignores the search filter. */
     .song[hidden] {
-      display: grid;
+      display: block;
     }
 
     .songs__empty {

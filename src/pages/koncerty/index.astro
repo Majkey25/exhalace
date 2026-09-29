@@ -4,10 +4,9 @@ import ConcertCard from '../../components/ConcertCard.astro';
 import Icon from '../../components/Icon.astro';
 import PageTitle from '../../components/PageTitle.astro';
 import { getConcerts, type Concert } from '../../content';
-import { bookingHref, plural, vlna } from '../../site';
+import { bookingHref, plural } from '../../site';
 
 const { upcoming, past } = await getConcerts();
-const next = upcoming.find((c) => !c.inactive);
 const years = [
   ...past
     .reduce((map, c) => {
@@ -24,35 +23,34 @@ const count = ['koncert', 'koncerty', 'koncertů'] as const;
   title="Koncerty"
   description="Kde a kdy hraje Exhalace: nadcházející koncerty s mapou a kalendářem a přehled odehraných akcí."
 >
-  <PageTitle title="Koncerty" eyebrow="Kde nás uslyšíte">
+  <PageTitle title="Koncerty">
     <p class="lead">
-      {upcoming.length
-        ? 'Ke každému koncertu najdete mapu a soubor do kalendáře.'
-        : vlna('Nové termíny chystáme. Sledujte nás, nebo si nás rovnou pozvěte na svou akci.')}
+      {upcoming.length ? (
+        'Ke každému koncertu najdete mapu a soubor do kalendáře.'
+      ) : (
+        <>
+          Nové termíny chystáme. Chcete nás na své akci?{' '}
+          <a class="inline-link" href={bookingHref}>
+            Ozvěte se nám
+          </a>
+        </>
+      )}
     </p>
   </PageTitle>
 
-  <section class="section-tight wrap narrow" aria-label="Nadcházející koncerty">
-    {upcoming.length > 0 ? (
+  {upcoming.length > 0 && (
+    <section class="section-tight wrap narrow" aria-label="Nadcházející koncerty">
       <ul class="list" data-reveal>
         {upcoming.map((c) => (
-          <ConcertCard concert={c} next={c === next} />
+          <ConcertCard concert={c} />
         ))}
       </ul>
-    ) : (
-      <div class="empty glass" data-reveal>
-        <p class="h3">Zrovna nemáme vypsaný koncert</p>
-        <a class="btn btn--solid" href={bookingHref}>
-          Pozvěte nás <Icon name="arrow-right" />
-        </a>
-      </div>
-    )}
-  </section>
+    </section>
+  )}
 
   {years.length > 0 && (
     <section class="section wrap narrow" aria-labelledby="past-title">
       <div class="section-head" data-reveal>
-        <p class="eyebrow">Archiv</p>
         <h2 id="past-title" class="h2">
           Odehráli jsme
         </h2>
@@ -89,14 +87,6 @@ const count = ['koncert', 'koncerty', 'koncertů'] as const;
   .list {
     display: grid;
     gap: 0.75rem;
-  }
-
-  .empty {
-    display: grid;
-    justify-items: center;
-    gap: 1.25rem;
-    padding: clamp(2rem, 5vw, 3rem);
-    text-align: center;
   }
 
   .archive {

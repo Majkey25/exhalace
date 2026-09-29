@@ -5,7 +5,7 @@ import Icon from '../components/Icon.astro';
 import Mark from '../components/Mark.astro';
 import { marks, type Mark as MarkName } from '../brand';
 import { getAbout, getSettings } from '../content';
-import { bookingHref, href, nav, type Page } from '../site';
+import { href, nav, type Page } from '../site';
 
 interface Props {
   /** Current page for the nav; the home page passes 'home', utility pages nothing. */
@@ -138,10 +138,7 @@ const ld = {
             ))}
           </ul>
         </nav>
-        <a class="btn btn--solid header__cta" href={bookingHref}>
-          Poptat koncert
-        </a>
-        <button class="btn btn--ghost header__menu" type="button" popovertarget="menu">
+        <button class="btn header__menu" type="button" popovertarget="menu">
           <Icon name="menu" /> Menu
         </button>
       </div>
@@ -157,9 +154,6 @@ const ld = {
           </li>
         ))}
       </ul>
-      <a class="btn btn--solid" href={bookingHref}>
-        Poptat koncert
-      </a>
       <button class="menu__close" type="button" popovertarget="menu" popovertargetaction="hide">
         <Icon name="close" />
         <span class="sr-only">Zavřít menu</span>
@@ -170,54 +164,29 @@ const ld = {
       <slot />
     </main>
 
-    <footer class="footer">
-      <div class="wrap">
-        <div class="footer__card glass">
-          <div class="footer__brand">
-            <a class="footer__logo" href={href()} aria-label="Exhalace – úvod">
-              <Mark name="logo" />
+    <!-- Slim centred footer with the credit chip, like the first site. -->
+    <footer class="footer wrap">
+      <ul class="footer__socials">
+        {socials.map((s) => (
+          <li>
+            <a href={s.url} rel="noopener" target="_blank" aria-label={s.name}>
+              <Icon name={s.icon} />
             </a>
-            <p class="dim">{settings.slogan}</p>
-            <ul class="footer__socials">
-              {socials.map((s) => (
-                <li>
-                  <a href={s.url} rel="noopener" target="_blank" aria-label={s.name}>
-                    <Icon name={s.icon} />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div class="footer__col">
-            <p class="eyebrow">Kontakt</p>
-            {tel && <a href={`tel:${tel}`}>{settings.phone}</a>}
-            <a href={`mailto:${settings.email}`}>{settings.email}</a>
-            <a class="link-arrow" href={bookingHref}>
-              Poptat koncert <Icon name="arrow-right" />
-            </a>
-          </div>
-          <nav class="footer__col" aria-label="Patička">
-            <p class="eyebrow">Web</p>
-            {nav.map((n) => (
-              <a href={href(`${n.key}/`)}>{n.label}</a>
-            ))}
-          </nav>
-        </div>
-        <div class="footer__row">
-          <p class="meta">© {new Date().getFullYear()} Exhalace</p>
-          <a
-            class="footer__chip"
-            href="https://majkey25.github.io/init/"
-            rel="noopener"
-            target="_blank"
-          >
-            Made by Matěj Teplý
-          </a>
-          <a class="meta footer__top" href="#main">
-            Nahoru <Icon name="arrow-up" />
-          </a>
-        </div>
-      </div>
+          </li>
+        ))}
+      </ul>
+      <p class="footer__contact">
+        {tel && <a href={`tel:${tel}`}>{settings.phone}</a>}
+        <a href={`mailto:${settings.email}`}>{settings.email}</a>
+      </p>
+      <a
+        class="footer__chip"
+        href="https://majkey25.github.io/init/"
+        rel="noopener"
+        target="_blank"
+      >
+        Made by Matěj Teplý © {new Date().getFullYear()}
+      </a>
     </footer>
 
     <script>
@@ -296,13 +265,17 @@ const ld = {
     }
   }
 
-  /* ---------- Header: a floating glass bar ---------- */
+  /* ---------- Header: the first site's full-width glass bar ---------- */
 
   .header {
     position: fixed;
-    inset: 0.75rem 0 auto;
+    inset: 0 0 auto;
     z-index: 100;
-    padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+    border-bottom: 1px solid rgb(255 255 255 / 0.06);
+    background: rgb(13 13 13 / 0.78);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 18px 38px rgb(0 0 0 / 0.35);
     view-transition-name: header;
   }
 
@@ -310,16 +283,8 @@ const ld = {
     display: flex;
     align-items: center;
     gap: 1.25rem;
-    width: min(100%, 80rem);
-    min-height: 3.5rem;
-    margin-inline: auto;
-    padding: 0.4rem 0.5rem 0.4rem 1.25rem;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: rgb(13 13 13 / 0.72);
-    -webkit-backdrop-filter: blur(16px) saturate(140%);
-    backdrop-filter: blur(16px) saturate(140%);
-    box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 0.35);
+    height: var(--header-h);
+    padding-inline: clamp(1.1rem, 2.5vw, 2rem);
   }
 
   .header__logo {
@@ -331,7 +296,7 @@ const ld = {
 
   .header__logo svg {
     width: auto;
-    height: 1.4rem;
+    height: clamp(1.9rem, 1.5rem + 1vw, 2.4rem);
   }
 
   .header__nav {
@@ -348,40 +313,37 @@ const ld = {
     display: inline-flex;
     align-items: center;
     min-height: 2.75rem;
-    padding-inline: 1rem;
+    padding-inline: 1.1rem;
     border-radius: 999px;
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 600;
+    letter-spacing: 0.02em;
     transition:
       background-color 0.3s var(--ease),
-      color 0.3s var(--ease);
+      box-shadow 0.3s var(--ease);
   }
 
   .header__nav a:hover,
   .menu a:not(.btn):hover {
-    background: rgb(255 255 255 / 0.1);
+    background: rgb(255 255 255 / 0.12);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
   }
 
   .header__nav a[aria-current='page'],
   .menu a[aria-current='page'] {
-    background: rgb(255 255 255 / 0.14);
-  }
-
-  .header__cta,
-  .header__menu {
-    min-height: 2.75rem;
-    padding: 0.5rem 1.2rem;
-    font-size: 0.9rem;
+    background: rgb(255 255 255 / 0.12);
   }
 
   .header__menu {
     display: none;
+    min-height: 2.75rem;
     margin-left: auto;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.9rem;
   }
 
   @media (width < 60rem) {
-    .header__nav,
-    .header__cta {
+    .header__nav {
       display: none;
     }
 
@@ -452,33 +414,14 @@ const ld = {
     background: rgb(255 255 255 / 0.1);
   }
 
-  /* ---------- Footer ---------- */
+  /* ---------- Footer: slim and centred, with the first site's credit chip ---------- */
 
   .footer {
-    padding-block: var(--section) 1.5rem;
-  }
-
-  .footer__card {
     display: grid;
-    grid-template-columns: 1.6fr 1fr 1fr;
-    gap: 2.5rem;
-    padding: clamp(1.75rem, 4vw, 3rem);
-  }
-
-  .footer__brand {
-    display: grid;
-    align-content: start;
+    justify-items: center;
     gap: 1rem;
-  }
-
-  .footer__logo {
-    color: #fff;
-    justify-self: start;
-  }
-
-  .footer__logo svg {
-    width: min(16rem, 100%);
-    height: auto;
+    padding-block: clamp(2.5rem, 6vw, 4rem) 2rem;
+    text-align: center;
   }
 
   .footer__socials {
@@ -491,34 +434,31 @@ const ld = {
     place-items: center;
     width: 2.75rem;
     height: 2.75rem;
-    border: 1px solid var(--border);
     border-radius: 50%;
+    color: var(--dim);
     transition:
       background-color 0.3s var(--ease),
       color 0.3s var(--ease);
   }
 
   .footer__socials a:hover {
-    background: #fff;
-    color: #0d0d0d;
+    background: rgb(255 255 255 / 0.12);
+    color: #fff;
   }
 
   .footer__socials .icon {
-    width: 1.15rem;
-    height: 1.15rem;
+    width: 1.25rem;
+    height: 1.25rem;
   }
 
-  .footer__col {
-    display: grid;
-    align-content: start;
-    justify-items: start;
+  .footer__contact {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 1.5rem;
   }
 
-  .footer__col .eyebrow {
-    margin-bottom: 0.5rem;
-  }
-
-  .footer__col a {
+  .footer__contact a {
     display: inline-flex;
     align-items: center;
     min-height: 2.75rem;
@@ -526,53 +466,24 @@ const ld = {
     transition: color 0.3s var(--ease);
   }
 
-  .footer__col a:hover {
+  .footer__contact a:hover {
     color: #fff;
   }
 
-  .footer__row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem 1.5rem;
-    padding-top: 1.5rem;
-  }
-
-  /* The first site's credit chip. */
   .footer__chip {
-    padding: 0.35rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    padding: 0.25rem 1rem;
     border: 1px solid rgb(255 255 255 / 0.12);
     border-radius: 999px;
-    background: rgb(255 255 255 / 0.06);
-    font-size: 0.875rem;
+    background: rgb(255 255 255 / 0.08);
+    box-shadow: 0 12px 30px rgb(0 0 0 / 0.35);
+    font-size: 0.92rem;
     transition: background-color 0.3s var(--ease);
   }
 
   .footer__chip:hover {
-    background: rgb(255 255 255 / 0.12);
-  }
-
-  .footer__top {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    min-height: 2.75rem;
-  }
-
-  @media (width < 48rem) {
-    .footer__card {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .footer__brand {
-      grid-column: 1 / -1;
-    }
-  }
-
-  @media (width < 24rem) {
-    .footer__card {
-      grid-template-columns: 1fr;
-    }
+    background: rgb(255 255 255 / 0.14);
   }
 </style>

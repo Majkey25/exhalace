@@ -1,7 +1,6 @@
 ---
 import { Picture } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import Icon from '../components/Icon.astro';
 import PageTitle from '../components/PageTitle.astro';
 import Video from '../components/Video.astro';
 import { getAbout, getMembers, getVideos } from '../content';
@@ -17,7 +16,7 @@ const videos = await getVideos();
   title="Kapela"
   description={`Sestava a příběh kapely Exhalace (${about.home}). Kapela vznikla v roce ${about.founded}.`}
 >
-  <PageTitle title="Kapela" eyebrow={`Od roku ${about.founded}`}>
+  <PageTitle title="Kapela">
     <p class="lead">{vlna(about.lead)}</p>
   </PageTitle>
 
@@ -48,7 +47,6 @@ const videos = await getVideos();
 
   <section class="section wrap narrow" aria-labelledby="story-title">
     <div class="section-head" data-reveal>
-      <p class="eyebrow">Příběh</p>
       <h2 id="story-title" class="h2">
         Jak to celé začalo
       </h2>
@@ -68,7 +66,6 @@ const videos = await getVideos();
   {videos.length > 0 && (
     <section class="section wrap narrow" aria-labelledby="video-title">
       <div class="section-head" data-reveal>
-        <p class="eyebrow">Video</p>
         <h2 id="video-title" class="h2">
           Z YouTube
         </h2>
@@ -89,8 +86,8 @@ const videos = await getVideos();
   <section class="section wrap narrow" aria-label="Poptávka">
     <div class="invite glass" data-reveal>
       <p class="h3">Chcete nás na své akci?</p>
-      <a class="btn btn--solid" href={bookingHref}>
-        Poptat koncert <Icon name="arrow-right" />
+      <a class="btn" href={bookingHref}>
+        Poptat koncert
       </a>
     </div>
   </section>
