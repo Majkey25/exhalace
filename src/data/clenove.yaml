@@ -1,23 +1,17 @@
-# Sestava v pořadí, v jakém se ukazuje na webu. Fotky na výšku.
-
 - name: Jarda Valenta
   role: Zpěv, housle
   photo: ../assets/clenove/jarda.jpg
-
 - name: Štěpán Šrámek
   role: Kytara
   previously: Resthard
   photo: ../assets/clenove/stepan.jpg
-
 - name: Matěj Teplý
-  role: Kytara
+  role: Kytara, zpěv
   photo: ../assets/clenove/matej.jpg
-
 - name: Libor Vurst
   role: Baskytara, zpěv
   previously: Koprock, Sunar, Menuet
   photo: ../assets/clenove/libor.jpg
-
 - name: Mirek Kostelecký
   role: Bicí
   previously: Imortela, Iron Maiden Revival
