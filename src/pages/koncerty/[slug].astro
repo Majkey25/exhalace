@@ -48,7 +48,6 @@ const where = [c.venue, c.city].filter(Boolean).join(', ');
 
     <div class:list={['concert glass', { 'concert--poster': c.poster }]} data-reveal>
       <div class="concert__main">
-        <p class="eyebrow">{isPast ? 'Odehráno' : 'Koncert'}</p>
         <p class="logo-type concert__date" aria-hidden="true">
           {d.numeric} {d.year}
         </p>
@@ -96,8 +95,8 @@ const where = [c.venue, c.city].filter(Boolean).join(', ');
             </a>
           )}
           {isPast && (
-            <a class="btn btn--ghost" href={bookingHref}>
-              Pozvěte nás k sobě <Icon name="arrow-right" />
+            <a class="btn" href={bookingHref}>
+              Pozvěte nás k sobě
             </a>
           )}
         </div>

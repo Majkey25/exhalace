@@ -16,8 +16,8 @@
   --pad: clamp(1.25rem, 4vw, 3rem);
   --max: 76rem;
   --header-h: 4.5rem;
-  --radius: 1.25rem;
-  --radius-lg: 1.75rem;
+  --radius: 0.875rem;
+  --radius-lg: 1.5rem;
   --shadow: 0 1.25rem 3rem rgb(0 0 0 / 0.45);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --section: clamp(4.5rem, 10vw, 8rem);
@@ -51,24 +51,51 @@ body {
   overflow-x: clip;
 }
 
-/* Soft coloured light drifting behind everything, as on the first site. Gradients are already
-   soft, so no blur filter is needed; only transform animates. */
-body::before {
+/* Coloured light drifting behind everything, with the first site's exact colours, blur and
+   timing. The glass surfaces blur this light, which is what makes them read as glass. */
+body::before,
+body::after {
   content: '';
   position: fixed;
-  inset: -20%;
+  inset: -30%;
   z-index: -1;
   pointer-events: none;
-  background:
-    radial-gradient(circle at 18% 28%, rgb(255 79 132 / 0.13), transparent 32%),
-    radial-gradient(circle at 82% 18%, rgb(64 165 255 / 0.11), transparent 30%),
-    radial-gradient(circle at 55% 85%, rgb(120 255 197 / 0.07), transparent 34%);
-  animation: drift 26s ease-in-out infinite alternate;
+  filter: blur(60px);
+  opacity: 0.75;
 }
 
-@keyframes drift {
-  to {
-    transform: translate3d(3%, -2%, 0) scale(1.05);
+body::before {
+  background:
+    radial-gradient(circle at 18% 28%, rgb(255 79 132 / 0.16), transparent 40%),
+    radial-gradient(circle at 82% 18%, rgb(64 165 255 / 0.15), transparent 36%),
+    radial-gradient(circle at 50% 80%, rgb(120 255 197 / 0.12), transparent 42%);
+  animation: float-light 22s ease-in-out infinite;
+}
+
+body::after {
+  background:
+    radial-gradient(circle at 70% 70%, rgb(255 255 255 / 0.06), transparent 45%),
+    radial-gradient(circle at 35% 75%, rgb(255 125 66 / 0.1), transparent 40%);
+  animation: float-light 28s ease-in-out infinite reverse;
+}
+
+@keyframes float-light {
+  50% {
+    transform: translate3d(2%, -2%, 0) scale(1.04);
+  }
+
+  100% {
+    transform: translate3d(-1%, 1%, 0);
+  }
+}
+
+/* Phones: a lighter, still glow saves the GPU, as on the first site. */
+@media (width < 56rem) {
+  body::before,
+  body::after {
+    animation: none;
+    filter: blur(30px);
+    opacity: 0.5;
   }
 }
 
@@ -196,15 +223,6 @@ h3 {
   letter-spacing: -0.01em;
 }
 
-/* Small caps line above a heading, in the first site's pink. */
-.eyebrow {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
 .lead {
   font-size: clamp(1.125rem, 1.05rem + 0.35vw, 1.3rem);
   line-height: 1.65;
@@ -261,12 +279,11 @@ h3 {
   justify-content: center;
   gap: 0.55rem;
   min-height: 3rem;
-  padding: 0.75rem 1.6rem;
-  border: 1.5px solid var(--text);
+  padding: 0.8rem 1.85rem;
+  border: 2px solid var(--text);
   border-radius: 999px;
-  font-size: 0.975rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
+  font-size: 1rem;
+  font-weight: 500;
   transition:
     background-color 0.3s var(--ease),
     color 0.3s var(--ease),
@@ -325,29 +342,59 @@ h3 {
 
 /* ---------- Glass surfaces ---------- */
 
+/* Values from the first site: a faint fill over blurred light, a hairline and a deep shadow. */
 .glass {
-  border: 1px solid var(--border);
+  border: 1px solid rgb(255 255 255 / 0.08);
   border-radius: var(--radius-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow);
+  background: rgb(255 255 255 / 0.02);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 24px 60px rgb(0 0 0 / 0.45);
 }
 
 .card {
   position: relative;
-  border: 1px solid var(--border);
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.08);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: rgb(255 255 255 / 0.04);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   transition:
-    transform 0.4s var(--ease),
-    border-color 0.4s var(--ease),
-    background-color 0.4s var(--ease);
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
 }
 
 a.card:hover,
 .card--lift:hover {
   transform: translateY(-4px);
-  border-color: var(--border-strong);
-  background: var(--surface-strong);
+  border-color: rgb(255 255 255 / 0.16);
+  box-shadow: 0 16px 36px rgb(0 0 0 / 0.35);
+}
+
+/* The first site's light sweep across a card on hover. */
+a.card::after,
+.card--lift::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  background: linear-gradient(120deg, transparent, rgb(255 255 255 / 0.14), transparent);
+  transform: translateX(-120%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+a.card:hover::after,
+.card--lift:hover::after {
+  opacity: 1;
+  animation: sweep 0.9s ease forwards;
+}
+
+@keyframes sweep {
+  to {
+    transform: translateX(160%);
+  }
 }
 
 /* ---------- Sections ---------- */
@@ -457,13 +504,15 @@ main > .page-head {
     --border: rgb(255 255 255 / 0.4);
   }
 
-  body::before {
+  body::before,
+  body::after {
     display: none;
   }
 }
 
 @media (forced-colors: active) {
-  body::before {
+  body::before,
+  body::after {
     display: none;
   }
 
@@ -482,6 +531,7 @@ main > .page-head {
   }
 
   body::before,
+  body::after,
   .header,
   .footer,
   .no-print {

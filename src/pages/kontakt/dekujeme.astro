@@ -1,18 +1,16 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Icon from '../../components/Icon.astro';
 import { href } from '../../site';
 ---
 
 <Base title="Poptávka odeslána" description="Díky, poptávka dorazila." noindex>
   <section class="section wrap">
     <div class="thanks glass">
-      <p class="eyebrow">Hotovo</p>
       <h1 class="title">Díky!</h1>
       <p class="lead">Poptávka dorazila. Ozveme se co nejdřív.</p>
       <div class="actions">
-        <a class="btn btn--solid" href={href('koncerty/')}>
-          Koncerty <Icon name="arrow-right" />
+        <a class="btn" href={href('koncerty/')}>
+          Koncerty
         </a>
         <a class="btn" href={href()}>
           Úvod

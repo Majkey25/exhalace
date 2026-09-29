@@ -43,7 +43,7 @@ const map =
   title="Kontakt"
   description="Objednejte si kapelu Exhalace: telefon, e-mail, poptávkový formulář a technické informace pro pořadatele."
 >
-  <PageTitle title="Kontakt" eyebrow="Ozvěte se nám">
+  <PageTitle title="Kontakt">
     <p class="lead">{vlna('Máte dotazy? Chcete si s námi domluvit koncert? Ozvěte se nám!')}</p>
   </PageTitle>
 
@@ -89,7 +89,6 @@ const map =
         data-reveal
       >
         <div>
-          <p class="eyebrow">Poptávka</p>
           <h2 class="h3">Chcete nás na své akci?</h2>
         </div>
         <div class="form__row">
@@ -150,7 +149,7 @@ const map =
         <input type="hidden" name="_next" value={next} />
         <div class="form__foot">
           <button class="btn btn--solid" type="submit">
-            Odeslat poptávku <Icon name="arrow-right" />
+            Odeslat poptávku
           </button>
           <p class="meta">
             {vlna('Zprávu doručí služba FormSubmit na náš e-mail. Údaje použijeme jen k odpovědi.')}
@@ -162,7 +161,6 @@ const map =
       <aside id="technika" class="rider glass" aria-labelledby="rider-title" data-reveal>
         <div class="rider__head">
           <div>
-            <p class="eyebrow">Technika</p>
             <h2 id="rider-title" class="h3">
               Pro pořadatele
             </h2>
@@ -183,7 +181,6 @@ const map =
   {map && (
     <section class="section wrap narrow no-print" aria-labelledby="map-title">
       <div class="section-head" data-reveal>
-        <p class="eyebrow">Odkud jsme</p>
         <h2 id="map-title" class="h2">
           Kde nás najdete?
         </h2>

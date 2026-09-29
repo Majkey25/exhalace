@@ -3,16 +3,13 @@ import { logoText, logoTypeFits } from '../site';
 
 interface Props {
   title: string;
-  /** Small pink line above the title. */
-  eyebrow?: string;
 }
 
-const { title, eyebrow } = Astro.props;
+const { title } = Astro.props;
 const logo = logoTypeFits(title);
 ---
 
 <header class="page-head wrap" data-reveal>
-  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
   {logo ? (
     <h1 class="title logo-type title--logo">
       <span aria-hidden="true">{logoText(title)}</span>

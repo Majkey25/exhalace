@@ -1,17 +1,14 @@
 ---
-import Icon from './Icon.astro';
 import { dateParts, statusLabel, type Concert } from '../content';
 import { href } from '../site';
 
 interface Props {
   concert: Concert;
-  /** The closest upcoming concert is marked. */
-  next?: boolean;
   /** Past concerts show the year and a quieter card. */
   past?: boolean;
 }
 
-const { concert: c, next = false, past = false } = Astro.props;
+const { concert: c, past = false } = Astro.props;
 const d = dateParts(c.date);
 const where = [c.venue, c.city].filter(Boolean).join(', ');
 const when = [d.weekday, c.time].filter(Boolean).join(' · ');
@@ -27,13 +24,9 @@ const when = [d.weekday, c.time].filter(Boolean).join(' · ');
       <span class="meta">{past ? d.year : when}</span>
     </time>
     <span class="concert__body">
-      {next && <span class="eyebrow">Nejbližší koncert</span>}
       <span class="h3 concert__name">{c.title ?? c.city}</span>
       <span class="dim">{c.title ? where : c.venue}</span>
       {c.status && <span class="concert__status">{statusLabel[c.status]}</span>}
-    </span>
-    <span class="concert__go" aria-hidden="true">
-      <Icon name="arrow-right" />
     </span>
   </a>
 </li>
@@ -41,7 +34,7 @@ const when = [d.weekday, c.time].filter(Boolean).join(' · ');
 <style>
   .concert {
     display: grid;
-    grid-template-columns: 8.5rem minmax(0, 1fr) auto;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
     align-items: center;
     gap: 0.75rem 1.75rem;
     padding: clamp(1.1rem, 2.5vw, 1.6rem) clamp(1.1rem, 3vw, 2rem);
@@ -76,25 +69,6 @@ const when = [d.weekday, c.time].filter(Boolean).join(' · ');
     font-weight: 600;
   }
 
-  .concert__go {
-    display: grid;
-    place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    transition:
-      background-color 0.35s var(--ease),
-      color 0.35s var(--ease),
-      transform 0.35s var(--ease);
-  }
-
-  .concert:hover .concert__go {
-    background: #fff;
-    color: #0d0d0d;
-    transform: translateX(0.2rem);
-  }
-
   .concert--off .concert__day {
     text-decoration: line-through;
     text-decoration-thickness: 2px;
@@ -102,7 +76,7 @@ const when = [d.weekday, c.time].filter(Boolean).join(' · ');
   }
 
   .concert--past {
-    grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
     padding-block: 0.9rem;
     background: transparent;
   }
@@ -118,7 +92,7 @@ const when = [d.weekday, c.time].filter(Boolean).join(' · ');
   @media (width < 36rem) {
     .concert,
     .concert--past {
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr);
     }
 
     .concert__date {
