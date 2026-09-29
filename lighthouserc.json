@@ -8,7 +8,7 @@
         "http://localhost/galerie/",
         "http://localhost/kontakt/"
       ],
-      "numberOfRuns": 1
+      "numberOfRuns": 3
     },
     "assert": {
       "assertions": {
