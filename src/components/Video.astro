@@ -40,6 +40,11 @@ const thumb = ok ? max : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
     </span>
   </a>
 </div>
+<p class="video-privacy">
+  Přehrání videa naváže spojení s YouTube. Google obdrží vaši IP adresu a údaje o prohlížeči a může
+  ukládat data do zařízení.
+  <a href="https://policies.google.com/privacy">Zásady ochrany soukromí Google</a>.
+</p>
 
 <script>
   document.querySelectorAll<HTMLAnchorElement>('[data-video]').forEach((link) =>
@@ -57,6 +62,15 @@ const thumb = ok ? max : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 </script>
 
 <style>
+  .video-privacy {
+    margin-top: 1rem;
+    color: var(--dim);
+  }
+
+  .video-privacy a {
+    text-decoration: underline;
+  }
+
   .video {
     position: relative;
     aspect-ratio: 16 / 9;

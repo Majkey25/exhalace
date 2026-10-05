@@ -30,7 +30,7 @@ const types = [
   'Soukromá oslava',
   'Něco jiného',
 ];
-// OpenStreetMap embed around the band's home (no script, loads only when scrolled to).
+// OpenStreetMap loads only after the visitor requests the map.
 const { map_lat: lat, map_lng: lng } = settings;
 const map =
   lat !== undefined && lng !== undefined
@@ -93,8 +93,8 @@ const map =
         </div>
         <div class="form__row">
           <label class="field">
-            <span>Jméno *</span>
-            <input name="name" autocomplete="name" required maxlength="100" />
+            <span>Jméno (nepovinné)</span>
+            <input name="name" autocomplete="name" maxlength="100" />
           </label>
           <label class="field">
             <span>E-mail *</span>
@@ -152,7 +152,10 @@ const map =
             Odeslat poptávku
           </button>
           <p class="meta">
-            {vlna('Zprávu doručí služba FormSubmit na náš e-mail. Údaje použijeme jen k odpovědi.')}
+            {vlna(
+              'Vyplněné údaje odešle služba FormSubmit do schránky kapely. Uveďte pouze údaje potřebné pro vyřízení poptávky.',
+            )}{' '}
+            <a href="#soukromi">Soukromí na webu</a>
           </p>
         </div>
         <p class="form__status" role="status" aria-live="polite"></p>
@@ -186,8 +189,16 @@ const map =
         </h2>
         <p class="dim">{about.home}</p>
       </div>
-      {/* The iframe is added only when the map scrolls near, so it never competes with the page. */}
-      <div class="map glass" data-reveal data-map={map} data-title={`Mapa: ${about.home}`}></div>
+      <p class="dim">
+        Načtením mapy se připojíte k OpenStreetMap, která obdrží vaši IP adresu a údaje o
+        prohlížeči.{' '}
+        <a href="https://osmfoundation.org/wiki/Privacy_Policy">Zásady soukromí OpenStreetMap</a>.
+      </p>
+      <div class="map glass" data-reveal data-map={map} data-title={`Mapa: ${about.home}`}>
+        <button class="btn btn--solid" type="button" data-load-map>
+          Načíst mapu OpenStreetMap
+        </button>
+      </div>
       <p class="map__credit">
         <a
           class="link-arrow"
@@ -200,6 +211,41 @@ const map =
       </p>
     </section>
   )}
+  <section id="soukromi" class="section wrap narrow" aria-labelledby="privacy-title">
+    <h2 id="privacy-title" class="h2">
+      Soukromí na webu
+    </h2>
+    <p>
+      Formulář odešle e-mail, zprávu a další vyplněné údaje službě FormSubmit, která je doručí do
+      schránky kapely. FormSubmit při odeslání obdrží také technické údaje spojení. Místo formuláře
+      můžete zavolat nebo použít vlastní e-mailovou aplikaci.
+    </p>
+    <p>
+      Dotazy k údajům ve zprávách, žádosti o přístup, opravu nebo výmaz posílejte na{' '}
+      <a href={`mailto:${settings.email}`}>{settings.email}</a>. Neposílejte citlivé údaje ani údaje
+      jiných lidí, které nejsou pro poptávku potřebné.
+    </p>
+    <p>
+      Web neobsahuje analytické ani reklamní skripty. Prohlížeč po dobu relace uchovává údaj o
+      přehrání úvodní animace. Odstraníte jej vymazáním dat webu v prohlížeči. GitHub Pages při
+      načtení webu obdrží IP adresu a další technické údaje požadavku.
+    </p>
+    <p>
+      YouTube a OpenStreetMap se připojí až po spuštění videa nebo načtení mapy. Externí služby,
+      sociální sítě a prodejci vstupenek mají vlastní podmínky a pravidla soukromí.
+    </p>
+    <p>
+      <a href="https://formsubmit.co/privacy.pdf">FormSubmit</a>
+      {' · '}
+      <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">
+        GitHub
+      </a>
+      {' · '}
+      <a href="https://policies.google.com/privacy">Google / YouTube</a>
+      {' · '}
+      <a href="https://osmfoundation.org/wiki/Privacy_Policy">OpenStreetMap</a>
+    </p>
+  </section>
 </Base>
 
 <script>
@@ -207,18 +253,13 @@ const map =
 
   const mapBox = document.querySelector<HTMLElement>('[data-map]');
   if (mapBox) {
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return;
-        const frame = document.createElement('iframe');
-        frame.src = mapBox.dataset.map ?? '';
-        frame.title = mapBox.dataset.title ?? 'Mapa';
-        mapBox.append(frame);
-        io.disconnect();
-      },
-      { rootMargin: '300px 0px' },
-    );
-    io.observe(mapBox);
+    mapBox.querySelector('[data-load-map]')?.addEventListener('click', () => {
+      const frame = document.createElement('iframe');
+      frame.src = mapBox.dataset.map ?? '';
+      frame.title = mapBox.dataset.title ?? 'Mapa';
+      mapBox.replaceChildren(frame);
+      frame.focus();
+    });
   }
 
   const form = document.querySelector<HTMLFormElement>('#poptavka');
@@ -264,6 +305,19 @@ const map =
 </script>
 
 <style>
+  #soukromi p {
+    margin-top: 1rem;
+  }
+
+  #soukromi a,
+  .form__foot a {
+    text-decoration: underline;
+  }
+
+  [data-load-map] {
+    margin: 1.5rem;
+  }
+
   .narrow {
     width: min(100%, 60rem);
   }
