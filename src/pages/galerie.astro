@@ -82,6 +82,7 @@ const photos = await Promise.all(
   if (dialog && img && caption && counter && shots.length) {
     let index = 0;
     let selection = 0;
+    let cancelPending = () => {};
     const template = img.cloneNode() as HTMLImageElement;
     const show = async (i: number) => {
       index = (i + shots.length) % shots.length;
@@ -89,6 +90,7 @@ const photos = await Promise.all(
       const thumbnail = shot?.querySelector('img');
       if (!shot || !thumbnail || !img) return;
       const request = ++selection;
+      cancelPending();
       const preview = template.cloneNode() as HTMLImageElement;
       preview.src = thumbnail.complete && thumbnail.naturalWidth > 0 ? thumbnail.currentSrc : '';
       preview.width = Number(shot.dataset.w);
@@ -96,6 +98,8 @@ const photos = await Promise.all(
       preview.alt = thumbnail.alt;
       if (dialog.open) preview.style.scale = '1';
       const full = new Image();
+      full.fetchPriority = 'high';
+      cancelPending = () => full.removeAttribute('src');
       full.src = shot.href;
       const ready = full.decode().then(
         () => true,
@@ -113,7 +117,7 @@ const photos = await Promise.all(
         preview.srcset = `${preview.src} ${preview.naturalWidth}w`;
         await preview.decode();
       } catch {
-        if (await ready) {
+        if ((await ready) && request === selection && dialog.open) {
           preview.srcset = '';
           preview.src = shot.href;
           await preview.decode().catch(() => {});
