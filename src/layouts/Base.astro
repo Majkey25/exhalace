@@ -16,11 +16,21 @@ interface Props {
   intro?: boolean;
   /** Utility pages (404, thank you) stay out of search results. */
   noindex?: boolean;
+  /** Pages without logo-type text can avoid the unused display font request. */
+  preloadDisplayFont?: boolean;
   /** Brand marks the page uses besides the logo; each traced path weighs 18–30 KB. */
   extraMarks?: Exclude<MarkName, 'logo'>[];
 }
 
-const { page, title, description, intro = false, noindex = false, extraMarks = [] } = Astro.props;
+const {
+  page,
+  title,
+  description,
+  intro = false,
+  noindex = false,
+  preloadDisplayFont = true,
+  extraMarks = [],
+} = Astro.props;
 const symbols: MarkName[] = ['logo', ...extraMarks];
 const settings = await getSettings();
 const about = await getAbout();
@@ -81,13 +91,15 @@ const ld = {
     <meta property="og:locale" content="cs_CZ" />
     <meta name="twitter:card" content="summary_large_image" />
     <Font cssVariable="--font" preload={[{ subset: 'latin' }]} />
-    <link
-      rel="preload"
-      href={href('fonts/farcry.woff2')}
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    />
+    {preloadDisplayFont && (
+      <link
+        rel="preload"
+        href={href('fonts/farcry.woff2')}
+        as="font"
+        type="font/woff2"
+        crossorigin="anonymous"
+      />
+    )}
     <script is:inline>
       (() => {
         const d = document.documentElement;
