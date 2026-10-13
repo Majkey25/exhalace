@@ -46,7 +46,7 @@ const photos = await Promise.all(
               widths={[320, 480, 720]}
               sizes="(width >= 76rem) 18rem, (width >= 48rem) 30vw, 45vw"
               alt={p.alt}
-              loading={i < 8 ? 'eager' : 'lazy'}
+              loading={i < 4 ? 'eager' : 'lazy'}
             />
           </a>
         </li>
