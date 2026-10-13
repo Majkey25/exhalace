@@ -194,11 +194,19 @@ const ld = {
       // Intro: any input skips it; it leaves the DOM once it has faded out.
       const intro = document.querySelector('.intro');
       if (intro) {
-        const done = () => intro.remove();
-        if (document.documentElement.classList.contains('no-intro')) done();
-        intro.addEventListener('animationend', (e) => e.target === intro && done());
-        for (const type of ['pointerdown', 'keydown', 'wheel', 'touchmove'])
-          addEventListener(type, done, { once: true, passive: true });
+        if (document.documentElement.classList.contains('no-intro')) intro.remove();
+        else {
+          const events = new AbortController();
+          const done = () => {
+            intro.remove();
+            events.abort();
+          };
+          intro.addEventListener('animationend', (e) => e.target === intro && done(), {
+            signal: events.signal,
+          });
+          for (const type of ['pointerdown', 'keydown', 'wheel', 'touchmove'])
+            addEventListener(type, done, { once: true, passive: true, signal: events.signal });
+        }
       }
 
       // Mobile menu: close once a link is picked.
