@@ -282,6 +282,8 @@ const map =
       data._subject = `Poptávka z webu: ${data.type}${data.place ? `, ${data.place}` : ''}${data.date ? `, ${data.date}` : ''}`;
       data._replyto = data.email ?? '';
       const label = button.innerHTML;
+      const controller = new AbortController();
+      const deadline = setTimeout(() => controller.abort(), 60_000);
       button.disabled = true;
       button.textContent = 'Odesílám…';
       try {
@@ -289,6 +291,7 @@ const map =
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify(data),
+          signal: controller.signal,
         });
         const body = (await res.json().catch(() => ({}))) as { success?: string | boolean };
         if (!res.ok || String(body.success) !== 'true') throw new Error(`status ${res.status}`);
@@ -297,6 +300,7 @@ const map =
       } catch {
         say('Odeslání se nepovedlo. Zavolejte nám, nebo napište na e-mail výše.', false);
       } finally {
+        clearTimeout(deadline);
         button.disabled = false;
         button.innerHTML = label;
       }
