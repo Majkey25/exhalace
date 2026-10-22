@@ -36,7 +36,9 @@ const settings = await getSettings();
 const about = await getAbout();
 const site = Astro.site ?? new URL('https://www.exhalace.cz');
 const url = (path: string) => new URL(path, site).href;
-const pageTitle = title ? `${title} — Exhalace` : `Exhalace — ${settings.slogan.toLowerCase()}`;
+const pageTitle = (
+  title ? `${title} | Exhalace` : `Exhalace | ${settings.slogan.toLowerCase()}`
+).replace(/\s+[—–-]\s+/g, ' | ');
 const pageDescription =
   description ??
   `Exhalace, rocková kapela (${about.home}). Předělávky známých i méně známých českých a slovenských rockových a punkových kapel. Energická a poctivá show na každou akci.`;
