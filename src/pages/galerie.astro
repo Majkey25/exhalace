@@ -46,7 +46,7 @@ const photos = await Promise.all(
               widths={[320, 480, 720]}
               sizes="(width >= 76rem) 18rem, (width >= 48rem) 30vw, 45vw"
               alt={p.alt}
-              loading={i < 8 ? 'eager' : 'lazy'}
+              loading={i < 4 ? 'eager' : 'lazy'}
             />
           </a>
         </li>
@@ -74,24 +74,64 @@ const photos = await Promise.all(
 
 <script>
   const dialog = document.querySelector<HTMLDialogElement>('.lightbox');
-  const img = dialog?.querySelector<HTMLImageElement>('.lightbox__img');
+  let img = dialog?.querySelector<HTMLImageElement>('.lightbox__img');
   const caption = dialog?.querySelector('.lightbox__caption');
   const counter = dialog?.querySelector('.lightbox__count');
   const shots = [...document.querySelectorAll<HTMLAnchorElement>('.tile')];
 
   if (dialog && img && caption && counter && shots.length) {
     let index = 0;
-    const show = (i: number) => {
+    let selection = 0;
+    let cancelPending = () => {};
+    const template = img.cloneNode() as HTMLImageElement;
+    const show = async (i: number) => {
       index = (i + shots.length) % shots.length;
       const shot = shots[index];
-      if (!shot) return;
-      const alt = shot.querySelector('img')?.alt ?? '';
-      img.src = shot.href;
-      img.width = Number(shot.dataset.w);
-      img.height = Number(shot.dataset.h);
-      img.alt = alt;
+      const thumbnail = shot?.querySelector('img');
+      if (!shot || !thumbnail || !img) return;
+      const request = ++selection;
+      cancelPending();
+      const preview = template.cloneNode() as HTMLImageElement;
+      preview.src = thumbnail.complete && thumbnail.naturalWidth > 0 ? thumbnail.currentSrc : '';
+      preview.width = Number(shot.dataset.w);
+      preview.height = Number(shot.dataset.h);
+      preview.alt = thumbnail.alt;
+      if (dialog.open) preview.style.scale = '1';
+      const full = new Image();
+      full.fetchPriority = 'high';
+      cancelPending = () => full.removeAttribute('src');
+      full.src = shot.href;
+      const ready = full.decode().then(
+        () => true,
+        () => false,
+      );
+      if (!dialog.open) {
+        img.style.visibility = 'hidden';
+        caption.textContent = '';
+        counter.textContent = '';
+      }
+      try {
+        await preview.decode();
+        // Keep the full photo's intrinsic size while displaying its cached thumbnail.
+        preview.sizes = `${shot.dataset.w}px`;
+        preview.srcset = `${preview.src} ${preview.naturalWidth}w`;
+        await preview.decode();
+      } catch {
+        if ((await ready) && request === selection && dialog.open) {
+          preview.srcset = '';
+          preview.src = shot.href;
+          await preview.decode().catch(() => {});
+        }
+      }
+      if (request !== selection || !dialog.open) return;
+      img.replaceWith(preview);
+      img = preview;
+      const alt = thumbnail.alt;
       caption.textContent = alt;
       counter.textContent = `${index + 1} / ${shots.length}`;
+      if (!(await ready) || request !== selection || !dialog.open) return;
+      preview.srcset = '';
+      preview.src = shot.href;
       // Warm the next photo so paging feels instant.
       const next = shots[(index + 1) % shots.length];
       if (next) new Image().src = next.href;

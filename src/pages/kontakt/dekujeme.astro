@@ -3,7 +3,12 @@ import Base from '../../layouts/Base.astro';
 import { href } from '../../site';
 ---
 
-<Base title="Poptávka odeslána" description="Díky, poptávka dorazila." noindex>
+<Base
+  title="Poptávka odeslána"
+  description="Díky, poptávka dorazila."
+  noindex
+  preloadDisplayFont={false}
+>
   <section class="section wrap">
     <div class="thanks glass">
       <h1 class="title">Díky!</h1>

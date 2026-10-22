@@ -38,6 +38,8 @@ jobs:
           path: node_modules/.astro
           key: astro-${{ github.workflow }}-${{ hashFiles('src/assets/**', 'package-lock.json', 'astro.config.mjs') }}
           restore-keys: astro-${{ github.workflow }}-
+      - run: npm run format:check
+      - run: npm run check
       # Site URL and base path come from the Pages settings (custom domain www.exhalace.cz).
       - run: npm run build -- --site "$SITE" --base "${BASE:-/}"
         env:
