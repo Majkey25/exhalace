@@ -12,8 +12,6 @@ interface Props {
   page?: Page | 'home';
   title?: string;
   description?: string;
-  /** The home page plays the logo intro once per session. */
-  intro?: boolean;
   /** Utility pages (404, thank you) stay out of search results. */
   noindex?: boolean;
   /** Pages without logo-type text can avoid the unused display font request. */
@@ -26,7 +24,6 @@ const {
   page,
   title,
   description,
-  intro = false,
   noindex = false,
   preloadDisplayFont = true,
   extraMarks = [],
@@ -100,18 +97,6 @@ const ld = {
         crossorigin="anonymous"
       />
     )}
-    <script is:inline>
-      (() => {
-        const d = document.documentElement;
-        d.classList.add('js');
-        try {
-          if (sessionStorage.getItem('exh-intro')) d.classList.add('no-intro');
-          else sessionStorage.setItem('exh-intro', '1');
-        } catch {
-          d.classList.add('no-intro');
-        }
-      })();
-    </script>
     {page === 'home' && (
       <script type="application/ld+json" set:html={JSON.stringify(ld).replace(/</g, '\\u003c')} />
     )}
@@ -123,12 +108,6 @@ const ld = {
         <symbol id={name} viewBox={marks[name].viewBox} set:html={marks[name].body} />
       ))}
     </svg>
-
-    {intro && (
-      <div class="intro" aria-hidden="true">
-        <Mark name="logo" class="intro__logo" />
-      </div>
-    )}
 
     <a class="skip" href="#main">
       Přeskočit na obsah
@@ -203,24 +182,6 @@ const ld = {
     </footer>
 
     <script>
-      // Intro: any input skips it; it leaves the DOM once it has faded out.
-      const intro = document.querySelector('.intro');
-      if (intro) {
-        if (document.documentElement.classList.contains('no-intro')) intro.remove();
-        else {
-          const events = new AbortController();
-          const done = () => {
-            intro.remove();
-            events.abort();
-          };
-          intro.addEventListener('animationend', (e) => e.target === intro && done(), {
-            signal: events.signal,
-          });
-          for (const type of ['pointerdown', 'keydown', 'wheel', 'touchmove'])
-            addEventListener(type, done, { once: true, passive: true, signal: events.signal });
-        }
-      }
-
       // Mobile menu: close once a link is picked.
       const menu = document.getElementById('menu');
       menu?.addEventListener('click', (e) => {
@@ -231,61 +192,6 @@ const ld = {
 </html>
 
 <style>
-  /* ---------- Intro: the logo rises, then opens up and dissolves into the page ---------- */
-
-  .intro {
-    position: fixed;
-    inset: 0;
-    z-index: 150;
-    display: grid;
-    place-items: center;
-    background: #0d0d0d;
-    pointer-events: none;
-    animation: intro-out 0.7s ease-out 1.65s forwards;
-  }
-
-  :global(.no-intro) .intro,
-  :global(html:not(.js)) .intro {
-    display: none;
-  }
-
-  .intro__logo {
-    width: min(84vw, 44rem);
-    height: auto;
-    color: #fff;
-    animation:
-      logo-in 0.9s var(--ease) 0.15s both,
-      logo-out 0.9s cubic-bezier(0.2, 0, 0.8, 1) 1.5s forwards;
-  }
-
-  @keyframes logo-in {
-    from {
-      opacity: 0;
-      transform: translateY(1.75rem);
-    }
-  }
-
-  @keyframes logo-out {
-    to {
-      opacity: 0;
-      transform: scale(1.4);
-      filter: blur(6px);
-    }
-  }
-
-  @keyframes intro-out {
-    to {
-      opacity: 0;
-      visibility: hidden;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .intro {
-      display: none;
-    }
-  }
-
   /* ---------- Header: the first site's full-width glass bar ---------- */
 
   .header {

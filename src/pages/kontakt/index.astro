@@ -187,28 +187,44 @@ const map =
         <h2 id="map-title" class="h2">
           Kde nás najdete?
         </h2>
-        <p class="dim">{about.home}</p>
       </div>
-      <p class="dim">
-        Načtením mapy se připojíte k OpenStreetMap, která obdrží vaši IP adresu a údaje o
-        prohlížeči.{' '}
-        <a href="https://osmfoundation.org/wiki/Privacy_Policy">Zásady soukromí OpenStreetMap</a>.
-      </p>
-      <div class="map glass" data-reveal data-map={map} data-title={`Mapa: ${about.home}`}>
-        <button class="btn btn--solid" type="button" data-load-map>
-          Načíst mapu OpenStreetMap
-        </button>
+      <div class="map glass" data-map={map} data-title={`Mapa: ${about.home}`}>
+        <div class="map__intro">
+          <Icon name="pin" />
+          <div>
+            <h3 class="h3">{about.home}</h3>
+            <p class="dim">Prohlédněte si místo v mapě, nebo ho otevřete v Mapy.com.</p>
+          </div>
+        </div>
+        <div class="map__actions">
+          <button
+            class="btn btn--solid"
+            type="button"
+            data-load-map
+            aria-controls="location-map"
+            aria-expanded="false"
+            aria-describedby="map-privacy"
+            hidden
+          >
+            Načíst mapu OpenStreetMap
+          </button>
+          <a
+            class="link-arrow"
+            href={`https://mapy.com/fnc/v1/showmap?center=${lng},${lat}&zoom=13&marker=true`}
+            rel="noopener"
+            target="_blank"
+          >
+            Otevřít v Mapy.com <Icon name="external" />
+          </a>
+        </div>
+        <p id="map-privacy" class="map__privacy meta">
+          Mapu načteme až po kliknutí. Prohlížeč se připojí k OpenStreetMap a předá jí IP adresu a
+          údaje o prohlížeči. Volbu neukládáme.{' '}
+          <a href="https://osmfoundation.org/wiki/Privacy_Policy">Soukromí OpenStreetMap</a>.
+        </p>
+        <p class="map__status meta" role="status" data-map-status></p>
+        <div id="location-map" class="map__frame" hidden></div>
       </div>
-      <p class="map__credit">
-        <a
-          class="link-arrow"
-          href={`https://mapy.com/fnc/v1/showmap?center=${lng},${lat}&zoom=13&marker=true`}
-          rel="noopener"
-          target="_blank"
-        >
-          Otevřít v Mapy.com <Icon name="external" />
-        </a>
-      </p>
     </section>
   )}
   <section id="soukromi" class="section wrap narrow" aria-labelledby="privacy-title">
@@ -226,9 +242,8 @@ const map =
       jiných lidí, které nejsou pro poptávku potřebné.
     </p>
     <p>
-      Web neobsahuje analytické ani reklamní skripty. Prohlížeč po dobu relace uchovává údaj o
-      přehrání úvodní animace. Odstraníte jej vymazáním dat webu v prohlížeči. GitHub Pages při
-      načtení webu obdrží IP adresu a další technické údaje požadavku.
+      Web neobsahuje analytické ani reklamní skripty. GitHub Pages při načtení webu obdrží IP adresu
+      a další technické údaje požadavku.
     </p>
     <p>
       YouTube a OpenStreetMap se připojí až po spuštění videa nebo načtení mapy. Externí služby,
@@ -252,13 +267,40 @@ const map =
   document.querySelector('[data-print]')?.addEventListener('click', () => print());
 
   const mapBox = document.querySelector<HTMLElement>('[data-map]');
-  if (mapBox) {
-    mapBox.querySelector('[data-load-map]')?.addEventListener('click', () => {
+  const mapToggle = mapBox?.querySelector<HTMLButtonElement>('[data-load-map]');
+  const mapFrame = mapBox?.querySelector<HTMLElement>('#location-map');
+  const mapStatus = mapBox?.querySelector('[data-map-status]');
+  if (mapBox && mapToggle && mapFrame && mapStatus) {
+    let deadline: ReturnType<typeof setTimeout> | undefined;
+    mapToggle.hidden = false;
+    mapToggle.addEventListener('click', () => {
+      clearTimeout(deadline);
+      const closing = mapToggle.getAttribute('aria-expanded') === 'true';
+      mapToggle.setAttribute('aria-expanded', String(!closing));
+      mapToggle.textContent = closing ? 'Načíst mapu OpenStreetMap' : 'Zavřít mapu';
+      mapFrame.hidden = closing;
+      mapFrame.replaceChildren();
+      mapStatus.textContent = '';
+      if (closing) return;
+
       const frame = document.createElement('iframe');
       frame.src = mapBox.dataset.map ?? '';
       frame.title = mapBox.dataset.title ?? 'Mapa';
-      mapBox.replaceChildren(frame);
-      frame.focus();
+      frame.referrerPolicy = 'no-referrer';
+      frame.addEventListener(
+        'load',
+        () => {
+          if (!frame.isConnected) return;
+          clearTimeout(deadline);
+          mapStatus.textContent = '';
+        },
+        { once: true },
+      );
+      mapStatus.textContent = 'Načítání mapy…';
+      deadline = setTimeout(() => {
+        mapStatus.textContent = 'Načítání mapy trvá déle. Použijte odkaz Otevřít v Mapy.com.';
+      }, 15_000);
+      mapFrame.append(frame);
     });
   }
 
@@ -316,10 +358,6 @@ const map =
   #soukromi a,
   .form__foot a {
     text-decoration: underline;
-  }
-
-  [data-load-map] {
-    margin: 1.5rem;
   }
 
   .narrow {
@@ -538,25 +576,57 @@ const map =
   }
 
   .map {
-    padding: 0.5rem;
+    padding: clamp(1.5rem, 4vw, 2.25rem);
     overflow: hidden;
   }
 
-  .map {
-    min-height: calc(clamp(18rem, 40vw, 26rem) + 1rem);
+  .map__intro {
+    display: flex;
+    align-items: start;
+    gap: 1rem;
+  }
+
+  .map__intro > :global(.icon) {
+    width: 2rem;
+    height: 2rem;
+    flex: none;
+    color: var(--accent);
+  }
+
+  .map__intro p {
+    margin-top: 0.65rem;
+  }
+
+  .map__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-block: 1.5rem;
+  }
+
+  .map__actions [hidden] {
+    display: none;
+  }
+
+  .map__privacy {
+    max-width: 65ch;
+  }
+
+  .map__privacy a {
+    text-decoration: underline;
+  }
+
+  .map__status:not(:empty),
+  .map__frame:not([hidden]) {
+    margin-top: 1.25rem;
   }
 
   .map :global(iframe) {
     width: 100%;
     height: clamp(18rem, 40vw, 26rem);
     border: 0;
-    border-radius: calc(var(--radius-lg) - 0.5rem);
-    filter: grayscale(0.6) contrast(1.05);
-  }
-
-  .map__credit {
-    margin-top: 0.75rem;
-    text-align: center;
+    border-radius: var(--radius);
   }
 
   @media (width < 56rem) {

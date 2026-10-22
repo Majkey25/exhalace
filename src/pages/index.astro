@@ -27,7 +27,7 @@ const d = next && dateParts(next.date);
 const tel = settings.phone?.replace(/\s/g, '');
 ---
 
-<Base page="home" intro>
+<Base page="home">
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero__media" aria-hidden="true">
       <Picture
@@ -51,7 +51,7 @@ const tel = settings.phone?.replace(/\s/g, '');
         <a class="btn" href={href('koncerty/')}>
           Koncerty
         </a>
-        <a class="btn" href={bookingHref}>
+        <a class="btn btn--solid" href={bookingHref}>
           Poptat koncert
         </a>
       </div>
@@ -153,7 +153,7 @@ const tel = settings.phone?.replace(/\s/g, '');
               formats={['avif']}
               fallbackFormat="webp"
               widths={[320, 480, 720]}
-              sizes="(width >= 64rem) 24rem, (width >= 36rem) 45vw, 90vw"
+              sizes="(width >= 76rem) 23rem, (width >= 40rem) 30vw, 45vw"
               alt={p.alt}
             />
           </li>
