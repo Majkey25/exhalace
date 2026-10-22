@@ -212,10 +212,19 @@ content:
         required: true
       - name: map_lat
         label: 'Mapa na kontaktu: zeměpisná šířka (např. 49.11641)'
-        description: 'Obě souřadnice najdeš na Mapy.com (pravé tlačítko na místo). Bez nich se mapa neukáže.'
+        description: 'Obě souřadnice najdeš v Google Maps (pravé tlačítko na místo). Při změně místa aktualizuj i vložení mapy.'
         type: number
         options: { min: -90, max: 90 }
       - name: map_lng
         label: 'Mapa na kontaktu: zeměpisná délka (např. 17.42777)'
         type: number
         options: { min: -180, max: 180 }
+      - name: map_embed
+        label: 'Google Maps: adresa vložené mapy'
+        description: 'Google Maps > Sdílet > Vložení mapy > Kopírovat HTML. Vlož jen adresu z atributu src, nikoli celé HTML. Bez ní a obou souřadnic se karta mapy nezobrazí.'
+        type: string
+        pattern:
+          {
+            regex: '^$|^https://www\.google\.com/maps/embed\?pb=.+$',
+            message: 'Použij adresu src z vložení Google Maps',
+          }
