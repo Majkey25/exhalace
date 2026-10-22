@@ -38,4 +38,4 @@ jobs:
       - run: npm run build
       # Lighthouse on the built site; fails on accessibility, SEO or best-practice regressions
       # and on a performance score below 0.8 (shared runners are noisy, so the bar sits lower).
-      - run: npx --yes @lhci/cli@0.15.1 autorun
+      - run: npm run lighthouse
