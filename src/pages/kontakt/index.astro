@@ -30,12 +30,9 @@ const types = [
   'Soukromá oslava',
   'Něco jiného',
 ];
-// OpenStreetMap loads only after the visitor requests the map.
+// Google Maps loads only after the visitor requests the map.
 const { map_lat: lat, map_lng: lng } = settings;
-const map =
-  lat !== undefined && lng !== undefined
-    ? `https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.04},${lat - 0.018},${lng + 0.04},${lat + 0.018}&layer=mapnik&marker=${lat},${lng}`
-    : undefined;
+const map = lat !== undefined && lng !== undefined ? settings.map_embed : undefined;
 ---
 
 <Base
@@ -193,7 +190,7 @@ const map =
           <Icon name="pin" />
           <div>
             <h3 class="h3">{about.home}</h3>
-            <p class="dim">Prohlédněte si místo v mapě, nebo ho otevřete v Mapy.com.</p>
+            <p class="dim">Prohlédněte si místo v mapě, nebo ho otevřete v Google Maps.</p>
           </div>
         </div>
         <div class="map__actions">
@@ -206,21 +203,21 @@ const map =
             aria-describedby="map-privacy"
             hidden
           >
-            Načíst mapu OpenStreetMap
+            Načíst Google Maps
           </button>
           <a
             class="link-arrow"
-            href={`https://mapy.com/fnc/v1/showmap?center=${lng},${lat}&zoom=13&marker=true`}
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${lat},${lng}`)}`}
             rel="noopener"
             target="_blank"
           >
-            Otevřít v Mapy.com <Icon name="external" />
+            Otevřít v Google Maps <Icon name="external" />
           </a>
         </div>
         <p id="map-privacy" class="map__privacy meta">
-          Mapu načteme až po kliknutí. Prohlížeč se připojí k OpenStreetMap a předá jí IP adresu a
-          údaje o prohlížeči. Volbu neukládáme.{' '}
-          <a href="https://osmfoundation.org/wiki/Privacy_Policy">Soukromí OpenStreetMap</a>.
+          Mapu načteme až po kliknutí. Prohlížeč se připojí ke Google Maps. Google obdrží IP adresu
+          a údaje o prohlížeči a může používat vlastní cookies. Volbu neukládáme.{' '}
+          <a href="https://policies.google.com/privacy?hl=cs">Soukromí služby Google</a>.
         </p>
         <p class="map__status meta" role="status" data-map-status></p>
         <div id="location-map" class="map__frame" hidden></div>
@@ -246,7 +243,7 @@ const map =
       a další technické údaje požadavku.
     </p>
     <p>
-      YouTube a OpenStreetMap se připojí až po spuštění videa nebo načtení mapy. Externí služby,
+      YouTube a Google Maps se připojí až po spuštění videa nebo načtení mapy. Externí služby,
       sociální sítě a prodejci vstupenek mají vlastní podmínky a pravidla soukromí.
     </p>
     <p>
@@ -256,9 +253,7 @@ const map =
         GitHub
       </a>
       {' · '}
-      <a href="https://policies.google.com/privacy">Google / YouTube</a>
-      {' · '}
-      <a href="https://osmfoundation.org/wiki/Privacy_Policy">OpenStreetMap</a>
+      <a href="https://policies.google.com/privacy?hl=cs">Google / YouTube / Maps</a>
     </p>
   </section>
 </Base>
@@ -277,7 +272,7 @@ const map =
       clearTimeout(deadline);
       const closing = mapToggle.getAttribute('aria-expanded') === 'true';
       mapToggle.setAttribute('aria-expanded', String(!closing));
-      mapToggle.textContent = closing ? 'Načíst mapu OpenStreetMap' : 'Zavřít mapu';
+      mapToggle.textContent = closing ? 'Načíst Google Maps' : 'Zavřít mapu';
       mapFrame.hidden = closing;
       mapFrame.replaceChildren();
       mapStatus.textContent = '';
@@ -298,7 +293,7 @@ const map =
       );
       mapStatus.textContent = 'Načítání mapy…';
       deadline = setTimeout(() => {
-        mapStatus.textContent = 'Načítání mapy trvá déle. Použijte odkaz Otevřít v Mapy.com.';
+        mapStatus.textContent = 'Načítání mapy trvá déle. Použijte odkaz Otevřít v Google Maps.';
       }, 15_000);
       mapFrame.append(frame);
     });

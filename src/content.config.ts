@@ -136,9 +136,15 @@ const nastaveni = defineCollection({
       instagram: optional(https('Instagram')),
       youtube: optional(https('YouTube')),
       organisers: text,
-      // Pin for the "Kde nás najdete" map on the contact page; no map without both.
+      // The embed comes from Google Maps > Share > Embed a map; coordinates power the fallback link.
       map_lat: optional(z.coerce.number().min(-90).max(90)),
       map_lng: optional(z.coerce.number().min(-180).max(180)),
+      map_embed: optional(
+        https('Mapa').refine(
+          (value) => /^https:\/\/www\.google\.com\/maps\/embed\?pb=.+$/.test(value),
+          'Použij adresu src z Google Maps > Sdílet > Vložení mapy',
+        ),
+      ),
     }),
 });
 
