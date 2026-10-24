@@ -5,6 +5,7 @@ import { defineConfig, fontProviders } from 'astro/config';
 export default defineConfig({
   site: 'https://www.exhalace.cz',
   compressHTML: true,
+  experimental: { parallelPrerender: { workers: 2 } },
   build: { inlineStylesheets: 'always' },
   // YouTube thumbnails for the video facade.
   image: { domains: ['i.ytimg.com'] },
