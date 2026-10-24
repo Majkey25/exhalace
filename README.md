@@ -10,7 +10,7 @@ Official website of **Exhalace**, a Czech rock cover band from Jalubí near Uher
 [![Deploy](https://github.com/Majkey25/exhalace/actions/workflows/deploy.yml/badge.svg)](https://github.com/Majkey25/exhalace/actions/workflows/deploy.yml)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fwww.exhalace.cz%2F&label=site)](https://www.exhalace.cz/)
 [![Astro](https://img.shields.io/badge/Astro-7-BC52EE?logo=astro&logoColor=white)](https://astro.build)
-[![Node](https://img.shields.io/badge/node-%E2%89%A522.12-339933?logo=nodedotjs&logoColor=white)](.nvmrc)
+[![Node](https://img.shields.io/badge/node-%E2%89%A522.23.4-339933?logo=nodedotjs&logoColor=white)](.nvmrc)
 [![Dependabot](https://img.shields.io/badge/dependabot-enabled-025E8C?logo=dependabot&logoColor=white)](.github/dependabot.yml)
 
 **[www.exhalace.cz](https://www.exhalace.cz/)**

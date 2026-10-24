@@ -1,14 +1,26 @@
+# Check twice weekly in UTC, with stable times per repository, ecosystem and directory.
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
+      interval: cron
+      cronjob: '1 22 * * 2,6'
+      timezone: Etc/UTC
     groups:
+      # Keep patch updates separate from changes that require manual review.
+      astro-patch:
+        patterns: ['astro', '@astrojs/*']
+        update-types: ['patch']
       astro:
         patterns: ['astro', '@astrojs/*']
+        update-types: ['minor', 'major']
+      dev-tools-patch:
+        dependency-type: development
+        update-types: ['patch']
       dev-tools:
         dependency-type: development
+        update-types: ['minor', 'major']
     ignore:
       # @astrojs/check supports TypeScript 5 and 6 only.
       - dependency-name: typescript
@@ -19,4 +31,6 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: cron
+      cronjob: '6 8 * * 1,5'
+      timezone: Etc/UTC
