@@ -27,7 +27,7 @@
     "sharp": "^0.35.5"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.10",
+    "@astrojs/check": "^0.9.12",
     "@lhci/cli": "0.15.1",
     "@types/node": "^24.19.2",
     "prettier": "^3.9.10",
