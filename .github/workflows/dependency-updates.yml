@@ -15,7 +15,7 @@ jobs:
       pull-requests: write
       checks: read
       statuses: read
-    uses: Majkey25/Project-Guard/.github/workflows/dependency-context.yml@0be6e1daeb1c1e6e923e1e4065877f5f57c9dfcb
+    uses: Majkey25/Project-Guard/.github/workflows/dependency-context.yml@2bc28746d0c02641305037e1c1e2b5f09749701f
 
   patch-merge:
     needs: context
